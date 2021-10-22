@@ -49,17 +49,17 @@ void GyroTurn(byte &turnDir, int &angLimit)  {
 
 //---------------------------------------------------
 byte ConsecutiveTries(byte nTries) {
-byte ncount;
-byte flag;
-  
+byte countFlag;
+
   if (ncount < nTries) {
     ncount++;
-    flag = 0;
+    countFlag = 0;
   }
   else {
+    countFlag = 1;
     ncount = 0;
   }
-  if (ncount == nTries)
-    flag = 1;
-  return flag;
+  
+  return countFlag;
 }
+

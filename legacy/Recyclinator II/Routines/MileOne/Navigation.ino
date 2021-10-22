@@ -26,7 +26,7 @@ void HallwayNavigation()  {
 
 /*
 // Motor Speeds
-            STOP    SLOW    MED     FAST
+             STOP    SLOW    MED     FAST
 MtrSPEED    128     210     238     250
 */
 

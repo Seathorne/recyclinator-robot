@@ -251,15 +251,15 @@ void Stats()  {
     case 1: {
       HW = 241;
       hallLengthEnc = 76000;     // enc between shortest straight walls   
-      hallEndEnc = 60000;   
+      hallEndEnc = 60400;   
 
       if(hallDir == North) {
-       byte feature[] = {1,11,1,6,1,7,5,6,1,11,1,99};    
+       byte feature[] = {1,6,1,6,1,0,99};    
        defineFeatureList(feature, sizeof(feature));  
         Dir = Left;
       }
       else {
-        byte feature[] = {1,11,1,6,0,7,5,7,1,6,1,99};         
+        byte feature[] = {1,6,0,1,6,1,0,99};         
        defineFeatureList(feature, sizeof(feature));          
         Dir = Right;
       }
@@ -269,15 +269,16 @@ void Stats()  {
     case 2: {
       HW = 241;
        hallLengthEnc = 84000;   
+       hallEndEnc = 67000;
          
       if(hallDir == North) {
         Serial1.println(  "stats  case 2,  dir North ");
-        byte feature[] = {1,10,1,0,99};   // {1,6,4,1,7,12,1,10,12,1,0,99};           
+        byte feature[] = {1,6,1,7,1,10,1,0,99};              
         defineFeatureList(feature, sizeof(feature));
         Dir = Right;
       }
       else {
-        byte feature[] = {1,11,10,1,11,1,6,1,5,7,1,99};
+        byte feature[] = {1,10,1,6,1,7,1,0,99};
         defineFeatureList(feature, sizeof(feature));
         Dir = Right;        
       }  
@@ -321,14 +322,15 @@ void Stats()  {
     case 5: {
       HW = 241;
       hallLengthEnc = 67000;   
+      hallEndEnc = 55000;
         
       if(hallDir == West) {
-        byte feature[] = {1,0,1,0,99};  // {1,12,1,6,8,2,3,1,0,1,99};      
+        byte feature[] = {1,6,8,1,0,1,0,99};        
         defineFeatureList(feature, sizeof(feature));  
         Dir = Right;
       }
       else {
-        byte feature[] = {1,0,1,9,7,1,11,99};
+        byte feature[] = {1,8,1,0,99};
         defineFeatureList(feature, sizeof(feature));        
         Dir = Left;
       }
@@ -358,15 +360,16 @@ void Stats()  {
     
     case 8: {
       HW = 241;
-      hallLengthEnc = 66000;    
+      hallLengthEnc = 54000;    
+      hallEndEnc = 54000;
        
       if(hallDir == West) {
-        byte feature[] = {13,1,7,6,1,8,1,14,99};      
+        byte feature[] = {1,7,6,1,6,1,0,99};      
         defineFeatureList(feature, sizeof(feature));  
         Dir = Right;
       }
       else {
-        byte feature[] = {14,1,9,3,1,7,6,1,99};        
+        byte feature[] = {1,7,1,0,99};        
         defineFeatureList(feature, sizeof(feature));
         Dir = Right;
       }  
@@ -460,23 +463,24 @@ byte featureType;
     if (endHallWidth > 250) {
        Serial1.print("   endHallWidth  =  ");
        Serial1.println(endHallWidth);
-//       EndofHall();  
-        SetAcceleration(3); 
-        MtrSpeed(MtrStop, MtrStop);
-        delay(50);
-        lidarDist = Lidar();
-        Serial1.print(" lidarDist =  ");
-        Serial1.println(lidarDist);
+       
+       lidarDist = Lidar();
+       Serial1.print(" lidarDist =  ");
+       Serial1.println(lidarDist);       
+       
+       EndofHall(); 
 
-        while(1) {
-          MtrSpeed(MtrStop, MtrStop);
-          Serial1.println("else");
-          delay(50);
-        }
-      }
+//      MtrSpeed(MtrStop, MtrStop);
+//      delay(50);
     }
+  }
   else if (featureType == caseNum) {
-    featureIndex++;
+    byte countsFlag = ConsecutiveTries(3);
+    Serial1.print("  feature tries ");
+    Serial1.println(ncount);
+    if (countsFlag == 1) {
+      featureIndex++;                 // look for next feature
+    }                                 //  first ncount initialization in setup()
   }
 }
 
@@ -485,7 +489,6 @@ void EndofHall() {
   Serial1.println(" end of hall ");   
   In_Hallway = false;   
   At_Turn_Node = true;
-  SetAcceleration(3);
 } 
 
 //---------------------------------------------------------
