@@ -1,8 +1,8 @@
 
 byte lowBit = 8;
 byte highBit = 9;
-byte relayLeft = 7;
-byte relayRight = 6;
+byte relayLeft = 6;
+byte relayRight = 7;
 byte lowVal;
 byte highVal;
 byte leftVal;
