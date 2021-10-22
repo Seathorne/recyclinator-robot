@@ -5,7 +5,6 @@ Serial1.print((millis() - timeTemp)/1000.0);
 Serial1.write(9);
 Serial1.print(caseNum);
 Serial1.write(9);
-
 Serial1.print(hallCase);
 Serial1.write(9);
 
@@ -13,21 +12,12 @@ Serial1.print(rangeLtF,0);
 Serial1.write(9);
 Serial1.print(rangeRtF,0);
 Serial1.write(9);
-Serial1.print(rangeLtHall,0);
-Serial1.write(9);
-Serial1.print(rangeRtHall,0);
-Serial1.write(9);
 
-Serial1.print(wallDel);
-Serial1.write(9);
-Serial1.print(wallAng);
-Serial1.write(9);
-Serial1.print(endHallWidth);
-Serial1.write(9);
-
-Serial1.print(hallWidth);
+Serial1.print(wallAng); 
 Serial1.write(9);
 Serial1.print(featureDepth);
+Serial1.write(9);
+Serial1.print(hallWidth);
 Serial1.write(9);
 Serial1.print(encoderLt);
 Serial1.write(9);

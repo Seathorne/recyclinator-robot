@@ -9,23 +9,17 @@
 
 void HallwayNavigation()  {
 
-//  if (FirstHallFlag == true) FirstHall();
+  if (FirstHallFlag == true) FirstHall();
 
   SideRange();                 //comparison measurements of different ranging sensors
   WallFollow();
   Encoders(encoderLt, encoderRt);
 
-//  enc = encoderLt;
-//   Print();
-  PrintMon();
+//  PrintMon();
 
 //  Detect Hall End
-//  if  (enc > (hallLengthEnc - hallEndEnc)) {     //enc of last open door
-    CrossHallRange();
-//    SideRange();
+     EndHallCheck(featureList);
      Print();
-     EndHallCheck();
-//  }
 }
 //---------------------------------------
 

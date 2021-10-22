@@ -1,13 +1,11 @@
-    
+       
 
 /*********************************************************
                          ARDUINO
                         RECYLINATOR II
                         Milestone 1
                         EMG40 & MD49
-                      28  January 2018
-                        
-Hall following working - 1/22
+                      29  January 2018
 
 **********************************************************/
 
@@ -25,7 +23,6 @@ const float radToDeg = 57.2958;
 const float roboWidth = 35;        //distance between right and left side sonars
 
 boolean At_Turn_Node;
-byte caseNum;
 boolean In_Hallway;
 boolean FirstHallFlag;
 boolean At_Fail;
@@ -33,6 +30,7 @@ boolean ID;
 boolean termination;
 boolean ReceiveEnc = false;
 
+byte caseNum;
 byte SetMode = 0x34;
 byte TrigPulse = 10;
 byte LtR_TrigEchoPin = 50;
@@ -66,6 +64,8 @@ byte EncIndex = 0;
 byte rc_active = 33;                          //Signal from BX-24 indicating R/C Control when high
 byte busy;
 byte ncount;
+byte featureIndex;
+byte featureList[20];
 
 int angLimit;
 int angTurn;
@@ -110,19 +110,19 @@ void setup()  {
   
   In_Hallway = true;
   At_Turn_Node = false;
-  FirstHallFlag = false;
+  FirstHallFlag = true;
   busy = 1;
   ncount = 0;
 
   LtMtrSpeed = MtrMed;
   RtMtrSpeed = MtrMed;  
-  HW = 241;
   Kp = 0.5;
   Ka = 0.75;
   
   SetPinModes();  
   InitializeSerialPorts();
   ConfigMotors();
+  Stats();
 }
 
 void loop()  {
