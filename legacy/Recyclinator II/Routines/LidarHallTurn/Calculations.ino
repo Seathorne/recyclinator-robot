@@ -27,12 +27,21 @@ void Pairs() {
       Serial.write(9);
       Serial.print(j);
       Serial.write(9);
+
+      Serial1.print(i);
+      Serial1.write(9);
+      Serial1.print(j);
+      Serial1.write(9);      
       Compute();
       Y[N] = y;
       Theta[N] = theta;
       Serial.print(y);
       Serial.write(9);
       Serial.println(theta*radToDeg);
+
+      Serial1.print(y);
+      Serial1.write(9);
+      Serial1.println(theta*radToDeg);      
     }
   }
 }
@@ -46,6 +55,9 @@ float sumThetaSqr;
 
   Serial.print("N = ");
   Serial.println(N);
+
+  Serial1.print("N = ");
+  Serial1.println(N);  
   sumY = 0;  
   sumTheta = 0;
   sumYSqr = 0;
@@ -70,7 +82,18 @@ float sumThetaSqr;
   Serial.write(9);
   Serial.println(sumTheta*radToDeg);
 
-  
+  Serial1.print(" sumY, sumY^2,  sumYSqr, sumTheta   ");
+  Serial1.print(sumY);
+  Serial1.write(9);
+  Serial1.print(sumY*sumY);
+  Serial1.write(9);
+  Serial1.println(sumYSqr);
+  Serial1.write(9);
+  Serial1.print((N*sumYSqr - sumY*sumY));
+  Serial1.write(9);
+  Serial1.print(sqrt(N*sumYSqr - sumY*sumY));
+  Serial1.write(9);
+  Serial1.println(sumTheta*radToDeg);
   avgY = sumY/N;
   avgTheta = sumTheta/N;
 
@@ -86,23 +109,36 @@ float sumThetaSqr;
   Serial.print(avgTheta*radToDeg);
   Serial.write(9);
   Serial.println(ThetaStdev*radToDeg);
+
+  Serial1.print(" avg & std dev   ");
+  Serial1.print(avgY);
+  Serial1.write(9);
+  Serial1.print(YStdev);
+  Serial1.write(9);
+  Serial1.print(avgTheta*radToDeg);
+  Serial1.write(9);
+  Serial1.println(ThetaStdev*radToDeg);  
 }
 
 //--------------------------------------------------
 void Filter() {
-float newAvg;
+
 float sumY;
 float sumTheta;
 float numII;
 int II[15];
 
   sumY = 0;
+  sumTheta = 0;
   numII = 0;
   
   for (int i = 1; i < (N+1); i++)  {
     if (abs(avgY - Y[i]) < YStdev) {
       Serial.print(i);
       Serial.write(9);
+      
+      Serial1.print(i);
+      Serial1.write(9);      
       sumY += Y[i];
       II[i] = i;
       numII += 1;
@@ -110,6 +146,9 @@ int II[15];
   }
   Serial.print(numII);
   Serial.println("   ");
+
+  Serial1.print(numII);
+  Serial1.println("   ");
   YBar = sumY/numII;
 
   for (int i = 1; i < numII+1; i++) {
@@ -118,9 +157,14 @@ int II[15];
   
   ThetaBar = sumTheta/numII;
 
-  Serial.print(" filter: YBar, ThetaBar  ");
-  Serial.print(YBar);
-  Serial.write(9);
-  Serial.println(ThetaBar*radToDeg);
+  Serial1.print(" filter: YBar, ThetaBar  ");
+  Serial1.print(YBar);
+  Serial1.write(9);
+  Serial1.println(ThetaBar*radToDeg);
+
+  Serial1.print(" filter: YBar, ThetaBar  ");
+  Serial1.print(YBar);
+  Serial1.write(9);
+  Serial1.println(ThetaBar*radToDeg);  
 }
 

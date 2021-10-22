@@ -48,6 +48,7 @@ float ThetaBar;
 void setup() {
   delay(500);
   Serial.begin(9600);       //Monitor  
+  Serial1.begin(57600);
   SetPinModes();  
   m = 166.0/180.0;
   b = 8.0;
@@ -86,8 +87,14 @@ void loop() {
       Serial.write(9);
       Serial.print(gamma[i]*radToDeg,0);
       Serial.write(9);
+
+      Serial1.print(distance[i],0);
+      Serial1.write(9);
+      Serial1.print(gamma[i]*radToDeg,0);
+      Serial1.write(9);      
     }
     Serial.println( " ");
+    Serial1.println( " ");    
     angle = m*90 + b;  
     LidarServo.write(angle); 
    Pairs();
