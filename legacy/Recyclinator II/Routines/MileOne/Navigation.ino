@@ -14,12 +14,12 @@ void HallwayNavigation()  {
   SideRange();                 //comparison measurements of different ranging sensors
   WallFollow();
   Encoders(encoderLt, encoderRt);
+  Print();
 
 //  PrintMon();
 
 //  Detect Hall End
      EndHallCheck();
-     Print();
 }
 //---------------------------------------
 
@@ -53,7 +53,6 @@ void WallFollow() {
   MtrSpeed(LtMtrSpd, RtMtrSpd);
 }
 
-//--------------------------------------
 //-------------------------------------
 void angleLimit(float &angDel) { 
   angDel = Ka * wallAng;  // Ka = 0.75 is slightly underdamped but approaches set point best
@@ -68,7 +67,6 @@ void angleLimit(float &angDel) {
   }     
 }
 
-//-------------------------------------
 //-------------------------------------------------------
 void wallLimit ()  {  
 //  float featureDepth;
@@ -198,7 +196,6 @@ float nearSide;
 }
 
 
-//----------------------------------------
 
 
 

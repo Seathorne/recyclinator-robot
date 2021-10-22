@@ -1,4 +1,5 @@
 void ChangeHall()   {
+   Serial1.println("  SetUp ChangeHall  ");   
 // 1. Choose Turn Direction  
   turnDir = turnHall2North[iTurn];             //decide which way to turn; ii initialized in set-up
   do {     
@@ -18,71 +19,25 @@ void ChangeHall()   {
   Serial1.write(9);
   Serial1.println(hallDir);                        
     iTurn++;          
-  
-   Serial1.println("  SetUp ChangeHall  "); 
-//  Left Turns - Lt motor speed turn; Rt motor speed slow
 
     while(1) {
       MtrSpeed(MtrTurn, MtrTurn+8);
-    }
+      Encoders(encoderLt, encoderRt);
+      Serial1.print(encoderLt);
+      Serial1.write(9);
+      Serial1.println(encoderRt);
 
+      if(turnDir == 0) {
+        angLimit = 90;    
+        GyroTurn(turnDir, angLimit); 
+     
+        Serial3.write('Z');  
+        delay(5);
+        while(Serial3.read() >= 0);  
+        gyroAngle = 0;  
+      }
+    }
 /*        
-
-//  2.  Advance after end of hall
-//   MtrSpeed(MtrStop, MtrStop);  
-
-    if(turnDir == 0) {
-      digitalWrite(LtTurnSig_pin, HIGH);            //turn signal lights
-      digitalWrite(RtTurnSig_pin, LOW);   
-    }
-    else if (turnDir == 1) {
-      digitalWrite(LtTurnSig_pin, LOW);
-      digitalWrite(RtTurnSig_pin, HIGH);        
-    }
-    else if (turnDir == 2) {
-      digitalWrite(LtTurnSig_pin, HIGH);
-      digitalWrite(RtTurnSig_pin, HIGH);        
-    }
-    
-    
-    EncRst(); 
-    GetEncoders();
-//    Encoders();
-    MtrSpeed(MtrMed, MtrMed);
-    
-    do {        
-      GetEncoders();
-//      Encoders();
-      Print();   
-    } while (encoderLt <= hallAdvCenterEnc);      
-
-//  3.  Turn 45 degrees
-  if(turnDir != 2) {
-
-  
-//  4.  Advance to middle of hall  
-    EncRst();
-    SetAcceleration(1);     
-    MtrSpeed(MtrSlow, MtrSlow);
-
- 
-
-//  5.  Turn 45 degrees
-
-  }
-
-  else if (turnDir == 2) {          //when no turn, advance far enough to see open hall
-    EncRst(); 
-    GetEncoders();
-//      Encoders();
-    MtrSpeed(MtrSlow, MtrSlow);
-    
-    do {                                                       
-      GetEncoders();
-//      Encoders();
-      Print();    
-    } while (encoderLt <= hallAdvCenterEnc + 2000);   
-  }
     
 /// 6.  Look for new hallway wall
     SetAcceleration(1);
@@ -108,6 +63,7 @@ void ChangeHall()   {
   Stats();                    //update stats for new hallway  
 
   At_Turn_Node = false;
+  In_Hallway = true;
   Serial1.println("  end ChangeHall  ");     
 } 
 

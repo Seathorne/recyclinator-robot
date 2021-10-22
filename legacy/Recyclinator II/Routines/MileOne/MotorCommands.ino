@@ -18,16 +18,6 @@ void MtrSpeed(byte LtSpeed, byte RtSpeed) {
       delay(20);
 }
 
-//----------------------------------------
-//-----------------------------------------
-void GetEncoders() {
-  ReceiveEnc = true;
-  Serial2.write(SynchByte);
-  Serial2.write(0x25);
-  delay(50);
-  EncIndex = 0;
-}
-
 //-------------------------------------------
 void Encoders(long &encoderLt, long &encoderRt)  {
   Serial2.write(SynchByte);                    //Get Encoder - right then left

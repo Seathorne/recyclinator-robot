@@ -419,14 +419,6 @@ void defineFeatureList(byte feature[], byte N) {
   }  
 }
 
-//---------------------------------------------------
-void EndofHall() {
-  Serial1.println(" end hall ");   
-  In_Hallway = false;  
-  MtrSpeed(MtrStop, MtrStop);  
-  At_Turn_Node = true;
-} 
-
 //---------------------------------------
 void FirstHall()  {   
 
@@ -457,7 +449,8 @@ byte featureType;
   featureType = featureList[featureIndex];
    
   if (featureType == 99) {
-    CrossHallRange();  
+    CrossHallRange();
+    Serial1.print("  CrossHall Ranges   ");  
     Serial1.print(rangeLtHall,0);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
     Serial1.write(9);
     Serial1.println(rangeRtHall,0);
@@ -472,6 +465,13 @@ byte featureType;
     featureIndex++;
   }
 }
+
+//---------------------------------------------------
+void EndofHall() {
+  Serial1.println(" end of hall ");   
+  In_Hallway = false;   
+  At_Turn_Node = true;
+} 
 
 
 

@@ -5,7 +5,7 @@
                         RECYLINATOR II
                         Milestone 1
                         EMG40 & MD49
-                       1 February 2018
+                       4 February 2018
 
 **********************************************************/
 
@@ -112,7 +112,7 @@ void setup()  {
   
   In_Hallway = true;
   At_Turn_Node = false;
-  FirstHallFlag = true;
+  FirstHallFlag = false;
   busy = 1;
   ncount = 0;
 
