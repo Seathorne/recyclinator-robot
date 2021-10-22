@@ -1,4 +1,5 @@
 
+
 #include <math.h>
 #include <Servo.h>
 Servo LidarServo;               //Left write(129);  Forward write(87);  Right write(45)
@@ -64,6 +65,13 @@ void loop() {
     LidarServo.write(angle);
     delay(100);               // wait for servo to settle    
     D1 =  Lidar();
+    Serial.print("  Lidar distances ");
+    Serial.write(9);
+    Serial.print(D1,0);
+
+    Serial1.print("  Lidar distances ");
+    Serial1.write(9);
+    Serial1.print(D1,0);    
     
     for (int i = 1; i < num; i++)  {
       beta = alpha - 5;
@@ -71,6 +79,11 @@ void loop() {
       LidarServo.write(angle);
       delay(100);
       D2 =  Lidar(); 
+    Serial.write(9);
+    Serial.print(D2,0);
+
+    Serial1.write(9);
+    Serial1.print(D2,0);          
       Compute();
       distance[i] = y;
       gamma[i] = theta;
@@ -82,24 +95,18 @@ void loop() {
       D1 = D2;
     }
 
-    for (int i = 1; i < num; i++)  {
-      Serial.print(distance[i],0);
-      Serial.write(9);
-      Serial.print(gamma[i]*radToDeg,0);
-      Serial.write(9);
-
-      Serial1.print(distance[i],0);
-      Serial1.write(9);
-      Serial1.print(gamma[i]*radToDeg,0);
-      Serial1.write(9);      
-    }
-    Serial.println( " ");
-    Serial1.println( " ");    
+    Serial.println("   ");
+    Serial.println("   ");
+    Serial1.println("  ");    
+    Serial1.println("  ");
+    
     angle = m*90 + b;  
     LidarServo.write(angle); 
    Pairs();
    AvgStdDev();
    Filter();
+   Serial.println("  ");
+   Serial1.println("  ");
    go = 0;
   }
 }

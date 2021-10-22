@@ -35,13 +35,13 @@ void Pairs() {
       Compute();
       Y[N] = y;
       Theta[N] = theta;
-      Serial.print(y);
+      Serial.print(y,0);
       Serial.write(9);
-      Serial.println(theta*radToDeg);
+      Serial.println(theta*radToDeg,1);
 
-      Serial1.print(y);
+      Serial1.print(y,0);
       Serial1.write(9);
-      Serial1.println(theta*radToDeg);      
+      Serial1.println(theta*radToDeg,1);      
     }
   }
 }
@@ -69,31 +69,6 @@ float sumThetaSqr;
     sumTheta += Theta[i];
     sumThetaSqr += Theta[i]*Theta[i];
   }
-  Serial.print(" sumY, sumY^2,  sumYSqr, sumTheta   ");
-  Serial.print(sumY);
-  Serial.write(9);
-  Serial.print(sumY*sumY);
-  Serial.write(9);
-  Serial.println(sumYSqr);
-  Serial.write(9);
-  Serial.print((N*sumYSqr - sumY*sumY));
-  Serial.write(9);
-  Serial.print(sqrt(N*sumYSqr - sumY*sumY));
-  Serial.write(9);
-  Serial.println(sumTheta*radToDeg);
-
-  Serial1.print(" sumY, sumY^2,  sumYSqr, sumTheta   ");
-  Serial1.print(sumY);
-  Serial1.write(9);
-  Serial1.print(sumY*sumY);
-  Serial1.write(9);
-  Serial1.println(sumYSqr);
-  Serial1.write(9);
-  Serial1.print((N*sumYSqr - sumY*sumY));
-  Serial1.write(9);
-  Serial1.print(sqrt(N*sumYSqr - sumY*sumY));
-  Serial1.write(9);
-  Serial1.println(sumTheta*radToDeg);
   avgY = sumY/N;
   avgTheta = sumTheta/N;
 
@@ -102,22 +77,22 @@ float sumThetaSqr;
   ThetaStdev = sqrt(N*sumThetaSqr - sumTheta*sumTheta)/N; 
 
   Serial.print(" avg & std dev   ");
-  Serial.print(avgY);
+  Serial.print(avgY,0);
   Serial.write(9);
-  Serial.print(YStdev);
+  Serial.print(YStdev,1);
   Serial.write(9);
-  Serial.print(avgTheta*radToDeg);
+  Serial.print(avgTheta*radToDeg,1);
   Serial.write(9);
-  Serial.println(ThetaStdev*radToDeg);
+  Serial.println(ThetaStdev*radToDeg,1);
 
   Serial1.print(" avg & std dev   ");
-  Serial1.print(avgY);
+  Serial1.print(avgY,0);
   Serial1.write(9);
-  Serial1.print(YStdev);
+  Serial1.print(YStdev,1);
   Serial1.write(9);
-  Serial1.print(avgTheta*radToDeg);
+  Serial1.print(avgTheta*radToDeg,1);
   Serial1.write(9);
-  Serial1.println(ThetaStdev*radToDeg);  
+  Serial1.println(ThetaStdev*radToDeg,1);  
 }
 
 //--------------------------------------------------
@@ -144,27 +119,31 @@ int II[15];
       numII += 1;
     }
   }
-  Serial.print(numII);
+  Serial.write(9);
+  Serial.print(numII,0);
   Serial.println("   ");
 
-  Serial1.print(numII);
+  Serial1.write(9);
+  Serial1.print(numII,0);
   Serial1.println("   ");
   YBar = sumY/numII;
 
-  for (int i = 1; i < numII+1; i++) {
+  for (int i = 1; i < (numII+1); i++) {
     sumTheta += Theta[II[i]];
   }
-  
+    Serial.println(sumTheta);  
   ThetaBar = sumTheta/numII;
 
-  Serial1.print(" filter: YBar, ThetaBar  ");
-  Serial1.print(YBar);
-  Serial1.write(9);
-  Serial1.println(ThetaBar*radToDeg);
+  Serial.print(" filter: YBar, ThetaBar  ");
+  Serial.write(9);
+  Serial.print(YBar,0);
+  Serial.write(9);
+  Serial.println(ThetaBar*radToDeg,1);
 
   Serial1.print(" filter: YBar, ThetaBar  ");
-  Serial1.print(YBar);
   Serial1.write(9);
-  Serial1.println(ThetaBar*radToDeg);  
+  Serial1.print(YBar,0);
+  Serial1.write(9);
+  Serial1.println(ThetaBar*radToDeg,1);  
 }
 
