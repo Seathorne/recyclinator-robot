@@ -252,12 +252,12 @@ void Stats()  {
 
       if(hallDir == North) {
        byte feature[] = {1,11,1,6,1,7,5,6,1,11,1,99};    
-       defineFeatureList(feature);  
+       defineFeatureList(feature, sizeof(feature));  
         Dir = Left;
       }
       else {
         byte feature[] = {1,11,1,6,0,7,5,7,1,6,1,99};         
-       defineFeatureList(feature);          
+       defineFeatureList(feature, sizeof(feature));          
         Dir = Right;
       }
       break;
@@ -270,12 +270,12 @@ void Stats()  {
       if(hallDir == North) {
         Serial1.println(  "stats  case 2,  dir North ");
         byte feature[] = {1,6,4,1,7,12,1,10,12,1,0,99};           
-        defineFeatureList(feature);
+        defineFeatureList(feature, sizeof(feature));
         Dir = Right;
       }
       else {
         byte feature[] = {1,11,10,1,11,1,6,1,5,7,1,99};
-        defineFeatureList(feature);
+        defineFeatureList(feature, sizeof(feature));
         Dir = Right;        
       }  
       break;    
@@ -287,12 +287,12 @@ void Stats()  {
        
       if(hallDir == North) {
         byte feature[] = {1,10,5,10,1,11,1,10,5,7,1,99};   
-        defineFeatureList(feature);     
+        defineFeatureList(feature, sizeof(feature));     
         Dir = Left;        
       }
       else {
         byte feature[] = {1,7,5,10,1,11,1,10,5,10,1,99};   
-        defineFeatureList(feature);     
+        defineFeatureList(feature, sizeof(feature));     
         Dir = Right;
       }
       break;      
@@ -304,12 +304,12 @@ void Stats()  {
 ;        
       if(hallDir == North) {
         byte feature[] = {12,1,7,12,1,9,12,1,3,1,12,1,12,99};  
-        defineFeatureList(feature);      
+        defineFeatureList(feature, sizeof(feature));      
         Dir = Left;
       }
       else {
         byte feature[] = {12,1,12,1,9,1,12,99};  
-        defineFeatureList(feature);      
+        defineFeatureList(feature, sizeof(feature));      
         Dir = Right;
       }
       break;
@@ -321,12 +321,12 @@ void Stats()  {
         
       if(hallDir == West) {
         byte feature[] = {1,12,1,6,8,2,3,1,0,1,99};      
-        defineFeatureList(feature);  
+        defineFeatureList(feature, sizeof(feature));  
         Dir = Right;
       }
       else {
         byte feature[] = {1,0,1,9,7,1,11,99};
-        defineFeatureList(feature);        
+        defineFeatureList(feature, sizeof(feature));        
         Dir = Left;
       }
       break;      
@@ -342,12 +342,12 @@ void Stats()  {
         
       if(hallDir == West) {
        byte feature[] = {1,12,1,3,99};       
-       defineFeatureList(feature); 
+       defineFeatureList(feature, sizeof(feature)); 
         Dir = Right;        
       }
       else {
         byte feature[] = {1,12,99}; 
-        defineFeatureList(feature);       
+        defineFeatureList(feature, sizeof(feature));       
         Dir = Left;        
       }   
       break;  
@@ -359,12 +359,12 @@ void Stats()  {
        
       if(hallDir == West) {
         byte feature[] = {13,1,7,6,1,8,1,14,99};      
-        defineFeatureList(feature);  
+        defineFeatureList(feature, sizeof(feature));  
         Dir = Right;
       }
       else {
         byte feature[] = {14,1,9,3,1,7,6,1,99};        
-        defineFeatureList(feature);
+        defineFeatureList(feature, sizeof(feature));
         Dir = Right;
       }  
       break;      
@@ -376,12 +376,12 @@ void Stats()  {
      
       if(hallDir == West) {
         byte feature[] = {1,12,14,1,2,1,99};   
-        defineFeatureList(feature);     
+        defineFeatureList(feature, sizeof(feature));     
         Dir = Left;        
       }
       else {
         byte feature[] = {1,2,1,11,14,12,1,1,14,13,1,99};   
-        defineFeatureList(feature);     
+        defineFeatureList(feature, sizeof(feature));     
         Dir = Right;        
       } 
       break;     
@@ -393,12 +393,12 @@ void Stats()  {
     
       if(hallDir == West) {
         byte feature[] = {1,12,1,6,99};        
-        defineFeatureList(feature);
+        defineFeatureList(feature, sizeof(feature));
         Dir = Left;        
       }
       else {
         byte feature[] = {6,1,12,1,99};        
-        defineFeatureList(feature);
+        defineFeatureList(feature, sizeof(feature));
         Dir = Left;        
       }
       break;      
@@ -412,11 +412,10 @@ void Stats()  {
 }
 
 //----------------------------------------------------
-void defineFeatureList(byte feature[]) {
-  for (int i = 0; i < int(sizeof(feature))/sizeof(int); i++) {
+void defineFeatureList(byte feature[], byte N) {
+  for (int i = 0; i < N; i++) {
     featureList[i] = feature[i]; 
   }  
-  Serial.println("   ");
 }
 
 //---------------------------------------------------
@@ -451,19 +450,16 @@ void FirstHall()  {
 } 
 
 //---------------------------------------------------
-void EndHallCheck(byte featureList[]) {     
+void EndHallCheck() {     
 byte featureType;
-  Serial.println(sizeof(featureList));
-  for (int i = 0; i < int(sizeof(featureList))/sizeof(int); i++) {
-    Serial.print(featureList[i]);
-  }
+
   featureType = featureList[featureIndex];
-  Serial.print(" Index  = ");
-  Serial.print(featureIndex);  
-  Serial.print("     featureType   ");
-  Serial.print(featureType);
-  Serial.print("        caseNum  = ");
-  Serial.println(caseNum); 
+  Serial1.print(" Index  = ");
+  Serial1.print(featureIndex);  
+  Serial1.print("     featureType   ");
+  Serial1.print(featureType);
+  Serial1.print("        caseNum  = ");
+  Serial1.println(caseNum); 
    
   if (featureType == 99) {
     CrossHallRange();  

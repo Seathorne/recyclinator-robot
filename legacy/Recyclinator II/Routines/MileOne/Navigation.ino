@@ -18,7 +18,7 @@ void HallwayNavigation()  {
 //  PrintMon();
 
 //  Detect Hall End
-     EndHallCheck(featureList);
+     EndHallCheck();
      Print();
 }
 //---------------------------------------
