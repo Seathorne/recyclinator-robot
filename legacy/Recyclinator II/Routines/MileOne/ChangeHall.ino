@@ -20,7 +20,6 @@ void ChangeHall()   {
   Serial1.println(hallDir);                        
     iTurn++;          
 
-    while(1) {
       MtrSpeed(MtrTurn, MtrTurn+8);
       Encoders(encoderLt, encoderRt);
       Serial1.print(encoderLt);
@@ -36,7 +35,6 @@ void ChangeHall()   {
         while(Serial3.read() >= 0);  
         gyroAngle = 0;  
       }
-    }
 /*        
     
 /// 6.  Look for new hallway wall

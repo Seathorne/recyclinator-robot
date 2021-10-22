@@ -25,10 +25,22 @@ void GyroTurn(byte &turnDir, int &angLimit)  {
          gyroAngle = int(Serial3.read())<<8;
          gyroAngle += int(Serial3.read());
        }    
+       
+//       Encoders(encoderLt, encoderRt); 
        Serial1.print( "gyroAngle   ");
-       Serial1.println(gyroAngle);
+        Serial1.println(gyroAngle);
+//       Serial1.write(9);
+//       Serial1.print(encoderLt);
+//       Serial1.write(9);
+ //      Serial1.println(encoderRt);
      } while (abs(gyroAngle) <= angLimit);   
 
+       if (Serial3.available() > 1 ) {
+         gyroAngle = int(Serial3.read())<<8;
+         gyroAngle += int(Serial3.read());
+       }    
+       Serial1.print("gyro angle =   ");
+       Serial1.println(gyroAngle);
      SetAcceleration(5);
      MtrSpeed(MtrStop, MtrStop);  
      delay(500);

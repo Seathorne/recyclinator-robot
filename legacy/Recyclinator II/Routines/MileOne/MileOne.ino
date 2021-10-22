@@ -1,4 +1,4 @@
-      
+       
 
 /*********************************************************
                          ARDUINO
@@ -111,7 +111,7 @@ void setup()  {
   wallDistVal = 80;
   
   In_Hallway = true;
-  At_Turn_Node = false;
+   At_Turn_Node = false;
   FirstHallFlag = false;
   busy = 1;
   ncount = 0;

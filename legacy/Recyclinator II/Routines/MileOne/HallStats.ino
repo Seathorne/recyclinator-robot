@@ -471,6 +471,7 @@ void EndofHall() {
   Serial1.println(" end of hall ");   
   In_Hallway = false;   
   At_Turn_Node = true;
+  SetAcceleration(3);
 } 
 
 
