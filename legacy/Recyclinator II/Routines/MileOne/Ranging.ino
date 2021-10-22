@@ -40,7 +40,7 @@ void frontSideRange () {
   delay(20);    
   pinMode(LtF_TrigEchoPin, OUTPUT);
   pulseOut(LtF_TrigEchoPin, TrigPulse);
-    pinMode(LtF_TrigEchoPin, INPUT);
+  pinMode(LtF_TrigEchoPin, INPUT);
   rangeLtF = pulseIn (LtF_TrigEchoPin, HIGH)/58.0;
 
   hallWidth = rangeRtF + rangeLtF + roboWidth;     
@@ -92,7 +92,6 @@ void HallRangeRt()  {
     rangeRtHall = pulseIn(RtHall_pin, HIGH)/58.0; 
 }
 
-//-----------------------------------------------
 //----------------------------------------------------
 float wallAngle (float rangeDiff) { 
   float angle;
@@ -111,6 +110,21 @@ float wallAngle (float rangeDiff) {
 }
 
 //---------------------------------------------------
+float Lidar() {
+float sum;
+float dist;
+  
+  digitalWrite(9, LOW);
+  sum = 0;
+   for (int i = 0; i < 100; i++) {
+    dist = pulseIn(8, HIGH)/10;
+    sum += dist;
+   }
+   digitalWrite(9, HIGH);
+   dist = sum/100;
+   return dist;
+ }
+ 
 //-------------------------------------------------
 void pulseOut(int pin, int duration) {
   delayMicroseconds(12);

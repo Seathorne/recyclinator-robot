@@ -14,6 +14,11 @@ void SetPinModes () {
   pinMode(RtF_TrigEchoPin, OUTPUT);
   pinMode(LtR_TrigEchoPin, OUTPUT);
   pinMode(RtR_TrigEchoPin, OUTPUT);
+  pinMode(LidarPwrEn_pin, OUTPUT);
+  pinMode(LidarMonitor_pin, INPUT);
+  pinMode(LidarTrigger_pin, OUTPUT);
+
+  LidarServo.attach(7);    
 }
 
 //--------------------------------------------

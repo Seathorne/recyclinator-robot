@@ -9,6 +9,9 @@
 
 **********************************************************/
 
+#include <Servo.h>
+Servo LidarServo;               //Left write(129);  Forward write(87);  Right write(45)
+
 #define SynchByte 0x00           // Command byte
 #define  North     1             // Define directions
 #define  East      2
@@ -33,12 +36,15 @@ boolean ReceiveEnc = false;
 byte caseNum;
 byte SetMode = 0x34;
 byte TrigPulse = 10;
-byte LtR_TrigEchoPin = 50;
-byte LtF_TrigEchoPin = 51;
-byte RtF_TrigEchoPin = 52;
-byte RtR_TrigEchoPin = 53;
-byte LtHall_pin = 48;
-byte RtHall_pin = 49;
+byte LtR_TrigEchoPin = 26;
+byte LtF_TrigEchoPin = 27;
+byte RtF_TrigEchoPin = 28;
+byte RtR_TrigEchoPin = 29;
+byte LtHall_pin = 24;
+byte RtHall_pin = 25;
+byte LidarMonitor_pin = 8;
+byte LidarTrigger_pin = 9;
+byte LidarPwrEn_pin = 10;
 byte MtrBack = 82;
 byte MtrStop = 128;
 byte MtrTurn = 200;
@@ -89,6 +95,7 @@ float rangeLtR;
 float wallAng;
 float wallDel;
 float wallDistVal;
+float lidarDist;
 
 long enc;
 long encoderLt;
@@ -115,6 +122,8 @@ void setup()  {
   FirstHallFlag = true;
   ncount = 0;
 
+  LidarServo.write(87);
+  
   LtMtrSpeed = MtrMed;
   RtMtrSpeed = MtrMed;  
   Kp = 0.5;
@@ -123,6 +132,7 @@ void setup()  {
   SetPinModes();  
   InitializeSerialPorts();
   ConfigMotors();
+  digitalWrite(LidarPwrEn_pin, HIGH);  
   Stats();
 }
 
@@ -138,7 +148,10 @@ void loop()  {
   }      
   
     else {                      //if RC STOP engaged, stop "slowly" i.e. accel value = 4
-      Serial.println("else");
+//      Serial.println("else");
+    lidarDist = Lidar();
+    Serial.println(lidarDist);
+    delay(50);
       MtrSpeed(MtrStop, MtrStop);
       Serial1.println("  idle  ");
       Serial1.write(9);
