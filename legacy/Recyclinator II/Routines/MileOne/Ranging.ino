@@ -76,9 +76,9 @@ void CrossHallRange()  {
 //--------------------------------------------------
 void HallRangeLt() {
     delay(20);
-    pinMode(RtF_TrigEchoPin, OUTPUT);
+    pinMode(LtHall_pin, OUTPUT);
     pulseOut(LtHall_pin, TrigPulse);
-    pinMode(RtF_TrigEchoPin, INPUT);
+    pinMode(LtHall_pin, INPUT);
     rangeLtHall = pulseIn(LtHall_pin, HIGH)/58.0;
 }
 
@@ -86,9 +86,9 @@ void HallRangeLt() {
 //--------------------------------------------------
 void HallRangeRt()  {
     delay(20);
-    pinMode(RtF_TrigEchoPin, OUTPUT);
+    pinMode(RtHall_pin, OUTPUT);
     pulseOut(RtHall_pin, TrigPulse);
-    pinMode(RtF_TrigEchoPin, INPUT);    
+    pinMode(RtHall_pin, INPUT);    
     rangeRtHall = pulseIn(RtHall_pin, HIGH)/58.0; 
 }
 

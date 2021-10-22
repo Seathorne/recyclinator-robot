@@ -452,5 +452,6 @@ Serial1.println("  Hallway Stats");
 void EndofHall() {
   Serial1.println(" end hall ");   
   In_Hallway = false;  
-  At_Turn_Node = true;
+      MtrSpeed(MtrStop, MtrStop);  
+//  At_Turn_Node = true;
 } 

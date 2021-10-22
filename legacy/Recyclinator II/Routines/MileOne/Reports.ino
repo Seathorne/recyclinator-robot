@@ -13,18 +13,16 @@ Serial1.print(rangeLtF,0);
 Serial1.write(9);
 Serial1.print(rangeRtF,0);
 Serial1.write(9);
-//Serial1.print(rangeLtHall);
-//Serial1.write(9);
-//Serial1.print(rangeRtHall);
-//Serial1.write(9);
+Serial1.print(rangeLtHall,0);
+Serial1.write(9);
+Serial1.print(rangeRtHall,0);
+Serial1.write(9);
 
 Serial1.print(wallDel);
 Serial1.write(9);
 Serial1.print(wallAng);
 Serial1.write(9);
-Serial1.print(LtMtrSpd);
-Serial1.write(9);
-Serial1.print(RtMtrSpd);
+Serial1.print(endHallWidth);
 Serial1.write(9);
 
 Serial1.print(hallWidth);

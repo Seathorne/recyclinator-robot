@@ -1,11 +1,11 @@
-    
+      
 
 /*********************************************************
                          ARDUINO
                         RECYLINATOR II
                         Milestone 1
                         EMG40 & MD49
-                      24  January 2018
+                      28  January 2018
                         
 Hall following working - 1/22
 
@@ -39,8 +39,8 @@ byte LtR_TrigEchoPin = 50;
 byte LtF_TrigEchoPin = 51;
 byte RtF_TrigEchoPin = 52;
 byte RtR_TrigEchoPin = 53;
-byte LtHall_pin = 32;
-byte RtHall_pin = 31;
+byte LtHall_pin = 48;
+byte RtHall_pin = 49;
 byte MtrStop = 128;
 byte MtrSlow = 210;
 byte MtrMed = 238;
@@ -109,7 +109,7 @@ void setup()  {
   
   In_Hallway = true;
   At_Turn_Node = false;
-  FirstHallFlag = true;
+  FirstHallFlag = false;
   busy = 1;
 
   LtMtrSpeed = MtrMed;

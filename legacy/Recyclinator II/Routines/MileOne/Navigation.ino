@@ -18,19 +18,17 @@ void HallwayNavigation()  {
 //  enc = encoderLt;
    Print();
 //  PrintMon();
-/*
+
 //  Detect Hall End
-  if  (enc > (hallLengthEnc - hallEndEnc)) {     //enc of last open door
+//  if  (enc > (hallLengthEnc - hallEndEnc)) {     //enc of last open door
     CrossHallRange();
-    SideRange();
+//    SideRange();
    Print();
     if (endHallWidth > 250) {
       Serial1.println(endHallWidth);
       EndofHall();
     }
-  }
-}
-*/
+// }
 }
 //---------------------------------------
 
