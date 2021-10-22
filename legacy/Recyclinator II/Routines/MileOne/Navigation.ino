@@ -16,19 +16,16 @@ void HallwayNavigation()  {
   Encoders(encoderLt, encoderRt);
 
 //  enc = encoderLt;
-   Print();
-//  PrintMon();
+//   Print();
+  PrintMon();
 
 //  Detect Hall End
 //  if  (enc > (hallLengthEnc - hallEndEnc)) {     //enc of last open door
     CrossHallRange();
 //    SideRange();
-   Print();
-    if (endHallWidth > 250) {
-      Serial1.println(endHallWidth);
-      EndofHall();
-    }
-// }
+     Print();
+     EndHallCheck();
+//  }
 }
 //---------------------------------------
 
@@ -208,28 +205,6 @@ float nearSide;
 
 
 //----------------------------------------
-//---------------------------------------
-void FirstHall()  {   
-
-  Serial1.print(" hallID, hallDir  ");
-  Serial1.write(9);
-  Serial1.print(hallID);
-  Serial1.write(9);
-  Serial1.println(hallDir);
-    
-  SideRange();
-  CrossHallRange();
-  MtrSpeed(MtrMed, MtrMed);    
-  
-  while (hallWidth > 250) {  
-      CrossHallRange();    
-      SideRange(); 
-   }
-   EncRst();
-//   GetEncoders();
-   Serial1.println("  beginning of first hall  ");
-   FirstHallFlag = false; 
- }
 
 
 

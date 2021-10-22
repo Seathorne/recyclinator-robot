@@ -38,9 +38,9 @@ void frontSideRange () {
   rangeRtF = pulseIn (RtF_TrigEchoPin, HIGH)/58.0;
   
   delay(20);    
-  pinMode(RtF_TrigEchoPin, OUTPUT);
+  pinMode(LtF_TrigEchoPin, OUTPUT);
   pulseOut(LtF_TrigEchoPin, TrigPulse);
-    pinMode(RtF_TrigEchoPin, INPUT);
+    pinMode(LtF_TrigEchoPin, INPUT);
   rangeLtF = pulseIn (LtF_TrigEchoPin, HIGH)/58.0;
 
   hallWidth = rangeRtF + rangeLtF + roboWidth;     
@@ -58,9 +58,9 @@ void rearSideRange () {
   rangeRtR = pulseIn (RtR_TrigEchoPin, HIGH)/58.0;
   
   delay(20);
-  pinMode(RtF_TrigEchoPin, OUTPUT);
+  pinMode(LtF_TrigEchoPin, OUTPUT);
   pulseOut(LtR_TrigEchoPin, TrigPulse);
-  pinMode(RtF_TrigEchoPin, INPUT);
+  pinMode(LtF_TrigEchoPin, INPUT);
   rangeLtR = pulseIn (LtR_TrigEchoPin, HIGH)/58.0;      
 }
 
@@ -75,7 +75,7 @@ void CrossHallRange()  {
 
 //--------------------------------------------------
 void HallRangeLt() {
-    delay(20);
+    delay(30);
     pinMode(LtHall_pin, OUTPUT);
     pulseOut(LtHall_pin, TrigPulse);
     pinMode(LtHall_pin, INPUT);
@@ -85,7 +85,7 @@ void HallRangeLt() {
 
 //--------------------------------------------------
 void HallRangeRt()  {
-    delay(20);
+    delay(30);
     pinMode(RtHall_pin, OUTPUT);
     pulseOut(RtHall_pin, TrigPulse);
     pinMode(RtHall_pin, INPUT);    

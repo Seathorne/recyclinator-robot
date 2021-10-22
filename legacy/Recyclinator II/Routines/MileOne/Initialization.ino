@@ -13,8 +13,6 @@ void SetPinModes () {
   pinMode(RtF_TrigEchoPin, OUTPUT);
   pinMode(LtR_TrigEchoPin, OUTPUT);
   pinMode(RtR_TrigEchoPin, OUTPUT);
-  pinMode(LtHall_pin, OUTPUT);
-  pinMode(RtHall_pin, OUTPUT);
 }
 
 //--------------------------------------------

@@ -40,8 +40,8 @@ void PrintMon() {
 
 Serial.print((millis() - timeTemp)/1000.0);
 Serial.write(9);
-Serial.print(caseNum);
-Serial.write(9);
+//Serial.print(caseNum);
+//Serial.write(9);
 
 Serial.print(hallCase);
 Serial.write(9);
@@ -50,11 +50,12 @@ Serial.print(rangeLtF,0);
 Serial.write(9);
 Serial.print(rangeRtF,0);
 Serial.write(9);
-//Serial.print(rangeLtHall);
-//Serial.write(9);
-//Serial.print(rangeRtHall);
-//Serial.write(9);
-
+Serial.print(rangeLtHall);
+Serial.write(9);
+Serial.print(rangeRtHall);
+Serial.write(9);
+Serial.println(endHallWidth);
+/*
 Serial.print(wallAng);
 Serial.write(9);
 Serial.print(LtMtrSpd);
@@ -69,5 +70,6 @@ Serial.write(9);
 Serial.print(encoderLt);
 Serial.write(9);
 Serial.println(encoderRt); 
+*/
 }
 

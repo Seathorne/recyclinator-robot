@@ -1,4 +1,4 @@
-      
+    
 
 /*********************************************************
                          ARDUINO
@@ -64,7 +64,8 @@ byte Dir;
 byte EncIndex = 0;
 
 byte rc_active = 33;                          //Signal from BX-24 indicating R/C Control when high
-byte busy = 1;
+byte busy;
+byte ncount;
 
 int angLimit;
 int angTurn;
@@ -111,9 +112,10 @@ void setup()  {
   At_Turn_Node = false;
   FirstHallFlag = false;
   busy = 1;
+  ncount = 0;
 
   LtMtrSpeed = MtrMed;
-  RtMtrSpeed = MtrMed ;  
+  RtMtrSpeed = MtrMed;  
   HW = 241;
   Kp = 0.5;
   Ka = 0.75;

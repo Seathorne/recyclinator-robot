@@ -455,3 +455,41 @@ void EndofHall() {
       MtrSpeed(MtrStop, MtrStop);  
 //  At_Turn_Node = true;
 } 
+
+//---------------------------------------
+void FirstHall()  {   
+
+  Serial1.print(" hallID, hallDir  ");
+  Serial1.write(9);
+  Serial1.print(hallID);
+  Serial1.write(9);
+  Serial1.println(hallDir);
+    
+  SideRange();
+  CrossHallRange();
+  MtrSpeed(MtrMed, MtrMed);    
+  
+  while (hallWidth > 250) {  
+      CrossHallRange();    
+      SideRange(); 
+   }
+   EncRst();
+//   GetEncoders();
+   Serial1.println("  beginning of first hall  ");
+   FirstHallFlag = false;
+} 
+//---------------------------------------------------
+
+void EndHallCheck() {
+    if (endHallWidth > 250) {
+      ncount++;
+      if (ncount == 3) {
+       Serial1.println(endHallWidth);
+       EndofHall();  
+       ncount = 0;
+      }
+    }
+    else
+      ncount = 0;
+}
+
