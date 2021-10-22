@@ -25,7 +25,6 @@ byte RtMtrSpd;
 int rc_active = 33;                          //Signal from BX-24 indicating R/C Control when high
 int busy = 0;
 
-long enc;
 long encoderLt;
 long encoderRt;
 long timeTemp;
@@ -35,24 +34,24 @@ void setup()  {
   SetPinModes();  
   InitializeSerialPorts();
   ConfigMotors();
+  EncRst();
 }
 
 void loop()  {
     busy = digitalRead(rc_active);          //busy = 0 when in Auto Mode
 
     if(busy == 0) {
-      MtrSpeed(MtrSlow, MtrSlow);
-      GetEncoders();
-      enc = encoderLt;
+      MtrSpeed(205, 205);
+      Encoders();
       Print();
-//  PrintMon();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+      PrintMon();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
       }          
 
     else {                      //if RC STOP engaged, stop "slowly" i.e. accel value = 4
-      Serial.println("else");
+//      Serial.println("else");
       MtrSpeed(MtrStop, MtrStop);
-      Serial1.println("  idle  ");
-      Serial1.write(9);
+//      Serial1.println("  idle  ");
+//      Serial1.write(9);
       timeTemp = millis();
       EncRst();
     }
