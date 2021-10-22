@@ -254,12 +254,12 @@ void Stats()  {
       hallEndEnc = 60400;   
 
       if(hallDir == North) {
-       byte feature[] = {1,6,1,6,1,0,99};    
+       byte feature[] = {1,6,1,6,1,99};    
        defineFeatureList(feature, sizeof(feature));  
         Dir = Left;
       }
       else {
-        byte feature[] = {1,6,0,1,6,1,0,99};         
+        byte feature[] = {1,6,0,1,6,1,99};         
        defineFeatureList(feature, sizeof(feature));          
         Dir = Right;
       }
@@ -273,12 +273,12 @@ void Stats()  {
          
       if(hallDir == North) {
         Serial1.println(  "stats  case 2,  dir North ");
-        byte feature[] = {1,6,1,7,1,10,1,0,99};              
+        byte feature[] = {1,6,1,7,1,10,1,99};              
         defineFeatureList(feature, sizeof(feature));
         Dir = Right;
       }
       else {
-        byte feature[] = {1,10,1,6,1,7,1,0,99};
+        byte feature[] = {1,10,1,6,1,7,1,99};
         defineFeatureList(feature, sizeof(feature));
         Dir = Right;        
       }  
@@ -325,12 +325,12 @@ void Stats()  {
       hallEndEnc = 55000;
         
       if(hallDir == West) {
-        byte feature[] = {1,6,8,1,0,1,0,99};        
+        byte feature[] = {1,6,8,1,0,1,99};        
         defineFeatureList(feature, sizeof(feature));  
         Dir = Right;
       }
       else {
-        byte feature[] = {1,8,1,0,99};
+        byte feature[] = {1,8,1,99};
         defineFeatureList(feature, sizeof(feature));        
         Dir = Left;
       }
@@ -364,12 +364,12 @@ void Stats()  {
       hallEndEnc = 54000;
        
       if(hallDir == West) {
-        byte feature[] = {1,7,6,1,6,1,0,99};      
+        byte feature[] = {1,7,6,1,6,1,99};      
         defineFeatureList(feature, sizeof(feature));  
         Dir = Right;
       }
       else {
-        byte feature[] = {1,7,1,0,99};        
+        byte feature[] = {1,7,1,99};        
         defineFeatureList(feature, sizeof(feature));
         Dir = Right;
       }  
@@ -480,7 +480,7 @@ byte featureType;
     Serial1.println(ncount);
     if (countsFlag == 1) {
       featureIndex++;                 // look for next feature
-    }                                 //  first ncount initialization in setup()
+    }                                 // ncount initialization in setup()
   }
 }
 

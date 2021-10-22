@@ -5,7 +5,7 @@
                         RECYLINATOR II
                         Milestone 1 - Hallway Transitions
                         EMG40 & MD49
-                       11 February 2018
+                       14 February 2018
 
 **********************************************************/
 
@@ -13,11 +13,11 @@
 Servo LidarServo;               //Left write(129);  Forward write(87);  Right write(45)
 
 #define SynchByte 0x00           // Command byte
-#define  North     1             // Define directions
+#define  North     1             // values for hall follow direction
 #define  East      2
 #define  South     3
 #define  West      4
-#define  Left      0
+#define  Left      0        // values for wall follow side
 #define  Right     1
 #define  Straight  2
 #define  faceLeft    129    // values for Lidar servo position
@@ -26,7 +26,7 @@ Servo LidarServo;               //Left write(129);  Forward write(87);  Right wr
 
 const float pi = 3.14159;
 const float radToDeg = 57.2958;
-const float roboWidth = 35;        //distance (cm) between right and left side sonars (outer transducer)
+const float roboWidth = 35;        //distance (cm) between right and left side sonars (outer transducer edges)
 
 boolean At_Turn_Node;
 boolean In_Hallway;
