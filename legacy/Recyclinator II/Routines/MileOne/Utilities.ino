@@ -32,11 +32,11 @@ void GyroTurn(byte &turnDir, int &angLimit)  {
 
      Serial1.print(" end gyro ");
      Serial1.println(gyroAngle);
-/*       
+      
      SetAcceleration(3);
      MtrSpeed(MtrStop, MtrStop);  
      delay(500);
-      
+/*      
      Serial3.write('G');  
      delay(20);
      if (Serial3.available() > 1 ) {

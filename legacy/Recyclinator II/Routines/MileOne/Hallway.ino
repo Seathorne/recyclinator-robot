@@ -481,9 +481,9 @@ byte featureType;
       featureIndex++;                 // look for next feature
     }                                 // ncount initialization in setup()
   }
-    else {
-       ncount = 0;
-    }
+  else {
+      ncount = 0;
+  }
 }
 
 //---------------------------------------------------
@@ -523,7 +523,7 @@ void ChangeHall()   {
     
 //  2.  Make 90 deg hall turn (CCW is negative angle)
     if(turnDir != 3) {
-      angLimit = 80;    
+      angLimit = 75;    
       GyroTurn(turnDir, angLimit); 
     }
     
