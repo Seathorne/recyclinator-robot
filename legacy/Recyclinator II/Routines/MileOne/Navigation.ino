@@ -14,9 +14,9 @@ void HallwayNavigation()  {
   SideRange();                 //comparison measurements of different ranging sensors
   WallFollow();
   Encoders(encoderLt, encoderRt);
-  Print();
+//  Print();
 
-//  PrintMon();
+  PrintMon();
 
 //  Detect Hall End
     EndHallCheck();
@@ -62,7 +62,7 @@ void angleLimit(float &angDel) {
   else if (angDel <= -8.0)
     angDel = -8.0;
 
-  if (abs(wallAng) >= 25) {   
+  if (abs(wallAng) >= 20) {   
     angDel = 0;
   }     
 }

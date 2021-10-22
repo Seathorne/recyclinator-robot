@@ -70,7 +70,7 @@ byte angDir;
 byte Dir;
 byte EncIndex = 0;
 
-byte rc_active = 33;                          //Signal from BX-24 indicating R/C Control when high
+byte rc_active = 34;                          //Signal from BX-24 indicating R/C Control when high
 byte busy;
 byte ncount;
 byte featureList[20];
@@ -124,7 +124,7 @@ void setup()  {
   
   In_Hallway = true;
   At_Turn_Node = false;
-  FirstHallFlag = true;
+  FirstHallFlag = false;
   ncount = 0;
 
   SetPinModes();  
@@ -134,8 +134,8 @@ void setup()  {
   LidarServo.write(faceForward);
 
   SetAcceleration(3);   
-  LtMtrSpeed = MtrMed;
-  RtMtrSpeed = MtrMed;  
+  LtMtrSpeed = MtrTurn + 20;
+  RtMtrSpeed = MtrTurn + 20;  
   Kp = 0.5;
   Ka = 0.75;
   

@@ -477,32 +477,32 @@ byte featureType;
   featureType = featureList[featureIndex];
    
   if (featureType == 99) {
-    if (hallEndType == 3) {
       lidarDist =  Lidar();
 
       while (lidarDist < 500) {
         CrossHallRange();
-        if (endHallWidth > 500) {
-          Serial1.print("   endHallWidth  =  ");
+        Encoders(encoderLt, encoderRt);       
+        Serial1.print("  crosshall ");
+        Serial1.println(endHallWidth);
+        Serial1.print(" encoderLt, lidar dist:   ");
+        Serial1.print(encoderLt);
+        Serial1.write(9);
+        Serial1.println(lidarDist); 
+        
+        if (endHallWidth > 400) {
+          Serial1.print("  endHallWidth  =  ");
           Serial1.println(endHallWidth);    
-          Serial1.print("  lidar dist =  ");
+          Encoders(encoderLt, encoderRt);
+          Serial1.print(" encoderLt, lidar dist:   ");
+          Serial1.print(encoderLt);
+          Serial1.write(9);
           Serial1.println(lidarDist);       
+          
           EndofHall(); 
           break;
       }
       lidarDist = Lidar();
     }
-    }
-    else {
-      CrossHallRange();
-    
-      if (endHallWidth > 500) {
-       Serial1.print("   endHallWidth  =  ");
-       Serial1.println(endHallWidth);    
-       
-       EndofHall(); 
-    }
-   }
   }
   else if (featureType == caseNum) {
     byte countsFlag = ConsecutiveTries(3);
@@ -513,6 +513,7 @@ byte featureType;
     }
     else {
       featureIndex++;                 // look for next feature
+      ncount = 0;
     }                                 // ncount initialization in setup()
   }
   else {
@@ -564,14 +565,15 @@ void ChangeHall()   {
 // 3.  Look for new hallway wall
     SetAcceleration(3);
     EncRst();
-    SideRange();
-//    CrossHallRange();    
+    SideRange();    
     MtrSpeed(MtrSlow, MtrSlow);
    
    while (hallWidth > 250) { 
       Encoders(encoderLt, encoderRt);
       SideRange();
-//      CrossHallRange();
+      CrossHallRange();
+      caseNum = 0;
+      hallCase = "    ";
       Print();
    }  
     EncRst();        
