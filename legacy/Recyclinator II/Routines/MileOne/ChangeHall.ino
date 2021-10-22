@@ -20,21 +20,20 @@ void ChangeHall()   {
   Serial1.println(hallDir);                        
     iTurn++;          
 
-      MtrSpeed(MtrTurn, MtrTurn+8);
-      Encoders(encoderLt, encoderRt);
-      Serial1.print(encoderLt);
-      Serial1.write(9);
-      Serial1.println(encoderRt);
+    Encoders(encoderLt, encoderRt);
+    Serial1.print(encoderLt);
+    Serial1.write(9);
+    Serial1.println(encoderRt);
 
-      if(turnDir == 0) {
-        angLimit = 90;    
-        GyroTurn(turnDir, angLimit); 
-     
-        Serial3.write('Z');  
-        delay(5);
-        while(Serial3.read() >= 0);  
-        gyroAngle = 0;  
-      }
+    if(turnDir != 3) {
+      angLimit = 500;    
+      GyroTurn(turnDir, angLimit); 
+    }
+    
+      Serial3.write('Z');  
+      delay(5);
+      while(Serial3.read() >= 0);  
+      gyroAngle = 0;  
 /*        
     
 /// 6.  Look for new hallway wall
