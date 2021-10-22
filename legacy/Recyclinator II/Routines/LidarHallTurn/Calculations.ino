@@ -13,9 +13,12 @@ void Compute()  {
 
 //-----------------------------------------------------------
 void Pairs() {
-
+  
+  N = 0;
+  
   for (int i = 1; i < num; i++)  {
     for (int j = (i+1); j < (num+1); j++ ) {
+      N++;
       D1 = DOne[i];
       alpha = angAlpha[i];
       D2 = DTwo[j];
@@ -25,8 +28,8 @@ void Pairs() {
       Serial.print(j);
       Serial.write(9);
       Compute();
-      Y[i] = y;
-      Theta[i] = theta;
+      Y[N] = y;
+      Theta[N] = theta;
       Serial.print(y);
       Serial.write(9);
       Serial.println(theta*radToDeg);
@@ -41,29 +44,48 @@ float sumTheta;
 float sumYSqr;
 float sumThetaSqr;
 
+  Serial.print("N = ");
+  Serial.println(N);
   sumY = 0;  
   sumTheta = 0;
-  for (int i = 1; i < (num); i++) {
+  sumYSqr = 0;
+  sumThetaSqr = 0;
+  
+  for (int i = 1; i < (N+1); i++) {
     sumY += Y[i];
     sumYSqr += Y[i]*Y[i];
     sumTheta += Theta[i];
     sumThetaSqr += Theta[i]*Theta[i];
   }
+  Serial.print(" sumY, sumY^2,  sumYSqr, sumTheta   ");
+  Serial.print(sumY);
+  Serial.write(9);
+  Serial.print(sumY*sumY);
+  Serial.write(9);
+  Serial.println(sumYSqr);
+  Serial.write(9);
+  Serial.print((N*sumYSqr - sumY*sumY));
+  Serial.write(9);
+  Serial.print(sqrt(N*sumYSqr - sumY*sumY));
+  Serial.write(9);
+  Serial.println(sumTheta*radToDeg);
 
-  avgY = sumY/(num-1);
-  avgTheta = sumTheta/(num-1);
+  
+  avgY = sumY/N;
+  avgTheta = sumTheta/N;
 
-  YStdev = sq(num*sumYSqr - sumY*sumY)/num;
-  ThetaStdev = sq(num*sumThetaSqr - sumTheta*sumTheta)/num; 
+  YStdev = sqrt(N*sumYSqr - sumY*sumY)/N;
+
+  ThetaStdev = sqrt(N*sumThetaSqr - sumTheta*sumTheta)/N; 
 
   Serial.print(" avg & std dev   ");
   Serial.print(avgY);
   Serial.write(9);
   Serial.print(YStdev);
   Serial.write(9);
-  Serial.print(avgTheta);
+  Serial.print(avgTheta*radToDeg);
   Serial.write(9);
-  Serial.println(ThetaStdev);
+  Serial.println(ThetaStdev*radToDeg);
 }
 
 //--------------------------------------------------
@@ -77,23 +99,28 @@ int II[15];
   sumY = 0;
   numII = 0;
   
-  for (int i = 1; i < num; i++)  {
+  for (int i = 1; i < (N+1); i++)  {
     if (abs(avgY - Y[i]) < YStdev) {
+      Serial.print(i);
+      Serial.write(9);
       sumY += Y[i];
       II[i] = i;
       numII += 1;
     }
   }
+  Serial.print(numII);
+  Serial.println("   ");
   YBar = sumY/numII;
 
-  for (int i = 1; i < numII+1; i++)
+  for (int i = 1; i < numII+1; i++) {
     sumTheta += Theta[II[i]];
-
+  }
+  
   ThetaBar = sumTheta/numII;
 
   Serial.print(" filter: YBar, ThetaBar  ");
   Serial.print(YBar);
   Serial.write(9);
-  Serial.println(ThetaBar);
+  Serial.println(ThetaBar*radToDeg);
 }
 
