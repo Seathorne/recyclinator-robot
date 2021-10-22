@@ -460,7 +460,19 @@ byte featureType;
     if (endHallWidth > 250) {
        Serial1.print("   endHallWidth  =  ");
        Serial1.println(endHallWidth);
-       EndofHall();  
+//       EndofHall();  
+        SetAcceleration(3); 
+        MtrSpeed(MtrStop, MtrStop);
+        delay(50);
+        lidarDist = Lidar();
+        Serial1.print(" lidarDist =  ");
+        Serial1.println(lidarDist);
+
+        while(1) {
+          MtrSpeed(MtrStop, MtrStop);
+          Serial1.println("else");
+          delay(50);
+        }
       }
     }
   else if (featureType == caseNum) {

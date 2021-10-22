@@ -114,7 +114,7 @@ float Lidar() {
 float sum;
 float dist;
   
-  digitalWrite(9, LOW);
+  digitalWrite(9, LOW);             //turn on lidar triggering
   sum = 0;
    for (int i = 0; i < 100; i++) {
     dist = pulseIn(8, HIGH)/10;

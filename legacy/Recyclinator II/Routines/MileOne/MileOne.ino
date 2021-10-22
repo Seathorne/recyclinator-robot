@@ -1,11 +1,11 @@
-       
+        
 
 /*********************************************************
                          ARDUINO
                         RECYLINATOR II
-                        Milestone 1
+                        Milestone 1 - Hallway Transitions
                         EMG40 & MD49
-                       8 February 2018
+                       10 February 2018
 
 **********************************************************/
 
@@ -112,26 +112,27 @@ String hallCase;
 
 void setup()  {
   delay(500);
-  hallID= 8 ;
-  hallDir = East;
+  hallID= 2;
+  hallDir = North;
   iTurn = 0;
   wallDistVal = 80;
   
   In_Hallway = true;
   At_Turn_Node = false;
-  FirstHallFlag = true;
+  FirstHallFlag = false;
   ncount = 0;
 
-  LidarServo.write(87);
+  SetPinModes();  
+  InitializeSerialPorts();
+  ConfigMotors();  
+
+  LidarServo.write(87);        // forward facing
   
   LtMtrSpeed = MtrMed;
   RtMtrSpeed = MtrMed;  
   Kp = 0.5;
   Ka = 0.75;
   
-  SetPinModes();  
-  InitializeSerialPorts();
-  ConfigMotors();
   digitalWrite(LidarPwrEn_pin, HIGH);  
   Stats();
 }
@@ -148,10 +149,7 @@ void loop()  {
   }      
   
     else {                      //if RC STOP engaged, stop "slowly" i.e. accel value = 4
-//      Serial.println("else");
-    lidarDist = Lidar();
-    Serial.println(lidarDist);
-    delay(50);
+      Serial.println("else");
       MtrSpeed(MtrStop, MtrStop);
       Serial1.println("  idle  ");
       Serial1.write(9);
