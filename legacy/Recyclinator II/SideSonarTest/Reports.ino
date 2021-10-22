@@ -18,5 +18,9 @@ Serial.print(rangeLtR,1);
 Serial.write(9);
 Serial.print(rangeRtF,1);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
 Serial.write(9);
-Serial.println(rangeRtR,1); 
+Serial.print(rangeRtR,1); 
+Serial.write(9);
+Serial.print(rangeLtHall,1);
+Serial.write(9);
+Serial.println(rangeRtHall, 1);
 }

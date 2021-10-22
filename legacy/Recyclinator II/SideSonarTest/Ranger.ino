@@ -7,7 +7,7 @@ void Ranger () {
     pulseOut(RtF_TrigEchopin, trigPulse);
     pinMode(RtF_TrigEchopin, INPUT);    
     rangeRtF = pulseIn (RtF_TrigEchopin, HIGH)/58.0;
-    
+
     delay(20);
     pinMode(RtR_TrigEchopin, OUTPUT);
     pulseOut(RtR_TrigEchopin, trigPulse);
@@ -25,6 +25,20 @@ void Ranger () {
     pulseOut(LtR_TrigEchopin, trigPulse);
     pinMode(LtR_TrigEchopin, INPUT);    
     rangeLtR = pulseIn (LtR_TrigEchopin, HIGH)/58.0;
+
+
+    delay(20);
+    pinMode(LtHall_TrigEchopin, OUTPUT);
+    pulseOut(LtHall_TrigEchopin, trigPulse);
+    pinMode(LtHall_TrigEchopin, INPUT);    
+    rangeLtHall = pulseIn (LtHall_TrigEchopin, HIGH)/58.0;
+
+
+    delay(20);
+    pinMode(RtHall_TrigEchopin, OUTPUT);
+    pulseOut(RtHall_TrigEchopin, trigPulse);
+    pinMode(RtHall_TrigEchopin, INPUT);    
+    rangeRtHall = pulseIn (RtHall_TrigEchopin, HIGH)/58.0;        
 }
 
 //---------------------------------------------------------
