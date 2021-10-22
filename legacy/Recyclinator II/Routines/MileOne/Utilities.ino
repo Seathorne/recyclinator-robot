@@ -10,10 +10,10 @@ void GyroTurn(byte &turnDir, int &angLimit)  {
 
     if (turnDir == Left) {                  //CCW Turn
       LtMtrSpd = MtrTurn;
-      RtMtrSpd = MtrTurn + 20;      
+      RtMtrSpd = MtrTurn + 22;      
     }
     else if (turnDir == Right) {            //CW turn
-      LtMtrSpd = MtrTurn  + 20;
+      LtMtrSpd = MtrTurn  + 22;
       RtMtrSpd = MtrTurn;         
     }
     else {                                //condition for straight ahead (turnDir = 2)       
@@ -32,7 +32,7 @@ void GyroTurn(byte &turnDir, int &angLimit)  {
 
      Serial1.print(" end gyro ");
      Serial1.println(gyroAngle);
-       
+/*       
      SetAcceleration(3);
      MtrSpeed(MtrStop, MtrStop);  
      delay(500);
@@ -45,6 +45,7 @@ void GyroTurn(byte &turnDir, int &angLimit)  {
      }    
      Serial1.print(" stop gyro ");
      Serial1.println(gyroAngle);
+*/     
 }
 
 //---------------------------------------------------

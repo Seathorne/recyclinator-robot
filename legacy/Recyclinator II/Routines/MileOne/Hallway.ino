@@ -455,10 +455,6 @@ byte featureType;
    
   if (featureType == 99) {
     CrossHallRange();
-    Serial1.print("  CrossHall Ranges   ");  
-    Serial1.print(rangeLtHall,0);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
-    Serial1.write(9);
-    Serial1.println(rangeRtHall,0);
     
     if (endHallWidth > 250) {
        Serial1.print("   endHallWidth  =  ");
@@ -476,12 +472,18 @@ byte featureType;
   }
   else if (featureType == caseNum) {
     byte countsFlag = ConsecutiveTries(3);
+    
+    if (countsFlag == 0 ) {
     Serial1.print("  feature tries ");
     Serial1.println(ncount);
-    if (countsFlag == 1) {
+    }
+    else {
       featureIndex++;                 // look for next feature
     }                                 // ncount initialization in setup()
   }
+    else {
+       ncount = 0;
+    }
 }
 
 //---------------------------------------------------
@@ -534,13 +536,13 @@ void ChangeHall()   {
     SetAcceleration(3);
     EncRst();
     SideRange();
-    CrossHallRange();    
+//    CrossHallRange();    
     MtrSpeed(MtrSlow, MtrSlow);
    
    while (hallWidth > 250) { 
       Encoders(encoderLt, encoderRt);
       SideRange();
-      CrossHallRange();
+//      CrossHallRange();
       Print();
    }  
     EncRst();        
