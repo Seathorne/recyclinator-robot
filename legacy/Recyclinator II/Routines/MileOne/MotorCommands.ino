@@ -70,6 +70,13 @@ void serialEvent2() {
 }
 
 //--------------------------------------------
+void SetAcceleration(byte accel) {
+    Serial2.write(SynchByte);                  //Set Acceleration time constant
+    Serial2.write(0x33);
+    Serial2.write(accel);
+    delay(20);   
+}
+
 //------------------------------------------
 void EncRst() {
   Serial2.write(SynchByte);                  //Reset Encoders

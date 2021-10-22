@@ -1,11 +1,11 @@
-     
+      
 
 /*********************************************************
                          ARDUINO
                         RECYLINATOR II
                         Milestone 1
                         EMG40 & MD49
-                      31  January 2018
+                       1 February 2018
 
 **********************************************************/
 
@@ -39,12 +39,12 @@ byte RtF_TrigEchoPin = 52;
 byte RtR_TrigEchoPin = 53;
 byte LtHall_pin = 48;
 byte RtHall_pin = 49;
+byte MtrBack = 82;
 byte MtrStop = 128;
+byte MtrTurn = 160;
 byte MtrSlow = 210;
 byte MtrMed = 238;
 byte MtrFast = 245;
-byte MtrTurn = 160;
-byte MtrBack = 82;
 
 byte LtMtrSpeed;
 byte RtMtrSpeed;
@@ -56,7 +56,7 @@ byte hallID;
 byte turnDir;
 byte hallDir;
 byte turnHall9East[] = {2, 0, 0, 0, 1, 2, 1, 1, 1, 0, 0, 1, 1, 1, 2, 1, 0, 0, 0, 2, 3};
-byte turnHall2North[] = {0, 0, 0, 0};
+byte turnHall2North[] = {0, 0, 0, 0, 3};
 byte angDir;
 byte Dir;
 byte EncIndex = 0;
@@ -66,6 +66,7 @@ byte busy;
 byte ncount;
 byte featureList[20];
 byte featureIndex;
+byte iTurn;
 
 int angLimit;
 int angTurn;
@@ -106,6 +107,7 @@ void setup()  {
   hallID= 2;
   hallDir = North;
   Dir = Right;
+  iTurn = 0;
   wallDistVal = 80;
   
   In_Hallway = true;
@@ -132,10 +134,10 @@ void loop()  {
         HallwayNavigation();
       if (At_Turn_Node) {
         Serial1.println(" at Turn Node ");   
-//        ChangeHall();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+        ChangeHall();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
       }      
   }      
- 
+  
     else {                      //if RC STOP engaged, stop "slowly" i.e. accel value = 4
       Serial.println("else");
       MtrSpeed(MtrStop, MtrStop);

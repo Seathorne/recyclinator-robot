@@ -27,9 +27,12 @@
 
 
 /*   FUNCTIONS
-     1.  boolean HallID()  -  line 35
-     2.  void Stats()      -  line 237
-     3.  void EndOfHall()  -  line 452
+     1.  boolean HallID()       -  line 38
+     2.  void Stats()           -  line 
+     3.  void defineFeatureList - line 
+     4.  void EndofHall()       - line
+     5.  void FirstHall()       - line 
+     6.  void EndHallCheck()    - line 
 */
 
 boolean HallID()  {
@@ -231,9 +234,7 @@ boolean HallID()  {
   return false;
 }
 
-//------------------------------------------------
-//--------------------------------------------------
-
+//---------------------------------------------------------------
 void Stats()  {
 //  HW:  hallway width; 241 except for hall 4, which is 214;  hall 6 and default is zero, which indicates an error.
 //  hallDir (hall travel direction): 1-N, 2-E, 3-S, 4-W
@@ -241,7 +242,7 @@ void Stats()  {
 // *****  major change for Recylinator II - eliminate hallAdvCenterEnc, hallEndEnc, hall 45AdvEnc  *******
 
   Serial1.print("  HallStats  ID = ");
-  Serial1.print(hallID);  
+  Serial1.println(hallID);  
 
   featureIndex = 0;
   
@@ -269,7 +270,7 @@ void Stats()  {
          
       if(hallDir == North) {
         Serial1.println(  "stats  case 2,  dir North ");
-        byte feature[] = {1,6,4,1,7,12,1,10,12,1,0,99};           
+        byte feature[] = {1,10,1,0,99};   // {1,6,4,1,7,12,1,10,12,1,0,99};           
         defineFeatureList(feature, sizeof(feature));
         Dir = Right;
       }
@@ -422,8 +423,8 @@ void defineFeatureList(byte feature[], byte N) {
 void EndofHall() {
   Serial1.println(" end hall ");   
   In_Hallway = false;  
-      MtrSpeed(MtrStop, MtrStop);  
-//  At_Turn_Node = true;
+  MtrSpeed(MtrStop, MtrStop);  
+  At_Turn_Node = true;
 } 
 
 //---------------------------------------
@@ -454,12 +455,6 @@ void EndHallCheck() {
 byte featureType;
 
   featureType = featureList[featureIndex];
-  Serial1.print(" Index  = ");
-  Serial1.print(featureIndex);  
-  Serial1.print("     featureType   ");
-  Serial1.print(featureType);
-  Serial1.print("        caseNum  = ");
-  Serial1.println(caseNum); 
    
   if (featureType == 99) {
     CrossHallRange();  

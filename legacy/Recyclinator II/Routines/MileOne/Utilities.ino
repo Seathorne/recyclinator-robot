@@ -1,4 +1,4 @@
-byte ConsecutiveTriesk(byte nTries) {
+byte ConsecutiveTries(byte nTries) {
 byte ncount;
 byte flag;
   
