@@ -37,6 +37,9 @@ void serialEvent() {
 }
 
 void SetAngles(int A0, int A1){
+  Serial.print(A0);
+  Serial.write(9);
+  Serial.println(A1);
   go = 1;
 //  alpha and beta (deg) measured CW from left perpendicular to heading    
   num = A0;

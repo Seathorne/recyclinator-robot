@@ -12,9 +12,23 @@ void Compute()  {
 }
 
 //_______________________________________________________________
-void Pairs(int num) {
+void Pairs() {
 
-  
-
+  for (int i = 1; i < num; i++)  {
+    for (int j = (i+1); j < (num+1); j++ ) {
+      D1 = DOne[i];
+      alpha = angAlpha[i];
+      D2 = DTwo[j];
+      beta = angBeta[j];
+      Serial.print(i);
+      Serial.write(9);
+      Serial.print(j);
+      Serial.write(9);
+      Compute();
+      Serial.print(y);
+      Serial.write(9);
+      Serial.println(theta*radToDeg);
+    }
+  }
 }
 

@@ -28,7 +28,11 @@ float D2;
 float theta;
 float y;
 float distance[15];
+float DOne[15];
+float DTwo[15];
 float gamma[15];
+float angAlpha[15];
+float angBeta[15];
 float m;
 float b;
 
@@ -53,13 +57,17 @@ void loop() {
     
     for (int i = 1; i < num; i++)  {
       beta = alpha - 5;
-      angle =m*beta + b;;    
+      angle = m*beta + b;;    
       LidarServo.write(angle);
       delay(100);
       D2 =  Lidar(); 
       Compute();
       distance[i] = y;
       gamma[i] = theta;
+      DOne[i] = D1;
+      DTwo[i+1] = D2;
+      angAlpha[i] = alpha;
+      angBeta[i+1] = beta;
       alpha = beta; 
       D1 = D2;
     }
@@ -67,12 +75,14 @@ void loop() {
     for (int i = 1; i < num; i++)  {
       Serial.print(distance[i],0);
       Serial.write(9);
-      Serial.println(gamma[i]*radToDeg,0);
+      Serial.print(gamma[i]*radToDeg,0);
+      Serial.write(9);
     }
     Serial.println( " ");
     angle = m*90 + b;  
-    LidarServo.write(angle);  
-  go = 0; 
+    LidarServo.write(angle); 
+   Pairs();
+   go = 0;
   }
 }
 
