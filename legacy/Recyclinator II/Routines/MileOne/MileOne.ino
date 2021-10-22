@@ -5,7 +5,7 @@
                         RECYLINATOR II
                         Milestone 1
                         EMG40 & MD49
-                      29  January 2018
+                      30  January 2018
 
 **********************************************************/
 
@@ -64,8 +64,8 @@ byte EncIndex = 0;
 byte rc_active = 33;                          //Signal from BX-24 indicating R/C Control when high
 byte busy;
 byte ncount;
-byte featureIndex;
 byte featureList[20];
+byte featureIndex;
 
 int angLimit;
 int angTurn;

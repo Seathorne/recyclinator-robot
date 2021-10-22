@@ -8,7 +8,8 @@ byte flag;
   }
   else {
     ncount = 0;
-    flag = 1;
   }
+  if (ncount == nTries)
+    flag = 1;
   return flag;
 }

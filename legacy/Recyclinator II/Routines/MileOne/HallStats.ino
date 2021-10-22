@@ -239,20 +239,25 @@ void Stats()  {
 //  hallDir (hall travel direction): 1-N, 2-E, 3-S, 4-W
 //  Dir:  which side of hall to follow with offset, 0-left, 1-right
 // *****  major change for Recylinator II - eliminate hallAdvCenterEnc, hallEndEnc, hall 45AdvEnc  *******
+
   Serial1.print("  HallStats  ID = ");
-  Serial1.print(hallID);
+  Serial1.print(hallID);  
+
+  featureIndex = 0;
   
   switch (hallID) {
     case 1: {
       HW = 241;
       hallLengthEnc = 76000;     // enc between shortest straight walls      
-      featureIndex = 0;
+
       if(hallDir == North) {
-        byte featureList[] = {1,11,1,6,1,7,5,6,1,11,1,99};        
+       byte feature[] = {1,11,1,6,1,7,5,6,1,11,1,99};    
+       defineFeatureList(feature);  
         Dir = Left;
       }
       else {
-        byte featureList[] = {1,11,1,6,0,7,5,7,1,6,1,99};         
+        byte feature[] = {1,11,1,6,0,7,5,7,1,6,1,99};         
+       defineFeatureList(feature);          
         Dir = Right;
       }
       break;
@@ -261,16 +266,16 @@ void Stats()  {
     case 2: {
       HW = 241;
        hallLengthEnc = 84000;   
-      featureIndex = 0;          
+         
       if(hallDir == North) {
         Serial1.println(  "stats  case 2,  dir North ");
-        byte featureList[] = {1,6,4,1,7,12,1,10,12,1,0,99};          
-        byte first = featureList[0];
-        Serial1.println(first); 
+        byte feature[] = {1,6,4,1,7,12,1,10,12,1,0,99};           
+        defineFeatureList(feature);
         Dir = Right;
       }
       else {
-        byte featureList[] = {1,11,10,1,11,1,6,1,5,7,1,99};
+        byte feature[] = {1,11,10,1,11,1,6,1,5,7,1,99};
+        defineFeatureList(feature);
         Dir = Right;        
       }  
       break;    
@@ -279,13 +284,15 @@ void Stats()  {
     case 3: {
       HW = 241;
       hallLengthEnc = 84000;  
-      featureIndex = 0;          
+       
       if(hallDir == North) {
-        byte featureList[] = {1,10,5,10,1,11,1,10,5,7,1,99};        
+        byte feature[] = {1,10,5,10,1,11,1,10,5,7,1,99};   
+        defineFeatureList(feature);     
         Dir = Left;        
       }
       else {
-        byte featureList[] = {1,7,5,10,1,11,1,10,5,10,1,99};        
+        byte feature[] = {1,7,5,10,1,11,1,10,5,10,1,99};   
+        defineFeatureList(feature);     
         Dir = Right;
       }
       break;      
@@ -294,13 +301,15 @@ void Stats()  {
     case 4: {
       HW = 214;
       hallLengthEnc = 92000;    
-      featureIndex = 0;        
+;        
       if(hallDir == North) {
-        byte featureList[] = {12,1,7,12,1,9,12,1,3,1,12,1,12,99};        
+        byte feature[] = {12,1,7,12,1,9,12,1,3,1,12,1,12,99};  
+        defineFeatureList(feature);      
         Dir = Left;
       }
       else {
-        byte featureList[] = {12,1,12,1,9,1,12,99};        
+        byte feature[] = {12,1,12,1,9,1,12,99};  
+        defineFeatureList(feature);      
         Dir = Right;
       }
       break;
@@ -309,13 +318,15 @@ void Stats()  {
     case 5: {
       HW = 241;
       hallLengthEnc = 67000;   
-      featureIndex = 0;         
+        
       if(hallDir == West) {
-        byte featureList[] = {1,12,1,6,8,2,3,1,0,1,99};        
+        byte feature[] = {1,12,1,6,8,2,3,1,0,1,99};      
+        defineFeatureList(feature);  
         Dir = Right;
       }
       else {
-        byte featureList[] = {1,0,1,9,7,1,11,99};        
+        byte feature[] = {1,0,1,9,7,1,11,99};
+        defineFeatureList(feature);        
         Dir = Left;
       }
       break;      
@@ -328,13 +339,15 @@ void Stats()  {
     case 7: {
       HW = 241;
       hallLengthEnc = 39000;    
-      featureIndex = 0;        
+        
       if(hallDir == West) {
-        byte featureList[] = {1,12,1,3,99};        
+       byte feature[] = {1,12,1,3,99};       
+       defineFeatureList(feature); 
         Dir = Right;        
       }
       else {
-        byte featureList[] = {1,12,99};        
+        byte feature[] = {1,12,99}; 
+        defineFeatureList(feature);       
         Dir = Left;        
       }   
       break;  
@@ -343,13 +356,15 @@ void Stats()  {
     case 8: {
       HW = 241;
       hallLengthEnc = 66000;    
-      featureIndex = 0;        
+       
       if(hallDir == West) {
-        byte featureList[] = {13,1,7,6,1,8,1,14,99};        
+        byte feature[] = {13,1,7,6,1,8,1,14,99};      
+        defineFeatureList(feature);  
         Dir = Right;
       }
       else {
-        byte featureList[] = {14,1,9,3,1,7,6,1,99};        
+        byte feature[] = {14,1,9,3,1,7,6,1,99};        
+        defineFeatureList(feature);
         Dir = Right;
       }  
       break;      
@@ -358,13 +373,15 @@ void Stats()  {
     case 9: {
       HW = 241;
       hallLengthEnc = 71000;      
-      featureIndex = 0;      
+     
       if(hallDir == West) {
-        byte featureList[] = {1,12,14,1,2,1,99};        
+        byte feature[] = {1,12,14,1,2,1,99};   
+        defineFeatureList(feature);     
         Dir = Left;        
       }
       else {
-        byte featureList[] = {1,2,1,11,14,12,1,1,14,13,1,99};        
+        byte feature[] = {1,2,1,11,14,12,1,1,14,13,1,99};   
+        defineFeatureList(feature);     
         Dir = Right;        
       } 
       break;     
@@ -373,13 +390,15 @@ void Stats()  {
     case 10: {
       HW = 241;
       hallLengthEnc = 38000;      
-      featureIndex = 0;      
+    
       if(hallDir == West) {
-        byte featureList[] = {1,12,1,6,99};        
+        byte feature[] = {1,12,1,6,99};        
+        defineFeatureList(feature);
         Dir = Left;        
       }
       else {
-        byte featureList[] = {6,1,12,1,99};        
+        byte feature[] = {6,1,12,1,99};        
+        defineFeatureList(feature);
         Dir = Left;        
       }
       break;      
@@ -389,11 +408,15 @@ void Stats()  {
       HW = 0;
     }
   }
-  
-//re-zero feature list for new hall ID
-//  iFeature = 0;                  //position index for a hall's feature list      
+ 
+}
 
-  
+//----------------------------------------------------
+void defineFeatureList(byte feature[]) {
+  for (int i = 0; i < int(sizeof(feature))/sizeof(int); i++) {
+    featureList[i] = feature[i]; 
+  }  
+  Serial.println("   ");
 }
 
 //---------------------------------------------------
@@ -425,20 +448,22 @@ void FirstHall()  {
    Encoders(encoderLt, encoderRt);
    Serial1.println("  beginning of first hall  ");
    FirstHallFlag = false;
-   featureIndex = 0;
 } 
 
 //---------------------------------------------------
 void EndHallCheck(byte featureList[]) {     
 byte featureType;
-
+  Serial.println(sizeof(featureList));
+  for (int i = 0; i < int(sizeof(featureList))/sizeof(int); i++) {
+    Serial.print(featureList[i]);
+  }
   featureType = featureList[featureIndex];
-  Serial1.print(" Index  = ");
-  Serial1.print(featureIndex);  
-  Serial1.print("     featureType   ");
-  Serial1.print(featureType);
-  Serial1.print("        caseNum  = ");
-  Serial1.println(caseNum); 
+  Serial.print(" Index  = ");
+  Serial.print(featureIndex);  
+  Serial.print("     featureType   ");
+  Serial.print(featureType);
+  Serial.print("        caseNum  = ");
+  Serial.println(caseNum); 
    
   if (featureType == 99) {
     CrossHallRange();  
