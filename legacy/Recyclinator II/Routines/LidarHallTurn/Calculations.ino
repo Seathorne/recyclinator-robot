@@ -1,3 +1,5 @@
+
+
 void Compute()  {
  float temp1;
  float temp2;
@@ -13,24 +15,34 @@ void Compute()  {
 
 //-----------------------------------------------------------
 void Pairs() {
+// find hall distance and alignment for all 
+//    pairs of lidar measurements  
+int k;
+int kk;
+float sumY;
+float sumTheta;
+float YBar;
+float ThetaBar;
+
+  N = 0;  
   
-  N = 0;
-  
-  for (int i = 1; i < num; i++)  {
-    for (int j = (i+1); j < (num+1); j++ ) {
+  for (int i = 1; i < numII; i++)  {
+    k = II[i];
+    for (int j = (i+1); j < numII; j++ ) {
       N++;
-      D1 = DOne[i];
-      alpha = angAlpha[i];
-      D2 = DTwo[j];
-      beta = angBeta[j];
-      Serial.print(i);
+      kk = II[j];
+      D1 = D[k];
+      alpha = angle[k];
+      D2 = D[kk];
+      beta = angle[kk];
+      Serial.print(k);
       Serial.write(9);
-      Serial.print(j);
+      Serial.print(kk);
       Serial.write(9);
 
-      Serial1.print(i);
+      Serial1.print(k);
       Serial1.write(9);
-      Serial1.print(j);
+      Serial1.print(kk);
       Serial1.write(9);      
       Compute();
       Y[N] = y;
@@ -44,106 +56,73 @@ void Pairs() {
       Serial1.println(theta*radToDeg,1);      
     }
   }
-}
-
-//-------------------------------------------------------------
-void AvgStdDev()  {
-float sumY;
-float sumTheta;
-float sumYSqr;
-float sumThetaSqr;
-
-  Serial.print("N = ");
-  Serial.println(N);
-
-  Serial1.print("N = ");
-  Serial1.println(N);  
-  sumY = 0;  
-  sumTheta = 0;
-  sumYSqr = 0;
-  sumThetaSqr = 0;
-  
-  for (int i = 1; i < (N+1); i++) {
-    sumY += Y[i];
-    sumYSqr += Y[i]*Y[i];
-    sumTheta += Theta[i];
-    sumThetaSqr += Theta[i]*Theta[i];
-  }
-  avgY = sumY/N;
-  avgTheta = sumTheta/N;
-
-  YStdev = sqrt(N*sumYSqr - sumY*sumY)/N;
-
-  ThetaStdev = sqrt(N*sumThetaSqr - sumTheta*sumTheta)/N; 
-
-  Serial.print(" avg & std dev   ");
-  Serial.print(avgY,0);
-  Serial.write(9);
-  Serial.print(YStdev,1);
-  Serial.write(9);
-  Serial.print(avgTheta*radToDeg,1);
-  Serial.write(9);
-  Serial.println(ThetaStdev*radToDeg,1);
-
-  Serial1.print(" avg & std dev   ");
-  Serial1.print(avgY,0);
-  Serial1.write(9);
-  Serial1.print(YStdev,1);
-  Serial1.write(9);
-  Serial1.print(avgTheta*radToDeg,1);
-  Serial1.write(9);
-  Serial1.println(ThetaStdev*radToDeg,1);  
-}
-
-//--------------------------------------------------
-void Filter() {
-
-float sumY;
-float sumTheta;
-float numII;
-int II[15];
 
   sumY = 0;
-  sumTheta = 0;
-  numII = 0;
-  
-  for (int i = 1; i < (N+1); i++)  {
-    if (abs(avgY - Y[i]) < YStdev) {
-      Serial.print(i);
-      Serial.write(9);
-      
-      Serial1.print(i);
-      Serial1.write(9);      
-      sumY += Y[i];
-      II[i] = i;
-      numII += 1;
-    }
-  }
-  Serial.write(9);
-  Serial.print(numII,0);
-  Serial.println("   ");
-
-  Serial1.write(9);
-  Serial1.print(numII,0);
-  Serial1.println("   ");
+  for (int i = 1; i < (N+1); i++) {
+    sumY += Y[II[i]];
+  }  
   YBar = sumY/numII;
 
-  for (int i = 1; i < (numII+1); i++) {
+  sumTheta = 0;
+  for (int i = 1; i < (N+1); i++) {
     sumTheta += Theta[II[i]];
-  }
-    Serial.println(sumTheta);  
+  }  
   ThetaBar = sumTheta/numII;
 
   Serial.print(" filter: YBar, ThetaBar  ");
   Serial.write(9);
   Serial.print(YBar,0);
   Serial.write(9);
-  Serial.println(ThetaBar*radToDeg,1);
+  Serial.println(ThetaBar*radToDeg,1);  
 
-  Serial1.print(" filter: YBar, ThetaBar  ");
+  Serial1.print(" YBar, ThetaBar  ");
   Serial1.write(9);
   Serial1.print(YBar,0);
   Serial1.write(9);
-  Serial1.println(ThetaBar*radToDeg,1);  
+  Serial1.println(ThetaBar*radToDeg,1);   
+}
+
+//--------------------------------------------------
+void Filter() {
+// save consistent, consecutive lidar distances
+float diff[15];
+int j;
+
+// find difference between angle-adjacent lidar distances  
+  for (int i = 1; i < num; i++)  {
+    diff[i] = D[i+1] - D[i];   //starts at largest azimuth angle
+    Serial.print(diff[i],0);
+    Serial.write(9);
+    
+    Serial1.print(diff[i],0);
+    Serial1.write(9);  
+  }  
+  Serial.println("  ");
+  Serial1.println("  ");
+// filter differences
+
+    j = 1;
+    numII = 0;
+  for (int i = 1; i < num; i++)  {
+    if ((diff[i] > 0) && (diff[i] < 100)) {   
+      II[j] = i;                              //array of retained value indecies       
+      Serial.print(II[j]);
+      Serial.write(9);
+      Serial1.print(II[j]);
+      Serial1.write(9);
+      j++;
+      numII++;                               // number of retained values
+    }
+  }
+  Serial.println("  ");
+  Serial1.println("  ");
+
+  Serial.print("  number of values:   ");
+  Serial.print(numII);
+  Serial.println("   ");
+
+  Serial1.print(" number of values:  ");
+  Serial1.print(numII);
+  Serial1.println("   "); 
 }
 

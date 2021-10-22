@@ -12,39 +12,30 @@ String inputString = "";                // a string to hold incoming data
 const float pi = 3.14159;
 const float radToDeg = 57.2958;
 
-byte rc_active = 33;         //Signal from BX-24 indicating R/C Control when high
-byte busy;
 byte LidarMonitor_pin = 8;
 byte LidarTrigger_pin = 9;
 byte LidarPwrEn_pin = 10;
-byte num;
-byte N;
+int num;
+int N;
 byte go;
 
-float alpha;
-float beta;
-float angle;
-float lidarDist;
-float D1;
-float D2;
+int numII;
+int II[15];
+
+int alpha;
+int beta;
+float angleFwd;
+float angle[15];
+float D[15];
 float theta;
 float y;
 float distance[15];
-float DOne[15];
-float DTwo[15];
-float gamma[15];
-float angAlpha[15];
-float angBeta[15];
 float m;
 float b;
 float Y[15];
 float Theta[15];
-float avgY;
-float avgTheta;
-float YStdev;
-float ThetaStdev;
-float YBar;
-float ThetaBar;
+float D1;
+float D2;
 
 void setup() {
   delay(500);
@@ -54,59 +45,51 @@ void setup() {
   m = 166.0/180.0;
   b = 8.0;
   go = 0;
-  angle = m*90 + b;  
+  angleFwd = m*90 + b;  
   digitalWrite(LidarPwrEn_pin, HIGH);     //face forward; 90 deg
-  LidarServo.write(angle);  
+  LidarServo.write(angleFwd);  
 }  
 
 void loop() {
   if (go == 1) {
-    angle = m*alpha + b;
-    LidarServo.write(angle);
-    delay(100);               // wait for servo to settle    
-    D1 =  Lidar();
-    Serial.print("  Lidar distances ");
-    Serial.write(9);
-    Serial.print(D1,0);
+    Serial.println("  (Lidar distance, angle):  ");
 
-    Serial1.print("  Lidar distances ");
-    Serial1.write(9);
-    Serial1.print(D1,0);    
-    
-    for (int i = 1; i < num; i++)  {
-      beta = alpha - 5;
-      angle = m*beta + b;;    
-      LidarServo.write(angle);
+    Serial1.println("  (Lidar distance, angle):  ");
+//  obtain the lidar distances for a set of azimuth angles    
+    for (int i = 1; i < (num+1); i++)  {
+      angle[i] = m*alpha + b;      //alpha is the initial input angle
+      LidarServo.write(angle[i]);
       delay(100);
-      D2 =  Lidar(); 
-    Serial.write(9);
-    Serial.print(D2,0);
+      D[i] =  Lidar(); 
+      alpha -= 5;                  // decrement by 5 degrees
+    }
+// Print the (distance, angle) pairs      
+    for (int i = 1; i < (num+1); i++)  {
+      Serial.write(9);
+      Serial.print("(");
+      Serial.print(D[i],0);
+      Serial.print(", ");
+      Serial.print(angle[i]);    
+      Serial.println(")");
 
-    Serial1.write(9);
-    Serial1.print(D2,0);          
-      Compute();
-      distance[i] = y;
-      gamma[i] = theta;
-      DOne[i] = D1;
-      DTwo[i+1] = D2;
-      angAlpha[i] = alpha;
-      angBeta[i+1] = beta;
-      alpha = beta; 
-      D1 = D2;
+      Serial1.write(9);
+      Serial1.print("(");
+      Serial1.print(D[i],0);
+      Serial1.print(", ");
+      Serial1.print(angle[i]);        
+      Serial1.println(")");
     }
 
-    Serial.println("   ");
-    Serial.println("   ");
-    Serial1.println("  ");    
+    Serial.println("   ");    
     Serial1.println("  ");
-    
-    angle = m*90 + b;  
-    LidarServo.write(angle); 
-   Pairs();
-   AvgStdDev();
-   Filter();
+// discard (distance, angle) pairs that have discordant adjacent distance values
+    Filter();   
+    Pairs();      
+                  
    Serial.println("  ");
    Serial1.println("  ");
+
+  LidarServo.write(angleFwd);     
    go = 0;
   }
 }

@@ -45,7 +45,7 @@ void SetAngles(int A0, int A1){
   Serial1.write(9);
   Serial1.println(A1);  
   go = 1;
-//  alpha and beta (deg) measured CW from left perpendicular to heading    
+//  alpha (deg) measured CW from left perpendicular to heading    
   num = A0;
   alpha = A1; 
 }
