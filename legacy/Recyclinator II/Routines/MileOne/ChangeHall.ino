@@ -24,38 +24,36 @@ void ChangeHall()   {
     Serial1.print(encoderLt);
     Serial1.write(9);
     Serial1.println(encoderRt);
-
+    
+//  2.  Make 90 deg hall turn (CCW is negative angle)
     if(turnDir != 3) {
-      angLimit = 500;    
+      angLimit = 75;    
       GyroTurn(turnDir, angLimit); 
     }
     
       Serial3.write('Z');  
       delay(5);
       while(Serial3.read() >= 0);  
-      gyroAngle = 0;  
-/*        
+      gyroAngle = 0;         
     
-/// 6.  Look for new hallway wall
-    SetAcceleration(1);
+// 3.  Look for new hallway wall
+    SetAcceleration(3);
     EncRst();
     SideRange();
-    CrossHallRange();
-//    forwardRange();    
+    CrossHallRange();    
     MtrSpeed(MtrSlow, MtrSlow);
    
    while (hallWidth > 250) { 
-      GetEncoders();
-//      Encoders();
+      Encoders(encoderLt, encoderRt);
       SideRange();
       CrossHallRange();
-//      forwardRange();
       Print();
    }  
+   Serial1.println("  new hall ");
     EncRst();        
 //  digitalWrite(LtTurnSig_pin, LOW);
 //  digitalWrite(RtTurnSig_pin, LOW); 
-*/ 
+ 
    
   Stats();                    //update stats for new hallway  
 

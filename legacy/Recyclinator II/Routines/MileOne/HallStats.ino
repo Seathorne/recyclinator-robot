@@ -246,7 +246,7 @@ void Stats()  {
 
   featureIndex = 0;
   
-  switch (hallID) {
+  switch (hallID) { 
     case 1: {
       HW = 241;
       hallLengthEnc = 76000;     // enc between shortest straight walls      
@@ -257,7 +257,7 @@ void Stats()  {
         Dir = Left;
       }
       else {
-        byte feature[] = {1,11,1,6,0,7,5,7,1,6,1,99};         
+        byte feature[] = {1,6,1,6,1,0,99};    //  {1,11,1,6,0,7,5,7,1,6,1,99};         
        defineFeatureList(feature, sizeof(feature));          
         Dir = Right;
       }
@@ -312,7 +312,7 @@ void Stats()  {
         byte feature[] = {12,1,12,1,9,1,12,99};  
         defineFeatureList(feature, sizeof(feature));      
         Dir = Right;
-      }
+;      }
       break;
     }
     
@@ -321,7 +321,7 @@ void Stats()  {
       hallLengthEnc = 67000;   
         
       if(hallDir == West) {
-        byte feature[] = {1,12,1,6,8,2,3,1,0,1,99};      
+        byte feature[] = {1,0,1,0,99};   //{1,12,1,6,8,2,3,1,0,1,99};      
         defineFeatureList(feature, sizeof(feature));  
         Dir = Right;
       }

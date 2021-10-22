@@ -1,17 +1,20 @@
 
 void GyroTurn(byte &turnDir, int &angLimit)  {
+    SetAcceleration(3);
+    MtrSpeed(MtrStop, MtrStop);
+    delay(500);                          //wait until robot stops before reading gyro    
     Serial3.write('Z');  
     delay(20); 
     while(Serial3.read() >= 0);  
     gyroAngle = 0;
 
     if (turnDir == Left) {                  //CCW Turn
-      LtMtrSpd = MtrTurn;
-      RtMtrSpd = MtrTurn+8;      
+      LtMtrSpd = MtrSlow;
+      RtMtrSpd = MtrSlow+24;      
     }
     else if (turnDir == Right) {            //CW turn
-      LtMtrSpd = MtrTurn+8;
-      RtMtrSpd = MtrTurn;         
+      LtMtrSpd = MtrSlow+24;
+      RtMtrSpd = MtrSlow;         
     }
     else {                                //condition for straight ahead (turnDir = 2)       
       return;
@@ -25,22 +28,23 @@ void GyroTurn(byte &turnDir, int &angLimit)  {
          gyroAngle = int(Serial3.read())<<8;
          gyroAngle += int(Serial3.read());
        }    
-/*       
-       Encoders(encoderLt, encoderRt); 
-       Serial1.print( "gyroAngle   ");
-       Serial1.print(gyroAngle);
-       Serial1.write(9);
-       Serial1.print(encoderLt);
-       Serial1.write(9);
-       Serial1.println(encoderRt);
-*/       
-     } while (abs(gyroAngle) <= angLimit);   
-Serial1.print(" gyro angle ");
-Serial1.println(gyroAngle);
-     SetAcceleration(5);
+     } while (abs(gyroAngle) <= angLimit);  
+
+      Serial1.print(" end gyro angle ");
+      Serial1.println(gyroAngle);
+
+     SetAcceleration(3);
      MtrSpeed(MtrStop, MtrStop);  
      delay(500);
-     SetAcceleration(3);
+       Serial3.write('G');  
+       delay(20);
+       if (Serial3.available() > 1 ) {
+         gyroAngle = int(Serial3.read())<<8;
+         gyroAngle += int(Serial3.read());
+       }         
+
+      Serial1.print(" stop gyro angle ");
+      Serial1.println(gyroAngle);       
 }
 
 //---------------------------------------------------

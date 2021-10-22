@@ -66,7 +66,7 @@ byte busy;
 byte ncount;
 byte featureList[20];
 byte featureIndex;
-byte iTurn;
+byte iTurn;                 //sets the turnHall array index
 
 int angLimit;
 int angTurn;
