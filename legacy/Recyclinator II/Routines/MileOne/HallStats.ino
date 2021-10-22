@@ -239,7 +239,9 @@ void Stats()  {
 //  hallDir (hall travel direction): 1-N, 2-E, 3-S, 4-W
 //  Dir:  which side of hall to follow with offset, 0-left, 1-right
 // *****  major change for Recylinator II - eliminate hallAdvCenterEnc, hallEndEnc, hall 45AdvEnc  *******
-
+  Serial1.print("  HallStats  ID = ");
+  Serial1.print(hallID);
+  
   switch (hallID) {
     case 1: {
       HW = 241;
@@ -261,7 +263,10 @@ void Stats()  {
        hallLengthEnc = 84000;   
       featureIndex = 0;          
       if(hallDir == North) {
-        byte featureList[] = {1,7,5,1,6,1,11,1,10,1,99};          
+        Serial1.println(  "stats  case 2,  dir North ");
+        byte featureList[] = {1,6,4,1,7,12,1,10,12,1,0,99};          
+        byte first = featureList[0];
+        Serial1.println(first); 
         Dir = Right;
       }
       else {
@@ -388,7 +393,7 @@ void Stats()  {
 //re-zero feature list for new hall ID
 //  iFeature = 0;                  //position index for a hall's feature list      
 
-Serial1.println("  Hallway Stats");  
+  
 }
 
 //---------------------------------------------------
@@ -413,6 +418,8 @@ void FirstHall()  {
   
   while (hallWidth > 250) {     
       SideRange(); 
+      Encoders(encoderLt, encoderRt); 
+      Print();
    }
    EncRst();
    Encoders(encoderLt, encoderRt);
@@ -426,12 +433,12 @@ void EndHallCheck(byte featureList[]) {
 byte featureType;
 
   featureType = featureList[featureIndex];
-  Serial.print(" Index  = ");
-  Serial.print(featureIndex);  
-  Serial.print("     featureType   ");
-  Serial.print(featureType);
-  Serial.print("        caseNum  = ");
-  Serial.println(caseNum); 
+  Serial1.print(" Index  = ");
+  Serial1.print(featureIndex);  
+  Serial1.print("     featureType   ");
+  Serial1.print(featureType);
+  Serial1.print("        caseNum  = ");
+  Serial1.println(caseNum); 
    
   if (featureType == 99) {
     CrossHallRange();  
