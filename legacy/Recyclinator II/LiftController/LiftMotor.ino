@@ -23,6 +23,7 @@ void LiftDown(int s){
   if (Calibrated == false) return;  
   if (Counter < 1 ) return;
   if (( s < MinSpeed) || (s > MaxSpeed)) return;  // can't set a speed below min or above max  Speed = s;
+  Speed = s;
   Direction = Down;
   digitalWrite(Dir1,HIGH);
   digitalWrite(Dir2,LOW); 

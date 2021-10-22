@@ -42,6 +42,5 @@ void HandleCalibration(){
   ReportEncoder();
   MaxCount = Counter;
   Calibrated = true;
-  Moving = false;
 }
 

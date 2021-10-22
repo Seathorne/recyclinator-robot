@@ -1,7 +1,7 @@
 
 // I/O pin assignments
-int TopSwitch = 46;
-int BottomSwitch = 47;
+int TopSwitch = 22;
+int BottomSwitch = 23;
 int Dir1 = 6;
 int Dir2 = 5;
 int LiftMotor = 4;
@@ -56,7 +56,7 @@ void setup() {
 
 void loop() {
   ReadLimits();
-  delay(5);
+  delay(5); 
   if ((Moving == true) && (millis() > EncoderTimeout)) EncoderFail();
   if (Moving == true) HandleLift();
 }
