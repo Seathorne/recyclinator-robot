@@ -5,12 +5,12 @@
                         RECYLINATOR II
                         Milestone 1
                         EMG40 & MD49
-                       5 February 2018
+                       8 February 2018
 
 **********************************************************/
 
 #define SynchByte 0x00           // Command byte
-#define  North     1          // Define directions
+#define  North     1             // Define directions
 #define  East      2
 #define  South     3
 #define  West      4
@@ -20,7 +20,7 @@
 
 const float pi = 3.14159;
 const float radToDeg = 57.2958;
-const float roboWidth = 35;        //distance between right and left side sonars
+const float roboWidth = 35;        //distance (cm) between right and left side sonars (outer transducer)
 
 boolean At_Turn_Node;
 boolean In_Hallway;
@@ -41,7 +41,7 @@ byte LtHall_pin = 48;
 byte RtHall_pin = 49;
 byte MtrBack = 82;
 byte MtrStop = 128;
-byte MtrTurn = 160;
+byte MtrTurn = 200;
 byte MtrSlow = 210;
 byte MtrMed = 238;
 byte MtrFast = 245;
@@ -66,7 +66,7 @@ byte busy;
 byte ncount;
 byte featureList[20];
 byte featureIndex;
-byte iTurn;                 //sets the turnHall array index
+byte iTurn;
 
 int angLimit;
 int angTurn;
@@ -95,8 +95,9 @@ long encoderLt;
 long encoderRt;
 long hall45AdvEnc;
 long hallAdvCenterEnc;
-long hallEndEnc;
-long hallLengthEnc;
+long hallCheckEnc;         
+long hallEndEnc;             // encoder value before reaching feature to ck for hall end 
+long hallLengthEnc;          // encoder value between hall shortest straight walls 
 long timeTemp;
 unsigned long EncWait;
 
@@ -104,16 +105,14 @@ String hallCase;
 
 void setup()  {
   delay(500);
-  hallID= 2;
-  hallDir = North;
-  Dir = Right;
+  hallID= 8 ;
+  hallDir = East;
   iTurn = 0;
   wallDistVal = 80;
   
   In_Hallway = true;
-   At_Turn_Node = false;
-  FirstHallFlag = false;
-  busy = 1;
+  At_Turn_Node = false;
+  FirstHallFlag = true;
   ncount = 0;
 
   LtMtrSpeed = MtrMed;
@@ -145,9 +144,7 @@ void loop()  {
       Serial1.write(9);
 //      PrintMon();
       timeTemp = millis();
-//      Serial3.write('Z');
-//      delay(50);
-//      while (Serial3.read() >= 0);    // clear gyro buffer  
+
       EncRst();
     }
  }

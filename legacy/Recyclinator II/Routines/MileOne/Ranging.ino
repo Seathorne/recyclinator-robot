@@ -97,7 +97,7 @@ void HallRangeRt()  {
 float wallAngle (float rangeDiff) { 
   float angle;
   float angleFlag;
-  float baseline = 19.5; 
+  float baseline = 19.4;   // distance between front and rear sonars (cm)
 
   angleFlag = false;
   if (abs(rangeDiff) >= baseline) {

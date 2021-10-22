@@ -1,13 +1,14 @@
 
 /*   FUNCTIONS
      1. void SetPinModes()             -  line 10
-     2.  void InitializeSerialPorts()  -  line 19
-     3.  void ConfigMotors()           -  line 27
+     2.  void InitializeSerialPorts()  -  line 20
+     3.  void ConfigMotors()           -  line 28
 */
 
 //-----------------------------------------
 
 void SetPinModes () {
+//  pinModes for rangeLt/RtHall set in HallRangeLt(), HallRangeRt()  
   pinMode(rc_active, INPUT);            // zero in Auto mode
   pinMode(LtF_TrigEchoPin, OUTPUT);
   pinMode(RtF_TrigEchoPin, OUTPUT);

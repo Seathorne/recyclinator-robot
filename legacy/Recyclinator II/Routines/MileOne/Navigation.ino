@@ -19,6 +19,7 @@ void HallwayNavigation()  {
 //  PrintMon();
 
 //  Detect Hall End
+//  if (hallCheckEnc >= hallEndEnc)
      EndHallCheck();
 }
 //---------------------------------------
@@ -101,12 +102,12 @@ float nearSide;
   else if ((featureDepth > 10) && (featureDepth < 55)) {
     if (nearSide > 90) {
       caseNum = 2;
-      hallCase = "Shallow";                          // Case 2 = shallow recess near side
+      hallCase = "Shallow Near";                          // Case 2 = shallow recess near side
       wallDistVal = 80 + featureDepth;
     }
     else {
       caseNum = 3;
-      hallCase = "FarRecess";                          // Case 3 = shallow recess far side
+      hallCase = "Shallow Far";                          // Case 3 = shallow recess far side
       wallDistVal = 80;
     }
   }
