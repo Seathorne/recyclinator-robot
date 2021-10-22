@@ -240,6 +240,7 @@ void Stats()  {
 //  HW:  hallway width; 241 except for hall 4, which is 214;  hall 6 and default is zero, which indicates an error.
 //  hallDir (hall travel direction): 1-N, 2-E, 3-S, 4-W
 //  Dir:  which side of hall to follow with offset, 0-left, 1-right
+//  hallEndType:  0 - wall end;  1 - hall forward; 2 - side lobby
 // *****  major change for Recylinator II - eliminate hallAdvCenterEnc, hallEndEnc, hall 45AdvEnc  *******
 
   Serial1.print("  HallStats  ID = ");
@@ -249,17 +250,21 @@ void Stats()  {
   
   switch (hallID) {
     case 1: {
-      HW = 241;
-      hallLengthEnc = 76000;     // enc between shortest straight walls   
-      hallEndEnc = 60400;   
+      HW = 241;       
 
       if(hallDir == North) {
+       hallLengthEnc = 60000;
+       hallEndEnc = 45000;          
+       hallEndType = 0;        
        byte feature[] = {1,6,1,6,1,99};    
        defineFeatureList(feature, sizeof(feature));  
         Dir = Left;
       }
       else {
-        byte feature[] = {1,6,0,1,6,1,99};         
+        hallLengthEnc = 60000; 
+        hallEndEnc = 53000;         
+        hallEndType = 3;
+        byte feature[] = {1,6,1,6,1,99};         
        defineFeatureList(feature, sizeof(feature));          
         Dir = Right;
       }
@@ -267,17 +272,20 @@ void Stats()  {
     }
     
     case 2: {
-      HW = 241;
-       hallLengthEnc = 84000;   
-       hallEndEnc = 67000;
-         
+      HW = 241; 
+       
       if(hallDir == North) {
-        Serial1.println(  "stats  case 2,  dir North ");
+       hallLengthEnc = 67000;
+       hallEndEnc = 55000;
+       hallEndType = 0;
         byte feature[] = {1,6,1,7,1,10,1,99};              
         defineFeatureList(feature, sizeof(feature));
         Dir = Right;
       }
       else {
+        hallLengthEnc = 69000;
+        hallEndEnc = 50000;
+        hallEndType = 0;
         byte feature[] = {1,10,1,6,1,7,1,99};
         defineFeatureList(feature, sizeof(feature));
         Dir = Right;        
@@ -288,6 +296,7 @@ void Stats()  {
     case 3: {
       HW = 241;
       hallLengthEnc = 84000;  
+      hallEndType = 0;
        
       if(hallDir == North) {
         byte feature[] = {1,10,5,10,1,11,1,10,5,7,1,99};   
@@ -304,7 +313,8 @@ void Stats()  {
     
     case 4: {
       HW = 214;
-      hallLengthEnc = 92000;    
+      hallLengthEnc = 92000;  
+      hallEndType = 0;  
         
       if(hallDir == North) {
         byte feature[] = {12,1,7,12,1,9,12,1,3,1,12,1,12,99};  
@@ -320,16 +330,20 @@ void Stats()  {
     }
     
     case 5: {
-      HW = 241;
-      hallLengthEnc = 67000;   
-      hallEndEnc = 55000;
+      HW = 241; 
         
       if(hallDir == West) {
+        hallLengthEnc = 55400;
+        hallEndEnc = 48000;
+        hallEndType = 3;        
         byte feature[] = {1,6,8,1,0,1,99};        
         defineFeatureList(feature, sizeof(feature));  
         Dir = Right;
       }
       else {
+        hallLengthEnc = 55000;
+        hallEndEnc = 46000;        
+        hallEndType = 1;        
         byte feature[] = {1,8,1,99};
         defineFeatureList(feature, sizeof(feature));        
         Dir = Left;
@@ -346,11 +360,13 @@ void Stats()  {
       hallLengthEnc = 39000;    
         
       if(hallDir == West) {
+       hallEndType = 1;        
        byte feature[] = {1,12,1,3,99};       
        defineFeatureList(feature, sizeof(feature)); 
         Dir = Right;        
       }
       else {
+        hallEndType = 0;
         byte feature[] = {1,12,99}; 
         defineFeatureList(feature, sizeof(feature));       
         Dir = Left;        
@@ -359,16 +375,20 @@ void Stats()  {
     }
     
     case 8: {
-      HW = 241;
-      hallLengthEnc = 54000;    
-      hallEndEnc = 54000;
+      HW = 241;  
        
       if(hallDir == West) {
+        hallLengthEnc = 54000;
+        hallEndEnc = 49000;        
+        hallEndType = 2;
         byte feature[] = {1,7,6,1,6,1,99};      
         defineFeatureList(feature, sizeof(feature));  
         Dir = Right;
       }
       else {
+        hallLengthEnc = 55700;
+        hallEndEnc = 45000;        
+        hallEndType = 1;
         byte feature[] = {1,7,1,99};        
         defineFeatureList(feature, sizeof(feature));
         Dir = Right;
@@ -378,7 +398,8 @@ void Stats()  {
     
     case 9: {
       HW = 241;
-      hallLengthEnc = 71000;      
+      hallLengthEnc = 71000;
+      hallEndType = 1;      
      
       if(hallDir == West) {
         byte feature[] = {1,12,14,1,2,1,99};   
@@ -395,14 +416,16 @@ void Stats()  {
     
     case 10: {
       HW = 241;
-      hallLengthEnc = 38000;      
+      hallLengthEnc = 38000;    
     
       if(hallDir == West) {
+        hallEndType = 1;
         byte feature[] = {1,12,1,6,99};        
         defineFeatureList(feature, sizeof(feature));
         Dir = Left;        
       }
       else {
+        hallEndType = 0;
         byte feature[] = {6,1,12,1,99};        
         defineFeatureList(feature, sizeof(feature));
         Dir = Left;        
@@ -454,21 +477,32 @@ byte featureType;
   featureType = featureList[featureIndex];
    
   if (featureType == 99) {
-    CrossHallRange();
+    if (hallEndType == 3) {
+      lidarDist =  Lidar();
+
+      while (lidarDist < 500) {
+        CrossHallRange();
+        if (endHallWidth > 500) {
+          Serial1.print("   endHallWidth  =  ");
+          Serial1.println(endHallWidth);    
+          Serial1.print("  lidar dist =  ");
+          Serial1.println(lidarDist);       
+          EndofHall(); 
+          break;
+      }
+      lidarDist = Lidar();
+    }
+    }
+    else {
+      CrossHallRange();
     
-    if (endHallWidth > 250) {
+      if (endHallWidth > 500) {
        Serial1.print("   endHallWidth  =  ");
-       Serial1.println(endHallWidth);
-       
-       lidarDist = Lidar();
-       Serial1.print(" lidarDist =  ");
-       Serial1.println(lidarDist);       
+       Serial1.println(endHallWidth);    
        
        EndofHall(); 
-
-//      MtrSpeed(MtrStop, MtrStop);
-//      delay(50);
     }
+   }
   }
   else if (featureType == caseNum) {
     byte countsFlag = ConsecutiveTries(3);
@@ -515,11 +549,6 @@ void ChangeHall()   {
   Serial1.write(9);
   Serial1.println(hallDir);                        
     iTurn++;          
-
-    Encoders(encoderLt, encoderRt);
-    Serial1.print(encoderLt);
-    Serial1.write(9);
-    Serial1.println(encoderRt);
     
 //  2.  Make 90 deg hall turn (CCW is negative angle)
     if(turnDir != 3) {

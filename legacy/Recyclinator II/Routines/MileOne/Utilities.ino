@@ -1,8 +1,8 @@
 
 void GyroTurn(byte &turnDir, int &angLimit)  {
     SetAcceleration(3);
-    MtrSpeed(MtrStop, MtrStop);
-    delay(500);                          //wait until robot stops before reading gyro    
+//    MtrSpeed(MtrStop, MtrStop);
+//    delay(100);                          //wait until robot stops before reading gyro    
     Serial3.write('Z');  
     delay(50); 
     while(Serial3.read() >= 0);  
@@ -10,16 +10,24 @@ void GyroTurn(byte &turnDir, int &angLimit)  {
 
     if (turnDir == Left) {                  //CCW Turn
       LtMtrSpd = MtrTurn;
-      RtMtrSpd = MtrTurn + 22;      
+      RtMtrSpd = MtrTurn + 20;      
     }
     else if (turnDir == Right) {            //CW turn
-      LtMtrSpd = MtrTurn  + 22;
+      LtMtrSpd = MtrTurn  + 20;
       RtMtrSpd = MtrTurn;         
     }
     else {                                //condition for straight ahead (turnDir = 2)       
       return;
     }
+    Encoders(encoderLt, encoderRt);     //temp:  encoders after stop, before turn
+    Serial1.print(encoderLt);
+    Serial1.write(9);
+    Serial1.println(encoderRt);
 
+     lidarDist = Lidar();
+     Serial1.print(" lidarDist =  ");
+     Serial1.println(lidarDist);       
+    
      do {       
        MtrSpeed(LtMtrSpd, RtMtrSpd);
        Serial3.write('G');  
@@ -35,8 +43,8 @@ void GyroTurn(byte &turnDir, int &angLimit)  {
       
      SetAcceleration(3);
      MtrSpeed(MtrStop, MtrStop);  
-     delay(500);
-/*      
+     delay(100);
+      
      Serial3.write('G');  
      delay(20);
      if (Serial3.available() > 1 ) {
@@ -45,7 +53,7 @@ void GyroTurn(byte &turnDir, int &angLimit)  {
      }    
      Serial1.print(" stop gyro ");
      Serial1.println(gyroAngle);
-*/     
+     
 }
 
 //---------------------------------------------------

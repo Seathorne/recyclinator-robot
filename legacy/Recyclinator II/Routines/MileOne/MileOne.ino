@@ -5,7 +5,7 @@
                         RECYLINATOR II
                         Milestone 1 - Hallway Transitions
                         EMG40 & MD49
-                       15 February 2018
+                       18 February 2018
 
 **********************************************************/
 
@@ -76,6 +76,7 @@ byte ncount;
 byte featureList[20];
 byte featureIndex;
 byte iTurn;
+byte hallEndType;
 
 int angLimit;
 int angTurn;
@@ -108,6 +109,7 @@ long hallAdvCenterEnc;
 long hallCheckEnc;         
 long hallEndEnc;             // encoder value before reaching feature to ck for hall end 
 long hallLengthEnc;          // encoder value between hall shortest straight walls 
+long hallEnd;
 long timeTemp;
 unsigned long EncWait;
 

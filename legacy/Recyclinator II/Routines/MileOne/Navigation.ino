@@ -19,8 +19,7 @@ void HallwayNavigation()  {
 //  PrintMon();
 
 //  Detect Hall End
-//  if (hallCheckEnc >= hallEndEnc)
-     EndHallCheck();
+    EndHallCheck();
 }
 //---------------------------------------
 
