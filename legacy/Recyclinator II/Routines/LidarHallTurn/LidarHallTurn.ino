@@ -1,5 +1,5 @@
 
-
+//    ********************  10 April 2018   **************
 #include <math.h>
 #include <Servo.h>
 Servo LidarServo;               //Left write(129);  Forward write(87);  Right write(45)
@@ -15,27 +15,29 @@ const float radToDeg = 57.2958;
 byte LidarMonitor_pin = 8;
 byte LidarTrigger_pin = 9;
 byte LidarPwrEn_pin = 10;
-int num;
-int N;
 byte go;
 
-int numII;
-int II[15];
-int JJ[15];
-int numJJ;
+int dir;
 
+int num;
+int N;
+int numII;
+int II[100];
+int JJ[100];
+int numJJ;
 int alpha;
 int beta;
+
 float angleFwd;
-float angle[15];
-float D[15];
+float angle[100];
+float servoAng;
+float D[100];
 float theta;
 float y;
-float distance[15];
 float m;
 float b;
-float Y[15];
-float Theta[15];
+float Y[100];
+float Theta[100];
 float D1;
 float D2;
 
@@ -50,28 +52,36 @@ void setup() {
   angleFwd = m*90 + b;  
   digitalWrite(LidarPwrEn_pin, HIGH);     //face forward; 90 deg
   LidarServo.write(angleFwd);  
-}  
+  }
+  
 
 void loop() {
   if (go == 1) {
-    Serial.println("  (Lidar distance, angle):  ");
-
-    Serial1.println("  (Lidar distance, angle):  ");
+    Serial.write(9);
+    Serial.println("  (Lidar angle, distance):  ");
+    Serial1.write(9);
+    Serial1.println("  (Lidar angle, distance):  ");
 //  obtain the lidar distances for a set of azimuth angles    
     for (int i = 1; i < (num+1); i++)  {
-      angle[i] = m*alpha + b;      //alpha is the initial input angle
-      LidarServo.write(angle[i]);
+      if (dir == 0) {                       //Left scan
+      angle[i] = alpha;
+      }
+    else {
+      angle[i] = 180 - alpha;
+    }
+      servoAng = m*angle[i] + b;      
+      LidarServo.write(servoAng);
       delay(100);
       D[i] =  Lidar(); 
       alpha -= 5;                  // decrement by 5 degrees
     }
-// Print the (distance, angle) pairs      
+// Print the (angle, distance) pairs      
     for (int i = 1; i <= num; i++)  {
       Serial.write(9);
       Serial.print("(");
-      Serial.print(D[i],0);
+      Serial.print(angle[i],0);
       Serial.print(", ");
-      Serial.print(angle[i]);    
+      Serial.print(D[i]);    
       Serial.println(")");
 
       Serial1.write(9);

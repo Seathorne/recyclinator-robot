@@ -1,8 +1,8 @@
 void HandleCommand(){
   ParseInput();
   inputString = "";
-// for calc;  arg[0] = number of angles;  arg[1] = alpha  
-  if (cmd == "ang")      SetAngles(arg[0], arg[1]);
+// for calc;  arg[0] = number of angles;  arg[1] = alpha;  arg]2] = scan R(ight) or L(eft)
+  if (cmd == "ang")      SetAngles(arg[0], arg[1], arg[2]);
 }
 
 
@@ -36,17 +36,22 @@ void serialEvent() {
   } 
 }
 
-void SetAngles(int A0, int A1){
+void SetAngles(int A0, int A1, int A2){
   Serial.print(A0);
   Serial.write(9);
-  Serial.println(A1);
+  Serial.print(A1);
+  Serial.write(9);
+  Serial.println(A2);  
 
   Serial1.print(A0);
   Serial1.write(9);
-  Serial1.println(A1);  
+  Serial1.print(A1); 
+  Serial1.write(9);
+  Serial1.println(A2); 
   go = 1;
 //  alpha (deg) measured CW from left perpendicular to heading    
   num = A0;
   alpha = A1; 
+  dir = A2;
 }
 
