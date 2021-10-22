@@ -19,18 +19,13 @@ void Pairs() {
 //    pairs of lidar measurements  
 int k;
 int kk;
-float sumY;
-float sumTheta;
-float YBar;
-float ThetaBar;
 
-  N = 0;  
-  
-  for (int i = 1; i < numII; i++)  {
-    k = II[i];
-    for (int j = (i+1); j < numII; j++ ) {
+  N = 0;   
+  for (int i = 1; i < numJJ; i++)  {
+    k = JJ[i];
+    for (int j = (i+1); j <= numJJ; j++ ) {
       N++;
-      kk = II[j];
+      kk = JJ[j];
       D1 = D[k];
       alpha = angle[k];
       D2 = D[kk];
@@ -56,18 +51,26 @@ float ThetaBar;
       Serial1.println(theta*radToDeg,1);      
     }
   }
+}
+
+//--------------------------------
+void Average()  {  
+float sumY;
+float sumTheta;
+float YBar;
+float ThetaBar;
 
   sumY = 0;
-  for (int i = 1; i < (N+1); i++) {
-    sumY += Y[II[i]];
+  for (int i = 1; i <= N; i++) {
+    sumY += Y[JJ[i]];
   }  
-  YBar = sumY/numII;
+  YBar = sumY/numJJ;
 
   sumTheta = 0;
-  for (int i = 1; i < (N+1); i++) {
-    sumTheta += Theta[II[i]];
+  for (int i = 1; i <= N; i++) {
+    sumTheta += Theta[JJ[i]];
   }  
-  ThetaBar = sumTheta/numII;
+  ThetaBar = sumTheta/numJJ;
 
   Serial.print(" filter: YBar, ThetaBar  ");
   Serial.write(9);
@@ -83,7 +86,7 @@ float ThetaBar;
 }
 
 //--------------------------------------------------
-void Filter() {
+void FilterDistances() {
 // save consistent, consecutive lidar distances
 float diff[15];
 int j;
@@ -101,28 +104,92 @@ int j;
   Serial1.println("  ");
 // filter differences
 
-    j = 1;
+    j = 0;
     numII = 0;
   for (int i = 1; i < num; i++)  {
+    j++;
     if ((diff[i] > 0) && (diff[i] < 100)) {   
-      II[j] = i;                              //array of retained value indecies       
+      II[j] = i;                                    
       Serial.print(II[j]);
       Serial.write(9);
       Serial1.print(II[j]);
       Serial1.write(9);
-      j++;
-      numII++;                               // number of retained values
+    }
+    else {
+      II[j] = 0;
     }
   }
   Serial.println("  ");
   Serial1.println("  ");
 
-  Serial.print("  number of values:   ");
-  Serial.print(numII);
+  Serial.print("  # diff():   ");
+  Serial.print(j);
   Serial.println("   ");
 
-  Serial1.print(" number of values:  ");
-  Serial1.print(numII);
+  Serial1.print(" # diff():  ");
+  Serial1.print(j);
   Serial1.println("   "); 
+}
+
+//--------------------------------
+void FilterGaps()  {
+int jj;
+
+  Serial.println(" gaps fwd scan  ");
+  Serial1.println("  gaps fwd scan");
+  for (int i = 2; i < num; i++)  {    // forward scan
+    if (II[i] == 0) {
+      II[i-1] = 0;
+    }
+  }
+
+  for (int i = 2; i < num; i++) {
+    Serial.print(II[i]);
+    Serial.write(9);
+    Serial1.print(II[i]);
+    Serial1.write(9);
+  }
+
+  Serial.println("  ");
+  Serial1.println("   ");
+  Serial.println("  gaps rev scan  ");
+  Serial1.println("  gaps rev scan  ");
+  
+  for (int i = num-2; i >= 1; i--)  {    // rev scan
+    if (II[i] == 0) 
+      II[i+1] = 0;
+  }
+
+  for (int i = num-2; i >= 1; i--) {
+    Serial.print(II[i]);
+    Serial.write(9);
+    Serial1.print(II[i]);
+    Serial1.write(9);
+  }
+
+  Serial.println("   ");
+  Serial1.println("  ");
+  Serial.println(" final filter ");
+  Serial1.println(" final filter ");
+
+  jj = 1;
+  numJJ = 0;
+  for (int i = 1; i < num; i++) {
+    if (II[i] != 0) {
+      JJ[jj] = II[i];
+      jj++;
+      numJJ++;
+    }
+  }  
+
+  for (int i = 1; i <= numJJ; i++) {
+    Serial.print(JJ[i]);
+    Serial.write(9);
+    Serial1.print(JJ[i]);
+    Serial1.write(9);
+  }
+
+  Serial.println("  ");
+  Serial1.println("  ");
 }
 

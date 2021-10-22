@@ -21,6 +21,8 @@ byte go;
 
 int numII;
 int II[15];
+int JJ[15];
+int numJJ;
 
 int alpha;
 int beta;
@@ -64,7 +66,7 @@ void loop() {
       alpha -= 5;                  // decrement by 5 degrees
     }
 // Print the (distance, angle) pairs      
-    for (int i = 1; i < (num+1); i++)  {
+    for (int i = 1; i <= num; i++)  {
       Serial.write(9);
       Serial.print("(");
       Serial.print(D[i],0);
@@ -83,8 +85,10 @@ void loop() {
     Serial.println("   ");    
     Serial1.println("  ");
 // discard (distance, angle) pairs that have discordant adjacent distance values
-    Filter();   
+    FilterDistances();   
+    FilterGaps();    
     Pairs();      
+    Average();
                   
    Serial.println("  ");
    Serial1.println("  ");
