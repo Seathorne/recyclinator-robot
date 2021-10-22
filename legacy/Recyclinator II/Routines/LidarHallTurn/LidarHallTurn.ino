@@ -16,6 +16,9 @@ byte busy;
 byte LidarMonitor_pin = 8;
 byte LidarTrigger_pin = 9;
 byte LidarPwrEn_pin = 10;
+byte TurnLow = 30;
+byte TurnHigh = 31;
+byte TurnEn = 32;
 byte num;
 byte go;
 
@@ -35,6 +38,14 @@ float angAlpha[15];
 float angBeta[15];
 float m;
 float b;
+float Y[15];
+float Theta[15];
+float avgY;
+float avgTheta;
+float YStdev;
+float ThetaStdev;
+float YBar;
+float ThetaBar;
 
 void setup() {
   delay(500);
@@ -82,6 +93,10 @@ void loop() {
     angle = m*90 + b;  
     LidarServo.write(angle); 
    Pairs();
+   Serial.println( " ");   
+   AvgStdDev();
+   Serial.println( " ");   
+   Filter();
    go = 0;
   }
 }

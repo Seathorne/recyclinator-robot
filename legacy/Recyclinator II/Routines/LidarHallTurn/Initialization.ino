@@ -5,6 +5,15 @@ void SetPinModes() {
   pinMode(LidarMonitor_pin, INPUT);
   pinMode(LidarTrigger_pin, OUTPUT);
 
+//  Following to prevent turn signal blinking during testing
+  pinMode(TurnLow, OUTPUT);
+  pinMode(TurnHigh, OUTPUT);
+  pinMode(TurnEn,OUTPUT);
+
+  digitalWrite(TurnLow, LOW);
+  digitalWrite(TurnHigh, LOW);
+  digitalWrite(TurnEn, LOW);
+
   LidarServo.attach(7);    
 }  
 
