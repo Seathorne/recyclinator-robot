@@ -1,6 +1,7 @@
 void HandleCommand(){
   ParseInput();
   inputString = "";
+//  arg[0] = 1 for calc;  arg[1] = beta;  arg[2] = alpha  
   if (cmd == "angles")      SetAngles(arg[0],arg[1], arg[2]);
 }
 
@@ -9,7 +10,7 @@ void HandleCommand(){
    arg[0-3] hold the data values being sent */
 void ParseInput(){
   int space, slash;
-  for(int x = 0; x < 4; x++) arg[x] = 0;
+  for(int x = 0; x < 3; x++) arg[x] = 0;
   ArgIndex = 0;
   space=inputString.indexOf(' ');
   slash = inputString.indexOf('\n');
@@ -37,7 +38,9 @@ void serialEvent() {
 
 void SetAngles(int Go, int A1, int A2){
   go = Go;
-  Gamma[1] = A1;
-  Gamma[2] = A2;
+//  alpha and beta (deg) measured CW from left perpendicular to heading    
+//  beta < alpha
+  alpha = A2;
+  beta = A1;
 }
 

@@ -23,7 +23,6 @@ byte LidarPwrEn_pin = 10;
 byte go;
 
 float lidarDist;
-int Gamma[3] = {0, 30, 45}; 
 float D1;
 float D2;
 float y1;
@@ -38,31 +37,31 @@ void setup() {
   Serial.begin(9600);       //Monitor  
   SetPinModes();  
   go = 0;
-  
+  angle = 175;
   digitalWrite(LidarPwrEn_pin, HIGH);  
-  LidarServo.write(faceForward);  
+  LidarServo.write(angle);  
 }  
 
 void loop() {
+/*
   if (go == 1) {
-    angle = 129 - (42./90.)*Gamma[1];
-    alpha = (129 - angle)*(90./42.)/radToDeg;
+    angle = 129 - (42./90.)*beta;
     LidarServo.write(angle);
     delay(100);
-    D1 =  Lidar();
-    Serial.print(D1);
+    D2 =  Lidar();
+    Serial.print(D2);
     Serial.write(9);
     
-    angle = 129 - (42./90.)*Gamma[2];
-    beta = (129 - angle)*(90./42.)/radToDeg;    
+    angle = 129 - (42./90.)*alpha;;    
     LidarServo.write(angle);
     delay(100);
-    D2 =  Lidar();  
-    Serial.println(D2);
+    D1 =  Lidar();  
+    Serial.println(D1);
     LidarServo.write(faceForward);    
     Compute();
     go = 0;
   }
+*/  
 }
 
 //---------------------------------------------------
