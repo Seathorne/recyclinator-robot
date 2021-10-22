@@ -1,8 +1,8 @@
 void HandleCommand(){
   ParseInput();
   inputString = "";
-//  arg[0] = 1 for calc;  arg[1] = beta;  arg[2] = alpha  
-  if (cmd == "angles")      SetAngles(arg[0],arg[1], arg[2]);
+// for calc;  arg[0] = number of angles;  arg[1] = alpha  
+  if (cmd == "ang")      SetAngles(arg[0], arg[1]);
 }
 
 
@@ -36,11 +36,10 @@ void serialEvent() {
   } 
 }
 
-void SetAngles(int Go, int A1, int A2){
-  go = Go;
+void SetAngles(int A0, int A1){
+  go = 1;
 //  alpha and beta (deg) measured CW from left perpendicular to heading    
-//  beta < alpha
-  alpha = A2;
-  beta = A1;
+  num = A0;
+  alpha = A1; 
 }
 

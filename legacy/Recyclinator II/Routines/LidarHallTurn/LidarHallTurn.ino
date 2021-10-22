@@ -3,10 +3,6 @@
 #include <Servo.h>
 Servo LidarServo;               //Left write(129);  Forward write(87);  Right write(45)
 
-#define  faceLeft    129    // values for Lidar servo position
-#define  faceForward 87
-#define  faceRight   45
-
 String cmd = "";                        // the Command 
 float arg[3] = {0,0,0};                  // you can pass up to 3 arguments in a command
 int ArgIndex;                           // index into arguments
@@ -20,48 +16,64 @@ byte busy;
 byte LidarMonitor_pin = 8;
 byte LidarTrigger_pin = 9;
 byte LidarPwrEn_pin = 10;
+byte num;
 byte go;
 
+float alpha;
+float beta;
+float angle;
 float lidarDist;
 float D1;
 float D2;
-float y1;
-float y2;
-float angle;
-float alpha;
-float beta;
 float theta;
+float y;
+float distance[15];
+float gamma[15];
+float m;
+float b;
 
 void setup() {
   delay(500);
   Serial.begin(9600);       //Monitor  
   SetPinModes();  
+  m = 166.0/180.0;
+  b = 8.0;
   go = 0;
-  angle = 175;
-  digitalWrite(LidarPwrEn_pin, HIGH);  
+  angle = m*90 + b;  
+  digitalWrite(LidarPwrEn_pin, HIGH);     //face forward; 90 deg
   LidarServo.write(angle);  
 }  
 
 void loop() {
-/*
   if (go == 1) {
-    angle = 129 - (42./90.)*beta;
+    angle = m*alpha + b;
     LidarServo.write(angle);
-    delay(100);
-    D2 =  Lidar();
-    Serial.print(D2);
-    Serial.write(9);
+    delay(100);               // wait for servo to settle    
+    D1 =  Lidar();
     
-    angle = 129 - (42./90.)*alpha;;    
-    LidarServo.write(angle);
-    delay(100);
-    D1 =  Lidar();  
-    Serial.println(D1);
-    LidarServo.write(faceForward);    
-    Compute();
-    go = 0;
+    for (int i = 1; i < num; i++)  {
+      beta = alpha - 5;
+      angle =m*beta + b;;    
+      LidarServo.write(angle);
+      delay(100);
+      D2 =  Lidar(); 
+      Compute();
+      distance[i] = y;
+      gamma[i] = theta;
+      alpha = beta; 
+      D1 = D2;
+    }
+
+    for (int i = 1; i < num; i++)  {
+      Serial.print(distance[i],0);
+      Serial.write(9);
+      Serial.println(gamma[i]*radToDeg,0);
+    }
+    Serial.println( " ");
+    angle = m*90 + b;  
+    LidarServo.write(angle);  
+  go = 0; 
   }
-*/  
 }
 
 //---------------------------------------------------
