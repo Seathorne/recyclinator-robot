@@ -1,0 +1,5 @@
+Nov 19 2021
+
+Attached is code that points the lidar and takes a distance measurement.
+After uploading the code, go to the serial monitor and enter the word "ang" a space and then the angle
+in degrees from 0 to 180.  Zero to the right, 180 to the left, and 90 straight ahead.

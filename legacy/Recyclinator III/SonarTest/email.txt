@@ -1,0 +1,8 @@
+Nov 19 2021
+
+Attached is the code that tests the sonars.  All appear to be working (there were a couple of loose connections).
+The sonar ranges are printed to the serial monitor in the order:
+
+ LeftHall, LeftFront, LeftRear, RightHall, RightFront, RightRear   on each line.
+
+The hall sonars are the ones above the front sonars.

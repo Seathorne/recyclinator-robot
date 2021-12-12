@@ -1,0 +1,22 @@
+Nov 24 2021
+
+Attached is a program to do wall following (also on the Recyclinator desk top). 
+
+  In order for it to work, three constants need to be set.
+   1.  Kp - the proportional constant
+   2.  Kd - the derivative constant
+   3.  maxSpeedDiff - this sets the maximum correction possible.
+
+    I have not included the integral component, which is not needed.
+
+  I have initial settings at:  Kp = 0.1, Kd = 0, and maxSpeedDiff = 10
+
+  I suggest starting with Kd = 0 and experimenting with Kp until oscillations are minimized;
+then add Kd, which will be 5 - 10 times larger than Kp, for this application.
+
+The speed units are 0 to 255, with 128 being stop, values >128 are forward, and values < 128 are reverse.
+
+ I suggest starting with a wall distance of 60 cm (presently in the code).  Be prepared to use the transmitter
+to stop the robot if it behaves wildly or is about to collide with a wall, or any other object.
+
+ Meet with me if you'd like an explanation of PD control.  Attached is a brief overview.
