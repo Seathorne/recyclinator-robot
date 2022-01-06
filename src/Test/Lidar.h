@@ -14,7 +14,8 @@
 //////////////////////////////////////////////
 
 //lidar class////////////////////////////////
-class Lidar{
+class Lidar : public LIDARLite
+{
   public:
   float LidarPoint(float servoAng);
   float lidardistance();
