@@ -8,7 +8,8 @@
 /////////////////////////////////////////////////////////////////////
 
 //////////lidar class///////////////////////////////////////////////
-class Lidar{
+class Lidar : public LIDARLite
+{
   public:
   Lidar(int p)
   {
@@ -26,7 +27,7 @@ class Lidar{
 float lidardistance();
 {
     float D;
-    D = myLidarLite.distance(false);    
+    D = this<-distance(false);    
     Serial.print(servoAng,0);
     Serial.write(9);
     Serial.println(D,1);     
