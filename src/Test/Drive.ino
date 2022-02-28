@@ -22,12 +22,12 @@ void Drive::SetSpeed(float left, float right) {
 
 void Drive::SetSpeedLeft(float value) {
   // Transform [-1..1] --> [0..255]
-  this->SendCommand(SET_SPEED_LEFT, (byte)((value + 1.0) * 127.5);
+  this->SendCommand(SET_SPEED_LEFT, (byte)((value + 1.0) * 127.5));
 }
 
 void Drive::SetSpeedRight(float value) {
   // Transform [-1..1] --> [0..255]
-  this->SendCommand(SET_SPEED_RIGHT, (byte)((value + 1.0) * 127.5);
+  this->SendCommand(SET_SPEED_RIGHT, (byte)((value + 1.0) * 127.5));
 }
 
 void Drive::SetAccel(float value) {
