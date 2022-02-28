@@ -13,10 +13,10 @@ float Sonar::Range() const {
 
 void Sonar::GetRange() {
   // Ping duration, in milliseconds
-  const int PING_DURATION = 12;
+  constexpr int PING_DURATION = 12;
   
   // Conversion factor, ??? to meters
-  const float TO_METERS = 17.241380;
+  constexpr float TO_METERS = 1.0 / 58.0;
 
   // Ping sonar
   pinMode(_pin, OUTPUT);
