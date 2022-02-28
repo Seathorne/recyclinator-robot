@@ -11,6 +11,7 @@ Sonar sonar_back_left(26);
 Sonar sonar_back_right(29);
 Sonar sonar_hall_left(24);
 Sonar sonar_hall_right(25);
+Sonar sonar_front(34);
 
 enum AutoRoutine
 {
@@ -71,6 +72,7 @@ void UpdateSonar() {
   sonar_back_right.Update();
   sonar_hall_left.Update();
   sonar_hall_right.Update();
+  sonar_front.Update();
 }
 
 void PrintSonar() {
