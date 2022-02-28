@@ -12,6 +12,14 @@ Sonar sonar_back_right(29);
 Sonar sonar_hall_left(24);
 Sonar sonar_hall_right(25);
 
+enum AutoRoutine
+{
+  DoNothing,
+  WallFollow,
+};
+
+AutoRoutine autoRoutine = AutoRoutine::DoNothing;
+
 void setup() {
   Serial.begin(9600);
 }
@@ -19,11 +27,23 @@ void setup() {
 void loop() {
   delay(1000);
 
-  if (!IsAutoMode()) return;
+  /* Escape if not in autonomous mode */
+  if (!IsAutoMode())
+    return;
 
+  /* Update sensors & subsystems */
   UpdateDrive();
-  
   UpdateSonar();
+
+  /* Perform autonomous routine step */
+  switch (autoRoutine) {
+    // Follow wall at range=60cm, speed=75%
+    case WallFollow: {
+      Follow(0.60, 0.75);
+    }; break;
+  }
+
+  /* Print info about subsystems */
   PrintSonar();
 }
 
