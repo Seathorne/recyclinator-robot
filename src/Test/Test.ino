@@ -17,16 +17,17 @@ enum AutoRoutine
 {
   DoNothing,
   WallFollow,
+  TestEncoders
 };
 
-AutoRoutine autoRoutine = AutoRoutine::DoNothing;
+AutoRoutine autoRoutine = AutoRoutine::TestEncoders;
 
 void setup() {
   Serial.begin(9600);
 }
 
 void loop() {
-  constexpr long FrameLength = 100;
+  constexpr long FrameLength = 1000;
   constexpr bool ShouldPrint = true;
 
   static long prevTime = millis();
@@ -47,6 +48,14 @@ void loop() {
     // Follow wall at range=60cm, speed=75%
     case WallFollow: {
       Follow(0.60, 0.75);
+    }; break;
+
+    case TestEncoders: {
+      double left, right;
+      double distance = drive.GetDistance(left, right);
+      Serial.print("left distance = " + String(left) + "\n");
+      Serial.print("right distance = " + String(right) + "\n");
+      Serial.print("average distance = " + String(distance) + "\n");
     }; break;
   }
 
