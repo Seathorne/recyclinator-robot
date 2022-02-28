@@ -25,11 +25,17 @@ void setup() {
 }
 
 void loop() {
-  delay(1000);
+  constexpr long FrameLength = 100;
+  constexpr bool ShouldPrint = true;
 
-  /* Escape if not in autonomous mode */
-  if (!IsAutoMode())
+  static long prevTime = millis();
+
+  /* Only loop within specfied frequency
+      and in autonomous mode */
+  long currTime = millis();
+  if (currTime - prevTime < FrameLength || !IsAutoMode() )
     return;
+  prevTime = currTime;
 
   /* Update sensors & subsystems */
   UpdateDrive();
@@ -44,7 +50,9 @@ void loop() {
   }
 
   /* Print info about subsystems */
-  PrintSonar();
+  if (ShouldPrint) {
+    PrintSonar();
+  }
 }
 
 bool IsAutoMode() {
