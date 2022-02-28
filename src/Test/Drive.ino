@@ -21,15 +21,18 @@ void Drive::SetSpeed(float left, float right) {
 }
 
 void Drive::SetSpeedLeft(float value) {
-  this->SendCommand(SET_SPEED_LEFT, (byte)(value * 0xFF));
+  // Transform [-1..1] --> [0..255]
+  this->SendCommand(SET_SPEED_LEFT, (byte)((value + 1.0) * 127.5);
 }
 
 void Drive::SetSpeedRight(float value) {
-  this->SendCommand(SET_SPEED_RIGHT, (byte)(value * 0xFF));
+  // Transform [-1..1] --> [0..255]
+  this->SendCommand(SET_SPEED_RIGHT, (byte)((value + 1.0) * 127.5);
 }
 
 void Drive::SetAccel(float value) {
-  this->SendCommand(SET_ACCEL, (byte)(value * 0xFF));
+  // Transform [0..1] --> [0..255]
+  this->SendCommand(SET_ACCEL, (byte)(value * 255));
 }
 
 void Drive::GetEncoderCounts() {
