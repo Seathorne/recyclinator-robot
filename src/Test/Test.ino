@@ -19,7 +19,6 @@ enum AutoRoutine
 {
   DoNothing,
   WallFollow,
-  TestEncoders,
   StopEndOfHallway
 };
 
@@ -35,8 +34,8 @@ void setup() {
 }
 
 void loop() {
-  constexpr long FrameLength = 100;
-  constexpr bool ShouldPrint = true;
+  constexpr long FrameLength = 1000;
+  constexpr bool PrintAll = true;
 
   static long prevTime = millis();
 
@@ -48,9 +47,9 @@ void loop() {
   prevTime = currTime;
 
   /* Update sensors & subsystems */
-  UpdateDrive();
-  UpdateSonar();
+  drive.Update();
   gyro.update();
+  UpdateSonar();
 
   /* Perform autonomous routine step */
   switch (autoRoutine) {
@@ -59,41 +58,32 @@ void loop() {
       Follow(0.60, 0.75);
     }; break;
 
-    case TestEncoders: {
-      double left, right;
-      double distance = drive.GetDistance(left, right);
-      Serial.print("left distance = " + String(left) + "\n");
-      Serial.print("right distance = " + String(right) + "\n");
-      Serial.print("average distance = " + String(distance) + "\n");
-    }; break;
-
     case StopEndOfHallway: {
       static bool done = false;
-      if (isEndOfHallway(sonar_front_right)) {
-        robotStop();
-        done = true;
-      }
-      
       if (!done) {
         drive.SetSpeed(0.6, 0.6);
+        
+        if (isEndOfHallway(sonar_front_right)) {
+          drive.SetSpeed(0.0, 0.0);
+          done = true;
+        }
       }
-    }
+    }; break;
+    
   }
 
   /* Print info about subsystems */
-  if (ShouldPrint) {
-    PrintSonar();
+  if (PrintAll) {
+    Print(drive);
     Print(gyro);
+    PrintSonar();
+    Serial.println();
   }
 }
 
 bool IsAutoMode() {
   const int BUSY_PIN = 33;
   return digitalRead(BUSY_PIN) == 0;
-}
-
-void UpdateDrive() {
-  drive.Update();
 }
 
 void UpdateSonar() {
@@ -132,27 +122,34 @@ bool isEndOfHallway(Sonar& sonar) {
   return endOfHallway;
 }
 
-void robotStop() {
-  drive.SetSpeed(0.0, 0.0);
+void PrintSonar() {
+  Serial.println("-------- Sonar Ranges --------");
+  Serial.println(" Front     = "
+    + String(sonar_front.Range()));
+  Serial.println(" L/R Front = "
+    + String(sonar_front_left.Range()) + "\t"
+    + String(sonar_front_right.Range()));
+  Serial.println(" L/R Hall  = "
+    + String(sonar_hall_left.Range()) + "\t"
+    + String(sonar_hall_right.Range()));
+  Serial.println(" L/R Back  = "
+    + String(sonar_back_left.Range()) + "\t"
+    + String(sonar_back_right.Range()));
+  Serial.println("------------------------------\n");
 }
 
-void PrintSonar() {
-  Serial.print("--- Sonar Ranges ---\n");
-  Serial.print(" FrL=");
-  Serial.print(sonar_front_left.Range());
-  Serial.print("\n FrR=");
-  Serial.print(sonar_front_right.Range());
-  Serial.print("\n BkL=");
-  Serial.print(sonar_back_left.Range());
-  Serial.print("\n BkR=");
-  Serial.print(sonar_back_right.Range());
-  Serial.print("\n HaL=");
-  Serial.print(sonar_hall_left.Range());
-  Serial.print("\n HaR=");
-  Serial.print(sonar_hall_right.Range());
-  Serial.print("\n--------------------\n\n");
+void Print(Drive& drive) {
+  double leftDistance, rightDistance;
+  double distance = drive.GetDistance(leftDistance, rightDistance);
+  Serial.println("------- Drive -------");
+  Serial.println(" Distance = " + String(distance) + "m");
+  Serial.println("  Left    = " + String(leftDistance) + "m");
+  Serial.println("  Right   = " + String(rightDistance) + "m");
+  Serial.println("---------------------\n");
 }
 
 void Print(Gyro& gyro) {
+  Serial.println("----- Gyroscope -----");
   Serial.println("Angle = " + String(gyro.angleDeg()) + " deg");
+  Serial.println("---------------------\n");
 }
