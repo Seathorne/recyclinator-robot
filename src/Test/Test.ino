@@ -17,17 +17,18 @@ enum AutoRoutine
 {
   DoNothing,
   WallFollow,
-  TestEncoders
+  TestEncoders,
+  StopEndOfHallway
 };
 
-AutoRoutine autoRoutine = AutoRoutine::TestEncoders;
+AutoRoutine autoRoutine = AutoRoutine::StopEndOfHallway;
 
 void setup() {
   Serial.begin(9600);
 }
 
 void loop() {
-  constexpr long FrameLength = 1000;
+  constexpr long FrameLength = 100;
   constexpr bool ShouldPrint = true;
 
   static long prevTime = millis();
@@ -57,6 +58,18 @@ void loop() {
       Serial.print("right distance = " + String(right) + "\n");
       Serial.print("average distance = " + String(distance) + "\n");
     }; break;
+
+    case StopEndOfHallway: {
+      static bool done = false;
+      if (isEndOfHallway(sonar_front_right)) {
+        robotStop();
+        done = true;
+      }
+      
+      if (!done) {
+        drive.SetSpeed(0.6, 0.6);
+      }
+    }
   }
 
   /* Print info about subsystems */
@@ -82,6 +95,36 @@ void UpdateSonar() {
   sonar_hall_left.Update();
   sonar_hall_right.Update();
   sonar_front.Update();
+}
+
+bool isEndOfHallway(Sonar& sonar) {
+  constexpr float Threshold = 100;
+  static float prevRange;
+  static bool firstTime = true;
+
+  float currRange = sonar.Range();
+
+  if (firstTime) {
+    firstTime = false;
+    prevRange = currRange;
+    return;
+  }
+
+  bool endOfHallway = (currRange - prevRange) >= Threshold;
+
+  if (endOfHallway) {
+    Serial.println("End of hallway, range=" + String(currRange) + ", prevRange=" + String(prevRange));
+    Serial.println("  difference=" + String(currRange - prevRange));
+  }
+
+  // Update previous range value
+  prevRange = currRange;
+
+  return endOfHallway;
+}
+
+void robotStop() {
+  drive.SetSpeed(0.0, 0.0);
 }
 
 void PrintSonar() {
