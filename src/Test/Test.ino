@@ -1,8 +1,10 @@
 #include "Drive.h"
+#include "Gyro.h"
 #include "Sonar.h"
 
 // MD49 motor controller
 Drive drive(Serial2);
+Gyro gyro(55);
 
 // Sonar distance sensors
 Sonar sonar_front_left(27);
@@ -21,10 +23,15 @@ enum AutoRoutine
   StopEndOfHallway
 };
 
-AutoRoutine autoRoutine = AutoRoutine::StopEndOfHallway;
+AutoRoutine autoRoutine = AutoRoutine::DoNothing;
 
 void setup() {
   Serial.begin(9600);
+
+  /* Initialize subsystems */
+  gyro.init();
+
+  Serial.println("Setup complete.");
 }
 
 void loop() {
@@ -43,6 +50,7 @@ void loop() {
   /* Update sensors & subsystems */
   UpdateDrive();
   UpdateSonar();
+  gyro.update();
 
   /* Perform autonomous routine step */
   switch (autoRoutine) {
@@ -75,6 +83,7 @@ void loop() {
   /* Print info about subsystems */
   if (ShouldPrint) {
     PrintSonar();
+    Print(gyro);
   }
 }
 
@@ -142,4 +151,8 @@ void PrintSonar() {
   Serial.print("\n HaR=");
   Serial.print(sonar_hall_right.Range());
   Serial.print("\n--------------------\n\n");
+}
+
+void Print(Gyro& gyro) {
+  Serial.println("Angle = " + String(gyro.angleDeg()) + " deg");
 }
