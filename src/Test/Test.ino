@@ -56,7 +56,8 @@ void loop() {
   switch (autoRoutine) {
     // Follow wall at range=60cm, speed=75%
     case WallFollow: {
-      Follow(0.60, 0.75);
+      Follow(60, 0.75, sonar_front_left);
+      // FollowLR(0.50, 40, 0.75, sonar_front_left, sonar_front_right);
     }; break;
 
     case StopEndOfHallway: {
