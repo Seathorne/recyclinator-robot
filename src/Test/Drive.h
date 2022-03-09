@@ -17,6 +17,7 @@ class Drive {
   public:
     Drive(HardwareSerial& serial);
 
+    void Init();
     void Update();
 
     void ResetEncoderCounts() const;
