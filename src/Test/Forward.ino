@@ -4,11 +4,12 @@ forwardmovement(float speed, float angle)
   float dist=55;
   float currentAng=angleDeg();
   const float Kp = .25;
-  const float Kd = 0.01;  //Why is this constant if we're changing speeds, given that it's defined as
-              //speed approaching wall. Wait, this is target speed, isn't it?
-              //I'm just gonna keep the target speed at what it was already at, since not all that is figured out
+  const float Kd = 0.01;  
   
   correctedAngle=currentAng-angle;
+  
+  
+  
   if(correctedAngle>180)
   {
     correctedAngle-=360;
