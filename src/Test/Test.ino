@@ -19,7 +19,8 @@ enum AutoRoutine
 {
   DoNothing,
   WallFollow,
-  StopEndOfHallway
+  StopEndOfHallway,
+  Rotate
 };
 
 AutoRoutine autoRoutine = AutoRoutine::DoNothing;
@@ -70,6 +71,9 @@ void loop() {
       }
     }; break;
     
+    case Rotate: {
+      rotateAbsolute(60);
+    }; break;
   }
 
   /* Print info about subsystems */
