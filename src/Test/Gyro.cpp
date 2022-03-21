@@ -16,13 +16,25 @@ void Gyro::init() {
 }
 
 void Gyro::update() {
+  static long int prevTime;
+
+  long int currTime = millis();
+  double prevAngle = _angleDeg;
+  
   sensor.getEvent(&sensorEvent);
   _angleDeg = sensorEvent.orientation.x;
   if (_angleDeg > 180.0) {
     _angleDeg -= 360.0;
   }
+
+  _angularVel = (_angleDeg - prevAngle) / (currTime - prevTime) / 1000.0;
+  prevTime = currTime;
 }
 
 float Gyro::angleDeg() const {
   return _angleDeg;
+}
+
+float Gyro::angularVel() const {
+  return _angularVel;
 }

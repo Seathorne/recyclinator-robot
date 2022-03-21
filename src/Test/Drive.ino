@@ -11,8 +11,18 @@ void Drive::Init() {
 }
 
 void Drive::Update() {
-  this->GetEncoderCounts();
-  // TODO: calculate real pos/vel/accel
+  static long int prevTime;
+
+  long int currTime = millis();
+
+  double left, right;
+  double prevDistance = GetDistance(left, right);
+  GetEncoderCounts();
+  double currDistance = GetDistance(left, right);
+  
+  _speed += (currDistance - prevDistance) / (currTime - prevTime) / 1000.0;
+
+  prevTime = currTime;
 }
 
 void Drive::ResetEncoderCounts() const {
@@ -62,8 +72,8 @@ void Drive::GetEncoderCounts() {
   _encoder_right += (long)_serial.read() << 8;
   _encoder_right += (long)_serial.read();
 
-  _distance_left =(2*M_PI*WHEEL_RADIUS*(double)_encoder_left)/(double)REVOLUTIONS;
-  _distance_right =(2*M_PI*WHEEL_RADIUS*(double)_encoder_right)/(double)REVOLUTIONS;
+  _distance_left = (2*M_PI*WHEEL_RADIUS*(double)_encoder_left)/(double)REVOLUTIONS;
+  _distance_right = (2*M_PI*WHEEL_RADIUS*(double)_encoder_right)/(double)REVOLUTIONS;
 }
 
 void Drive::SendCommand(DriveCommand command) const {
@@ -86,4 +96,8 @@ double Drive::GetDistance(double &left, double &right) const {
   left = _distance_left;
   right = _distance_right;
   return (_distance_left + _distance_right) * 0.5;
+}
+
+double Drive::GetSpeed() const {
+  return _speed;
 }

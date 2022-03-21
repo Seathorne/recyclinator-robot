@@ -32,6 +32,9 @@ class Drive {
 
     /* Returns the averaged left and right encoder distances, in meters */
     double GetDistance(double &encoder1, double &encoder2) const;
+
+    /* Returns the averaged left and right encoder velocities, in meters per second */
+    double GetSpeed() const;
     
   private:
     HardwareSerial& _serial;
@@ -40,6 +43,7 @@ class Drive {
     long _encoder_right;
     double _distance_left;
     double _distance_right;
+    double _speed;
 
     void GetEncoderCounts();
 

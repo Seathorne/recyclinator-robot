@@ -17,9 +17,14 @@ class Gyro
         in degrees (-180..180]. */
     float angleDeg() const;
 
+    /* Returns the angular velocity of the IMU,
+     *   in degrees per second. */
+    float angularVel() const;
+
   private:
     int _pin;
-    double _angleDeg;
+    float _angleDeg;
+    float _angularVel;
     Adafruit_BNO055 sensor;
     sensors_event_t sensorEvent;
 };

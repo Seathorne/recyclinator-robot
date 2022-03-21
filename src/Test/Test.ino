@@ -20,7 +20,8 @@ enum AutoRoutine
   DoNothing,
   WallFollow,
   StopEndOfHallway,
-  Rotate
+  Rotate,
+  RotateTwice
 };
 
 AutoRoutine autoRoutine = AutoRoutine::DoNothing;
@@ -75,6 +76,26 @@ void loop() {
     case Rotate: {
       rotateAbsolute(60);
     }; break;
+
+    case RotateTwice: {
+      static int i = 0;
+      static bool started = false;
+      
+      if (i == 0) {
+        rotateAbsolute(60);
+        if (!started) {
+          if(isStoppedRotating()) break;
+          else started = true;
+        }
+      } else if (i == 1) {
+        rotateAbsolute(-60);
+      }
+      
+      if (isStoppedRotating()) {
+        i++;
+      }
+      
+    }; break;
   }
 
   /* Print info about subsystems */
@@ -111,7 +132,7 @@ bool isEndOfHallway(Sonar& sonar) {
   if (firstTime) {
     firstTime = false;
     prevRange = currRange;
-    return;
+    return false;
   }
 
   bool endOfHallway = (currRange - prevRange) >= Threshold;
@@ -125,6 +146,24 @@ bool isEndOfHallway(Sonar& sonar) {
   prevRange = currRange;
 
   return endOfHallway;
+}
+
+bool isStoppedRotating() {
+  constexpr float Threshold = 2;
+
+  bool isStopped = abs(gyro.angularVel()) <= Threshold;
+  if (isStopped) Serial.println("isStoppedRotating = true");
+
+  return isStopped;
+}
+
+bool isStopped() {
+  constexpr double Threshold = 0.02;
+
+  bool isStopped = abs(drive.GetSpeed()) <= Threshold;
+  if (isStopped) Serial.println("isStopped = true");
+
+  return isStopped;
 }
 
 void PrintSonar() {
