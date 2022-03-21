@@ -1,11 +1,12 @@
-forwardmovement(float speed, float angle)
+#include "gyro.h"
+void forwardmovement(float speed, float angle,Gyro &gyro)
 {
   float Speed=speed;
   float dist=55;
-  float currentAng=angleDeg();
-  const float Kp = .25;
+  float currentAng=gyro.angleDeg();
+  const float Kp = 0.25;
   const float Kd = 0.01;  
-  
+  float correctedAngle;
   correctedAngle=currentAng-angle;
   
   
@@ -23,11 +24,12 @@ forwardmovement(float speed, float angle)
   static float delError = 0;
   
   float newError = 0-correctedAngle;
-  delerror=newError-error;
+  delError=newError-error;
   error=newError;
-  
-  
+  Serial.println("Set Angle "+String(angle));
+  Serial.println("Current Angle "+String(gyro.angleDeg()));
   float corr = -(Kp*error+Kd*delError);
+  Serial.println("Corr value"+String(corr));
   if (corr > .1) {
     corr = .1;
   }

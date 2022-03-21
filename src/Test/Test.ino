@@ -5,7 +5,7 @@
 // MD49 motor controller
 Drive drive(Serial2);
 Gyro gyro(55);
-
+float angleMaint;
 // Sonar distance sensors
 Sonar sonar_front_left(27);
 Sonar sonar_front_right(28);
@@ -20,6 +20,7 @@ enum AutoRoutine
   DoNothing,
   WallFollow,
   StopEndOfHallway,
+  ForwardDrive,
   Rotate,
   RotateTwice
 };
@@ -28,10 +29,10 @@ AutoRoutine autoRoutine = AutoRoutine::DoNothing;
 
 void setup() {
   Serial.begin(9600);
-
+  
   /* Initialize subsystems */
   gyro.init();
-
+  angleMaint=gyro.angleDeg();
   Serial.println("Setup complete.");
 }
 
@@ -95,6 +96,9 @@ void loop() {
         i++;
       }
       
+    }; break;
+    case ForwardDrive{ 
+      forwardmovement(0.7,angleMaint,gyro);
     }; break;
   }
 
