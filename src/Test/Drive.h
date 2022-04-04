@@ -1,5 +1,6 @@
-#ifndef DRIVE
-#define DRIVE
+#ifndef DRIVE_H
+#define DRIVE_H
+
 #define WHEEL_RADIUS 0.063
 #define REVOLUTIONS 980
 enum DriveCommand {
@@ -51,4 +52,4 @@ class Drive {
     void SendCommand(DriveCommand command) const;
 };
 
-#endif DRIVE
+#endif // DRIVE_H

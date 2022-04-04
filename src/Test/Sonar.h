@@ -1,5 +1,5 @@
-#ifndef SONAR
-#define SONAR
+#ifndef SONAR_H
+#define SONAR_H
 
 class Sonar {
   public:
@@ -16,4 +16,4 @@ class Sonar {
     void GetRange();
 };
 
-#endif SONAR
+#endif // SONAR_H
