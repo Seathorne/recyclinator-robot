@@ -47,3 +47,18 @@ void Robot::stepRotate()
   Serial.println("Rotate| corr = " + String(corr));
   _drive.SetSpeed(corr, -corr);
 }
+
+void Robot::startDrive(double distance, double speed)
+{
+  
+}
+
+bool Robot::isDriving() const
+{
+  return _isDriving;
+}
+
+void Robot::stepDrive()
+{
+  
+}

@@ -14,7 +14,7 @@ public:
     void stepRotate();
 
     void startDrive(double distance, double speed);
-    bool isDriving();
+    bool isDriving() const;
     void stepDrive();
 
 private:
@@ -23,8 +23,10 @@ private:
 
     double _angleSetpoint;
     bool   _isRotating;
+    
     double _distanceSetpoint;
     double _driveSpeed;
+    bool   _isDriving;
 };
 
 #endif // ROBOT_H

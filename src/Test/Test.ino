@@ -30,7 +30,8 @@ enum AutoRoutine
   RotateDrive,
 };
 
-AutoRoutine autoRoutine = AutoRoutine::DoNothing;
+AutoRoutine autoRoutine = AutoRoutine::RotateDrive;
+int autoStep = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -114,31 +115,30 @@ void loop() {
 	}; break;
 	  
 	case RotateDrive: {
-      int step = 0;
-      switch (step) {
+      switch (autoStep) {
         case 0:
           robot.startRotate(60);
           Serial.println("Rotate| starting rotation");
-          step++;
+          autoStep++;
           break;
         case 1:
           if (robot.isRotating() == true) {
             robot.stepRotate();
           } else {
             Serial.println("Rotate| rotation complete");
-            step++;
+            autoStep++;
           }
           break;
         case 2:
           robot.startDrive(2, 0.7);
           Serial.println("Drive| starting drive");
-          step++;
+          autoStep++;
         case 3:
           if (robot.isDriving() == true) {
             robot.stepDrive();
           } else {
             Serial.println("Drive| drive complete");
-            step++;
+            autoStep++;
           }
           break;
         case 4:
