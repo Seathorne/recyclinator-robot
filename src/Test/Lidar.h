@@ -1,3 +1,4 @@
+/*
 #ifndef Lidar
 #define Lidar
 
@@ -25,3 +26,4 @@ class Lidar : public LIDARLite
 }
 ////////////////////////////////////////////
 #endif
+*/

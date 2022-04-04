@@ -6,6 +6,7 @@ Gyro::Gyro(int pin)
 
 void Gyro::init() {
   /* Initialize IMU device */
+  Serial.println("Gyro| initializing");
   sensor = Adafruit_BNO055(_pin);
   if (!sensor.begin()) {
     Serial.println("Warning: no BNO055 IMU detected.");

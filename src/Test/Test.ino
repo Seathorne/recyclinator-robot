@@ -6,6 +6,7 @@
 Drive drive(Serial2);
 Gyro gyro(55);
 float angleMaint;
+
 // Sonar distance sensors
 Sonar sonar_front_left(27);
 Sonar sonar_front_right(28);
@@ -31,25 +32,30 @@ AutoRoutine autoRoutine = AutoRoutine::DoNothing;
 
 void setup() {
   Serial.begin(9600);
-  
+
   /* Initialize subsystems */
+  drive.Init();
   gyro.init();
+
   angleMaint=gyro.angleDeg();
-  Serial.println("Setup complete.");
+  Serial.println("Robot| setup complete.");
 }
 
 void loop() {
-  constexpr long FrameLength = 1000;
+  constexpr long FrameLength = 200;
   constexpr bool PrintAll = true;
 
   static long prevTime = millis();
+  static bool prevIsAutoMode;
 
   /* Only loop within specfied frequency
       and in autonomous mode */
   long currTime = millis();
-  if (currTime - prevTime < FrameLength || !IsAutoMode() )
+  bool isAutoMode = IsAutoMode();
+  if (currTime - prevTime < FrameLength || !isAutoMode )
     return;
   prevTime = currTime;
+  prevIsAutoMode = isAutoMode;
 
   /* Update sensors & subsystems */
   drive.Update();
@@ -58,6 +64,7 @@ void loop() {
 
   /* Perform autonomous routine step */
   switch (autoRoutine) {
+	
     // Follow wall at range=60cm, speed=75%
     case WallFollow: {
       Follow(60, 0.75, sonar_front_left);
@@ -75,11 +82,11 @@ void loop() {
         }
       }
     }; break;
-    
-    case Rotate: {
+	
+	case Rotate: {
       rotateAbsolute(60);
     }; break;
-
+	
     case RotateTwice: {
       static int i = 0;
       static bool started = false;
@@ -99,12 +106,12 @@ void loop() {
       }
       
     }; break;
-
-    case ForwardDrive{ 
+	
+    case ForwardDrive: {
       forwardmovement(0.7,angleMaint,gyro);
-    }; break;
-
-    case RotateDriveSequence {
+	}; break;
+	  
+	case RotateDriveSequence: {
       int step = 0;
       switch (step) {
         case 0:
@@ -139,6 +146,7 @@ void loop() {
           break;
       }
     }; break;
+	
   }
 
   /* Print info about subsystems */
@@ -193,19 +201,14 @@ bool isEndOfHallway(Sonar& sonar) {
 
 bool isStoppedRotating() {
   constexpr float Threshold = 2;
-
   bool isStopped = abs(gyro.angularVel()) <= Threshold;
   if (isStopped) Serial.println("isStoppedRotating = true");
-
   return isStopped;
 }
-
 bool isStopped() {
   constexpr double Threshold = 0.02;
-
   bool isStopped = abs(drive.GetSpeed()) <= Threshold;
   if (isStopped) Serial.println("isStopped = true");
-
   return isStopped;
 }
 
