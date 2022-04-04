@@ -18,8 +18,8 @@ public:
     void stepDrive();
 
 private:
-    Drive *drive;
-    Gyro *gyro;
+    Drive _drive;
+    Gyro _gyro;
 
     double _angleSetpoint;
     bool   _isRotating;

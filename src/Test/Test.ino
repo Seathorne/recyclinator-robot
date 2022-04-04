@@ -1,5 +1,6 @@
 #include "Drive.h"
 #include "Gyro.h"
+#include "Robot.h"
 #include "Sonar.h"
 
 // MD49 motor controller
@@ -25,7 +26,8 @@ enum AutoRoutine
   StopEndOfHallway,
   ForwardDrive,
   Rotate,
-  RotateTwice
+  RotateTwice,
+  RotateDrive,
 };
 
 AutoRoutine autoRoutine = AutoRoutine::DoNothing;
@@ -111,12 +113,12 @@ void loop() {
       forwardmovement(0.7,angleMaint,gyro);
 	}; break;
 	  
-	case RotateDriveSequence: {
+	case RotateDrive: {
       int step = 0;
       switch (step) {
         case 0:
           robot.startRotate(60);
-          Serial.println("Rotate| starting rotation")
+          Serial.println("Rotate| starting rotation");
           step++;
           break;
         case 1:

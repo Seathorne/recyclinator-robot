@@ -1,21 +1,16 @@
 #include "Robot.h"
 
 Robot::Robot(Drive &drive, Gyro &gyro)
-{
-    this->drive = drive;
-    this->gyro = gyro;
-}
-
-Robot robot(...);
-
-robot.askdjaskldj();
+  : _drive(drive),
+    _gyro(gyro)
+{ }
 
 void Robot::startRotate(float angleDeg)
 {
-    float currAngle = gyro->angleDeg();
+    float currAngle = _gyro.angleDeg();
     _angleSetpoint = currAngle + angleDeg;
     _isRotating = true;
-    stepRotate();
+    this->stepRotate();
 }
 
 bool Robot::isRotating() const
@@ -30,7 +25,7 @@ void Robot::stepRotate()
   
   static double delError = 0;
   static double error = 0;
-  double angle = gyro.angleDeg();
+  double angle = _gyro.angleDeg();
   
   float newError = _angleSetpoint - angle;
   delError = newError - error;
@@ -50,5 +45,5 @@ void Robot::stepRotate()
   }
   
   Serial.println("Rotate| corr = " + String(corr));
-  drive.SetSpeed(corr, -corr);
+  _drive.SetSpeed(corr, -corr);
 }

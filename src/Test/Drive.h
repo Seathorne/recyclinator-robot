@@ -1,8 +1,11 @@
 #ifndef DRIVE_H
 #define DRIVE_H
 
+#include <Arduino.h>
+
 #define WHEEL_RADIUS 0.063
 #define REVOLUTIONS 980
+
 enum DriveCommand {
   SYNC = 0x00,
   GET_ENCODERS = 0x25,
