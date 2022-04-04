@@ -10,7 +10,7 @@ public:
     Robot(Drive &drive, Gyro &gyro);
 
     void startRotate(float angleDeg);
-    bool isRotating();
+    bool isRotating() const;
     void stepRotate();
 
     void startDrive(double distance, double speed);
@@ -22,6 +22,7 @@ private:
     Gyro *gyro;
 
     double _angleSetpoint;
+    bool   _isRotating;
     double _distanceSetpoint;
     double _driveSpeed;
 };
