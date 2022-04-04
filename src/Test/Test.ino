@@ -15,6 +15,8 @@ Sonar sonar_hall_left(24);
 Sonar sonar_hall_right(25);
 Sonar sonar_front(34);
 
+Robot robot(drive, gyro);
+
 enum AutoRoutine
 {
   DoNothing,
@@ -97,8 +99,45 @@ void loop() {
       }
       
     }; break;
+
     case ForwardDrive{ 
       forwardmovement(0.7,angleMaint,gyro);
+    }; break;
+
+    case RotateDriveSequence {
+      int step = 0;
+      switch (step) {
+        case 0:
+          robot.startRotate(60);
+          Serial.println("Rotate| starting rotation")
+          step++;
+          break;
+        case 1:
+          if (robot.isRotating() == true) {
+            robot.stepRotate();
+          } else {
+            Serial.println("Rotate| rotation complete");
+            step++;
+          }
+          break;
+        case 2:
+          robot.startDrive(2, 0.7);
+          Serial.println("Drive| starting drive");
+          step++;
+        case 3:
+          if (robot.isDriving() == true) {
+            robot.stepDrive();
+          } else {
+            Serial.println("Drive| drive complete");
+            step++;
+          }
+          break;
+        case 4:
+          drive.SetSpeed(0, 0);
+          autoRoutine = AutoRoutine::DoNothing;
+          Serial.println("Robot| stopped");
+          break;
+      }
     }; break;
   }
 
