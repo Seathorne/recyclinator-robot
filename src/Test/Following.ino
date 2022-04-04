@@ -38,3 +38,29 @@ void FollowLR(float leftRight, float minRange, float rightSpeed, Sonar &left, So
 
   Follow(max(setpointL, minRange), rightSpeed, left);
 }
+
+void OldFollow(float rangeSetpoint, float driveSpeed, Sonar &sonar)
+{
+  const float Kp = 0.2;
+  const float Kd = 5;
+  const float speedMaxDiff = 10 / 128.0;
+  
+  static float prevError = 0;
+
+  float range = sonar.Range();
+  float error = rangeSetpoint - range;
+  float delError = (error - prevError);
+  prevError = error;
+
+  float corr = -(Kp*error + Kd*delError);
+  Serial.println("Following| corr=" + String(corr));
+  if (corr > 1)
+    corr = 1;
+  else if (corr < -1)
+    corr = -1;
+  
+  float corrLim = corr*speedMaxDiff;
+  float leftSpeed = driveSpeed + corrLim;
+  float rightSpeed = driveSpeed;
+  drive.SetSpeed(leftSpeed, rightSpeed);
+}
