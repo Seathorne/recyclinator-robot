@@ -1,5 +1,6 @@
+/*
 #include "gyro.h"
-void forwardmovement(float speed, float angle,Gyro &gyro)
+void forwardmovement(float speed, float angle, Gyro &gyro)
 {
   float Speed=speed;
   float dist=55;
@@ -47,3 +48,4 @@ void forwardmovement(float speed, float angle,Gyro &gyro)
   Serial.println(leftSpeed);
   drive.SetSpeed(leftSpeed, rightSpeed);
 }
+*/  //depriciated, kept for posterity.

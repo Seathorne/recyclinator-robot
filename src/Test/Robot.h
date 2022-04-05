@@ -16,7 +16,7 @@ public:
     void startDrive(double distance, double speed);
     bool isDriving() const;
     void stepDrive();
-
+    void forwardmovement(float speed, float angle, Gyro &gyro); //to be set to private once test file no longer requires it.
 private:
     Drive _drive;
     Gyro _gyro;
