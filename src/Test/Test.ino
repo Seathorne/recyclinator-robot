@@ -22,16 +22,15 @@ Robot robot(drive, gyro);
 enum AutoRoutine
 {
   DoNothing,
+  Drive,
+  Rotate,
   WallFollow,
   StopEndOfHallway,
-  ForwardDrive,
-  Rotate,
-  RotateTwice,
   RotateDrive,
-  TestRotate,
+  TestMinSpeed,
 };
 
-AutoRoutine autoRoutine = AutoRoutine::RotateDrive;
+AutoRoutine autoRoutine = AutoRoutine::DoNothing;
 int autoStep = 0;
 
 void setup() {
@@ -67,53 +66,11 @@ void loop() {
   /* Perform autonomous routine step */
   switch (autoRoutine) {
 
-    case TestRotate: {
+    case TestMinSpeed: {
         drive.SetSpeed(0.25, -0.25);
     }; break;
 
-    // Follow wall at range=60cm, speed=75%
-    case WallFollow: {
-      // Follow(60, 0.75, sonar_front_left);
-      // FollowLR(0.50, 40, 0.75, sonar_front_left, sonar_front_right);
-      OldFollow(60, 0.75, sonar_front_right);
-    }; break;
-
-    case StopEndOfHallway: {
-      static bool done = false;
-      if (!done) {
-        drive.SetSpeed(0.6, 0.6);
-        
-        if (isEndOfHallway(sonar_front_right)) {
-          drive.SetSpeed(0.0, 0.0);
-          done = true;
-        }
-      }
-    }; break;
-	
-	  case Rotate: {
-      rotateAbsolute(60);
-    }; break;
-	
-    case RotateTwice: {
-      static int i = 0;
-      static bool started = false;
-      
-      if (i == 0) {
-        rotateAbsolute(60);
-        if (!started) {
-          if(isStoppedRotating()) break;
-          else started = true;
-        }
-      } else if (i == 1) {
-        rotateAbsolute(-60);
-      }
-      
-      if (isStoppedRotating()) {
-        i++;
-      }
-    }; break;
-	
-    case ForwardDrive: {
+    case Drive: {
       if (autoStep == 0)
       {
         robot.startDrive(2,.7);
@@ -126,6 +83,43 @@ void loop() {
       else
       {
         autoRoutine = AutoRoutine::DoNothing;
+      }
+    }; break;
+
+    case Rotate: {
+      if (autoStep == 0)
+      {
+        robot.startRotate(60);
+        autoStep++;
+      }
+      else if (robot.mode() == Mode::Rotating)
+      {
+        robot.step();
+      }
+      else
+      {
+        autoRoutine = AutoRoutine::DoNothing;
+      }
+    }; break;
+
+    // Follow wall at range=60cm, speed=75%
+    case WallFollow: {
+      robot.
+      // Follow(60, 0.75, sonar_front_left);
+      // FollowLR(0.50, 40, 0.75, sonar_front_left, sonar_front_right);
+      OldFollow(60, 0.75, sonar_front_right);
+      robot.
+    }; break;
+
+    case StopEndOfHallway: {
+      static bool done = false;
+      if (!done) {
+        drive.SetSpeed(0.6, 0.6);
+        
+        if (isEndOfHallway(sonar_front_right)) {
+          drive.SetSpeed(0.0, 0.0);
+          done = true;
+        }
       }
     }; break;
 	  
@@ -189,8 +183,8 @@ void loop() {
 
   /* Print info about subsystems */
   if (PrintAll) {
-    Print(drive);
-    Print(gyro);
+    Print(robot.drive());
+    Print(robot.gyro());
     PrintSonar();
     Serial.println();
   }
@@ -237,19 +231,6 @@ bool isEndOfHallway(Sonar& sonar) {
   return endOfHallway;
 }
 
-bool isStoppedRotating() {
-  constexpr float Threshold = 2;
-  bool isStopped = abs(gyro.angularVel()) <= Threshold;
-  if (isStopped) Serial.println("isStoppedRotating = true");
-  return isStopped;
-}
-bool isStopped() {
-  constexpr double Threshold = 0.02;
-  bool isStopped = abs(drive.GetSpeed()) <= Threshold;
-  if (isStopped) Serial.println("isStopped = true");
-  return isStopped;
-}
-
 void PrintSonar() {
   Serial.println("-------- Sonar Ranges --------");
   Serial.println(" Front     = "
@@ -268,7 +249,7 @@ void PrintSonar() {
 
 void Print(Drive& drive) {
   double leftDistance, rightDistance;
-  double distance = robot.drive().GetDistance(leftDistance, rightDistance);
+  double distance = drive.GetDistance(leftDistance, rightDistance);
   Serial.println("------- Drive -------");
   Serial.println(" Distance = " + String(distance) + "m");
   Serial.println("  Left    = " + String(leftDistance) + "m");
