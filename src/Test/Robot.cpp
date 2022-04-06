@@ -5,17 +5,43 @@ Robot::Robot(Drive &drive, Gyro &gyro)
     _gyro(gyro)
 { }
 
+void Robot::init()
+{
+  /* Initialize subsystems */
+  _drive.Init();
+  _gyro.init();
+}
+
+void Robot::update()
+{
+  /* Update sensors & subsystems */
+  _drive.Update();
+  _gyro.update();
+}
+
+void Robot::step()
+{
+  switch (_mode)
+  {
+    case Rotating:
+      stepRotate();
+      break;
+
+    case Driving:
+      stepDrive();
+      break;
+    
+    default: break;
+  }
+}
+
 void Robot::startRotate(float angleDeg)
 {
     float currAngle = _gyro.angleDeg();
     _angleSetpoint = currAngle + angleDeg;
-    _isRotating = true;
+    
+    _mode = Mode::Rotating;
     this->stepRotate();
-}
-
-bool Robot::isRotating() const
-{
-    return _isRotating;
 }
 
 void Robot::stepRotate()
@@ -25,6 +51,13 @@ void Robot::stepRotate()
   
   static double delError = 0;
   static double error = 0;
+
+  if (_mode != Mode::Rotating)
+  {
+    Serial.println("Warning! Robot::stepRotate() : _mode is " + String(_mode) + "; should be Mode::Rotating.");
+    return;
+  }
+  
   double angle = _gyro.angleDeg();
   
   float newError = _angleSetpoint - angle;
@@ -58,33 +91,50 @@ void Robot::startDrive(double distance, double speed)
   _distanceSetpoint = distance + distanceSoFar;
   _driveSpeed = speed;    //set this as a non-1 value, please and thank you.
   _angleSetpoint = _gyro.angleDeg();
+  
+  _mode = Mode::Driving;
   this->stepDrive();
-}
-
-bool Robot::isDriving() const
-{
-  return _isDriving;
 }
 
 void Robot::stepDrive()
 {
+  if (_mode != Mode::Driving)
+  {
+    Serial.println("Warning! Robot::stepDrive() : _mode is " + String(_mode) + "; should be Mode::Driving.");
+    return;
+  }
+  
   double distanceSoFar = _drive.DistanceRight();
   if (distanceSoFar < _distanceSetpoint) {
     this->forwardmovement(_driveSpeed, _angleSetpoint, _gyro);
-    _isDriving=true;
   } else {
-    _drive.SetSpeed(0,0);
-    _isDriving=false;
+    this->stop();
   }
+}
+
+void Robot::stop()
+{
+  _drive.SetSpeed(0,0);
+  _setMode(Mode::Stopped);
 }
 
 void Robot::forwardmovement(float speed, float angle, Gyro &gyro)
 {
+  const float Kp = 0.25;
+  const float Kd = 0.01;
+
+  static float error = 0;
+  static float delError = 0;
+  
+  if (_mode != Mode::Driving)
+  {
+    Serial.println("Warning! Robot::forwardmovement(...) : _mode is " + String(_mode) + "; should be Mode::Driving.");
+    return;
+  }
+  
   float Speed=speed;
   float dist=55;
   float currentAng=gyro.angleDeg();
-  const float Kp = 0.25;
-  const float Kd = 0.01;  
   float correctedAngle;
   correctedAngle=currentAng-angle;
   
@@ -96,9 +146,6 @@ void Robot::forwardmovement(float speed, float angle, Gyro &gyro)
   {
     correctedAngle+=360;
   }
-  
-  static float error = 0;
-  static float delError = 0;
   
   float newError = 0-correctedAngle;
   delError=newError-error;
@@ -126,3 +173,13 @@ void Robot::forwardmovement(float speed, float angle, Gyro &gyro)
 }
 
 //driveforward functions end
+
+Mode Robot::mode() const
+{
+  return _mode;
+}
+
+void Robot::_setMode(Mode mode)
+{
+  _mode = mode;
+}

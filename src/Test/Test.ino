@@ -37,8 +37,7 @@ void setup() {
   Serial.begin(9600);
 
   /* Initialize subsystems */
-  drive.Init();
-  gyro.init();
+  robot.init();
 
   angleMaint=gyro.angleDeg();
   Serial.println("Robot| setup complete.");
@@ -61,8 +60,7 @@ void loop() {
   prevIsAutoMode = isAutoMode;
 
   /* Update sensors & subsystems */
-  drive.Update();
-  gyro.update();
+  robot.update();
   UpdateSonar();
 
   /* Perform autonomous routine step */
@@ -118,34 +116,34 @@ void loop() {
 	case RotateDrive: {
       switch (autoStep) {
         case 0:
-          robot.startRotate(60);
           Serial.println("Rotate| starting rotation");
+          robot.startRotate(60);
           autoStep++;
           break;
         case 1:
-          if (robot.isRotating() == true) {
-            robot.stepRotate();
-          } else {
+          if (robot.mode() == Mode::Stopped) {
             Serial.println("Rotate| rotation complete");
             autoStep++;
+          } else {
+            robot.step();
           }
           break;
         case 2:
-          robot.startDrive(2, 0.7);
           Serial.println("Drive| starting drive");
+          robot.startDrive(2, 0.7);
           autoStep++;
         case 3:
-          if (robot.isDriving() == true) {
-            robot.stepDrive();
-          } else {
+          if (robot.mode() == Mode::Stopped) {
             Serial.println("Drive| drive complete");
             autoStep++;
+          } else {
+            robot.step();
           }
           break;
         case 4:
-          drive.SetSpeed(0, 0);
+          Serial.println("Robot| stopping");
+          robot.stop();
           autoRoutine = AutoRoutine::DoNothing;
-          Serial.println("Robot| stopped");
           break;
       }
     }; break;
