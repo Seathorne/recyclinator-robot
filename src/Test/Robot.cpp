@@ -48,6 +48,7 @@ void Robot::stepRotate()
 {
   const float Kp = 1;
   const float Kd = 0.01;
+  const float Threshold = 5;
   
   static double delError = 0;
   static double error = 0;
@@ -63,6 +64,13 @@ void Robot::stepRotate()
   float newError = _angleSetpoint - angle;
   delError = newError - error;
   error = newError;
+
+  if (abs(error) >= Threshold)
+  {
+    Serial.println("Rotate| Stopped rotating");
+    stop();
+    return;
+  }
   
   float corr = Kp*error + Kd*delError;
   Serial.println("Rotate| orig corr = " + String(corr));
