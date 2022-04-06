@@ -99,6 +99,14 @@ double Drive::GetDistance(double &left, double &right) const {
   return (_distance_left + _distance_right) * 0.5;
 }
 
+double Drive::DistanceLeft() const {
+  return _distance_left;
+}
+
+double Drive::DistanceRight() const {
+  return _distance_right;
+}
+
 double Drive::GetSpeed() const {
   return _speed;
 }

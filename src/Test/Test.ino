@@ -112,7 +112,7 @@ void loop() {
     }; break;
 	
     case ForwardDrive: {
-      forwardmovement(0.7,angleMaint,gyro);
+      robot.forwardmovement(0.7,angleMaint,gyro);
 	}; break;
 	  
 	case RotateDrive: {

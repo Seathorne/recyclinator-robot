@@ -52,12 +52,13 @@ void Robot::stepRotate()
 
 void Robot::startDrive(double distance, double speed)
 {
-    double distanceSoFar;
-    _drive.getDistance(distanceSoFar, NULL); //use right wheel as reference since left is the correcting wheel, and will have variable distance traveled.
-    _distanceSetPoint=distance+distanceSoFar;
-    _driveSpeed=speed;    //set this as a non-1 value, please and thank you.
-    _angleSetPoint= _gyro.angleDeg;
-    this->stepDrive();
+  // Use right wheel as reference since left is the correcting wheel,
+  //  and will have variable distance traveled.
+  double distanceSoFar = _drive.DistanceRight();
+  _distanceSetpoint = distance + distanceSoFar;
+  _driveSpeed = speed;    //set this as a non-1 value, please and thank you.
+  _angleSetpoint = _gyro.angleDeg();
+  this->stepDrive();
 }
 
 bool Robot::isDriving() const
@@ -67,20 +68,17 @@ bool Robot::isDriving() const
 
 void Robot::stepDrive()
 {
-    double distanceSoFar;
-    _drive.getDistance(distanceSoFar, NULL);
-    if(distanceSoFar<_distanceSetPoint){
-     this->forwardMovement(_driveSpeed, _angleSetPoint, _gyro);
-     _isDriving=true;
-    }
-    else
-    {
-      _drive.setSpeed(0,0);
-      _isDriving=false;
-    }
+  double distanceSoFar = _drive.DistanceRight();
+  if (distanceSoFar < _distanceSetpoint) {
+    this->forwardmovement(_driveSpeed, _angleSetpoint, _gyro);
+    _isDriving=true;
+  } else {
+    _drive.SetSpeed(0,0);
+    _isDriving=false;
+  }
 }
-//the forwardmovement function stuck into robot.
-void Robot::forwardmovement(float speed, float angle, Gyro &gyro);
+
+void Robot::forwardmovement(float speed, float angle, Gyro &gyro)
 {
   float Speed=speed;
   float dist=55;
@@ -124,7 +122,7 @@ void Robot::forwardmovement(float speed, float angle, Gyro &gyro);
   float rightSpeed= speed+corr;
   Serial.println("s");
   Serial.println(leftSpeed);
-  drive.SetSpeed(leftSpeed, rightSpeed);
+  _drive.SetSpeed(leftSpeed, rightSpeed);
 }
 
 //driveforward functions end
