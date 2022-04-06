@@ -65,7 +65,7 @@ void Robot::stepRotate()
   delError = newError - error;
   error = newError;
 
-  if (abs(error) >= Threshold)
+  if (abs(error) <= Threshold)
   {
     Serial.println("Rotate| Stopped rotating");
     stop();
@@ -181,6 +181,16 @@ void Robot::forwardmovement(float speed, float angle, Gyro &gyro)
 }
 
 //driveforward functions end
+
+Drive Robot::drive() const
+{
+  return _drive;
+}
+
+Gyro Robot::gyro() const
+{
+  return _gyro;
+}
 
 Mode Robot::mode() const
 {

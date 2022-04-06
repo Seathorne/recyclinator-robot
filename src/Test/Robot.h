@@ -30,6 +30,9 @@ public:
     void stop();
 
     Mode mode() const;
+
+    Drive drive() const;
+    Gyro gyro() const;
     
 private:
     Drive _drive;

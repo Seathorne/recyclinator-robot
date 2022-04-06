@@ -44,7 +44,7 @@ void setup() {
 }
 
 void loop() {
-  constexpr long FrameLength = 200;
+  constexpr long FrameLength = 1000;
   constexpr bool PrintAll = true;
 
   static long prevTime = millis();
@@ -117,7 +117,7 @@ void loop() {
       switch (autoStep) {
         case 0:
           Serial.println("Rotate| starting rotation");
-          robot.startRotate(60);
+          robot.startRotate(45);
           autoStep++;
           break;
         case 1:
@@ -130,7 +130,7 @@ void loop() {
           break;
         case 2:
           Serial.println("Drive| starting drive");
-          robot.startDrive(2, 0.7);
+          robot.startDrive(2.5, 0.7);
           autoStep++;
         case 3:
           if (robot.mode() == Mode::Stopped) {
@@ -141,9 +141,30 @@ void loop() {
           }
           break;
         case 4:
-          Serial.println("Robot| stopping");
-          robot.stop();
-          autoRoutine = AutoRoutine::DoNothing;
+          Serial.println("Rotate| starting rotation");
+          robot.startRotate(45);
+          autoStep++;
+          break;
+        case 5:
+          if (robot.mode() == Mode::Stopped) {
+            Serial.println("Rotate| rotation complete");
+            autoStep++;
+          } else {
+            robot.step();
+          }
+          break;
+        case 6:
+          Serial.println("Drive| starting drive");
+          robot.startDrive(1, 0.7);
+          autoStep++;
+        case 7:
+          if (robot.mode() == Mode::Stopped) {
+            Serial.println("Drive| drive complete");
+            autoStep++;
+            autoRoutine = AutoRoutine::DoNothing;
+          } else {
+            robot.step();
+          }
           break;
       }
     }; break;
@@ -231,7 +252,7 @@ void PrintSonar() {
 
 void Print(Drive& drive) {
   double leftDistance, rightDistance;
-  double distance = drive.GetDistance(leftDistance, rightDistance);
+  double distance = robot.drive().GetDistance(leftDistance, rightDistance);
   Serial.println("------- Drive -------");
   Serial.println(" Distance = " + String(distance) + "m");
   Serial.println("  Left    = " + String(leftDistance) + "m");
