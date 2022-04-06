@@ -28,6 +28,7 @@ enum AutoRoutine
   Rotate,
   RotateTwice,
   RotateDrive,
+  TestRotate,
 };
 
 AutoRoutine autoRoutine = AutoRoutine::RotateDrive;
@@ -65,7 +66,11 @@ void loop() {
 
   /* Perform autonomous routine step */
   switch (autoRoutine) {
-	
+
+    case TestRotate: {
+        drive.SetSpeed(0.25, -0.25);
+    }; break;
+
     // Follow wall at range=60cm, speed=75%
     case WallFollow: {
       // Follow(60, 0.75, sonar_front_left);

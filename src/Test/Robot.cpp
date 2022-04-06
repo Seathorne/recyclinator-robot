@@ -48,7 +48,8 @@ void Robot::stepRotate()
 {
   const float Kp = 1;
   const float Kd = 0.01;
-  const float Threshold = 5;
+  const float AngleThreshold = 5;
+  const float MinSpeed = 0.25;
   
   static double delError = 0;
   static double error = 0;
@@ -65,7 +66,7 @@ void Robot::stepRotate()
   delError = newError - error;
   error = newError;
 
-  if (abs(error) <= Threshold)
+  if (abs(error) <= AngleThreshold)
   {
     Serial.println("Rotate| Stopped rotating");
     stop();
@@ -83,6 +84,10 @@ void Robot::stepRotate()
     corr = 1;
   } else if (corr < -1) {
     corr = -1;
+  } else if (corr < MinSpeed && corr > 0) {
+    corr = MinSpeed;
+  } else if (corr > -MinSpeed && corr < 0) {
+    corr = -MinSpeed;
   }
   
   Serial.println("Rotate| corr = " + String(corr));
