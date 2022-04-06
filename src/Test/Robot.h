@@ -47,7 +47,7 @@ private:
     bool   _isDriving;
 
     void _setMode(Mode mode);
-    void _driveForward(float speed, float angle)
+    void _driveForward(float speed, float angle);
 };
 
 #endif // ROBOT_H
