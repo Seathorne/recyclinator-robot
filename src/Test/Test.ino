@@ -90,7 +90,7 @@ void loop() {
       }
     }; break;
 	
-	case Rotate: {
+	  case Rotate: {
       rotateAbsolute(60);
     }; break;
 	
@@ -111,14 +111,25 @@ void loop() {
       if (isStoppedRotating()) {
         i++;
       }
-      
     }; break;
 	
     case ForwardDrive: {
-      robot.forwardmovement(0.7,angleMaint,gyro);
-	}; break;
+      if (autoStep == 0)
+      {
+        robot.startDrive(2,.7);
+        autoStep++;
+      }
+      else if (robot.mode() == Mode::Driving)
+      {
+        robot.step();
+      }
+      else
+      {
+        autoRoutine = AutoRoutine::DoNothing;
+      }
+    }; break;
 	  
-	case RotateDrive: {
+    case RotateDrive: {
       switch (autoStep) {
         case 0:
           Serial.println("Rotate| starting rotation");

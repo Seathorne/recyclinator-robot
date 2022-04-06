@@ -119,7 +119,7 @@ void Robot::stepDrive()
   
   double distanceSoFar = _drive.DistanceRight();
   if (distanceSoFar < _distanceSetpoint) {
-    this->forwardmovement(_driveSpeed, _angleSetpoint, _gyro);
+    this->_driveForward(_driveSpeed, _angleSetpoint);
   } else {
     this->stop();
   }
@@ -131,9 +131,9 @@ void Robot::stop()
   _setMode(Mode::Stopped);
 }
 
-void Robot::forwardmovement(float speed, float angle, Gyro &gyro)
+void Robot::_driveForward(float speed, float angle)
 {
-  const float Kp = 0.25;
+  const float Kp = 0.01;
   const float Kd = 0.01;
 
   static float error = 0;
@@ -147,7 +147,7 @@ void Robot::forwardmovement(float speed, float angle, Gyro &gyro)
   
   float Speed=speed;
   float dist=55;
-  float currentAng=gyro.angleDeg();
+  float currentAng = _gyro.angleDeg();
   float correctedAngle;
   correctedAngle=currentAng-angle;
   
@@ -164,7 +164,7 @@ void Robot::forwardmovement(float speed, float angle, Gyro &gyro)
   delError=newError-error;
   error=newError;
   Serial.println("Set Angle "+String(angle));
-  Serial.println("Current Angle "+String(gyro.angleDeg()));
+  Serial.println("Current Angle " + String(_gyro.angleDeg()));
   float corr = -(Kp*error+Kd*delError);
   Serial.println("Corr value"+String(corr));
   if (corr > .1) {

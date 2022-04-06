@@ -25,7 +25,6 @@ public:
 
     void startDrive(double distance, double speed);
     void stepDrive();
-    void forwardmovement(float speed, float angle, Gyro &gyro); //to be set to private once test file no longer requires it.
 
     void stop();
 
@@ -48,6 +47,7 @@ private:
     bool   _isDriving;
 
     void _setMode(Mode mode);
+    void _driveForward(float speed, float angle)
 };
 
 #endif // ROBOT_H
