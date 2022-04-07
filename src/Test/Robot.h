@@ -25,6 +25,12 @@ enum SonarLoc
   Count
 };
 
+enum Feature {
+  None,
+  Junction,
+  Other,
+};
+
 class Robot
 {
 public:
@@ -43,8 +49,11 @@ public:
     void stepDrive();
 
     void startWallFollow(float range, double distance, double speed, SonarLoc sonar);
+    void setRangeSetpoint(float range);
 
     void stop();
+
+    Feature detectFeature(SonarLoc sonar, float &range);
 
     Mode mode() const;
 

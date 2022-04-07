@@ -239,6 +239,82 @@ void Robot::_stepWallFollow()
   _drive.SetSpeed(leftSpeed, rightSpeed);
 }
 
+void Robot::setRangeSetpoint(float range) {
+  _rangeSetpoint = range;
+}
+
+/* Provides simple feature detection based on 
+ * a small buffer of past sonar readings and
+ * recognition of quick increases in depth.
+ * Returns the type of feature and its absolute
+ * range from the robot.
+ */
+Feature Robot::detectFeature(SonarLoc sonarLoc, float &range) {
+  constexpr float FeatureThreshold = 15;
+  constexpr float JunctionThreshold = 100;
+
+  constexpr int BufferSize = 6;
+  
+  static float ranges[BufferSize];
+  static bool firstTime = true;
+
+  /* Read current range */
+  float currRange = this->sonar(sonarLoc).Range();
+
+  /* First time only: initialize buffer */
+  if (firstTime) {
+    firstTime = false;
+    for (int i = 0; i < BufferSize; i++) {
+      ranges[i] = currRange;
+    }
+    range = -1;
+    return Feature::None;
+  }
+
+  /* Shift in new reading */
+  for (int i = 0; i < BufferSize-1; i++) {
+    ranges[i] = ranges[i+1];
+  }
+  ranges[BufferSize-1] = currRange;
+
+  /* Find mean of older readings */
+  float oldRangeAvg = 0;
+  int oldCount = (BufferSize + 1)/2;
+  for (int i = 0; i < oldCount; i++) {
+    oldRangeAvg += ranges[i];
+  }
+  oldRangeAvg /= oldCount;
+
+  /* Find mean of newer readings */
+  float newRangeAvg = 0;
+  int newCount = BufferSize/2;
+  for (int i = 0; i < newCount; i++) {
+    newRangeAvg += ranges[i];
+  }
+  newRangeAvg /= newCount;
+
+  /* Characterize feature */
+  float depth = abs(newRangeAvg - oldRangeAvg); // abs -> detects pos & neg features
+  Feature detected = (depth >= JunctionThreshold)
+    ? Feature::Junction
+    : (depth >= FeatureThreshold)
+      ? Feature::Other
+      : Feature::None;
+
+  /* For debugging: print detected feature */
+  switch (detected) {
+    case Junction:
+      Serial.println("Feature| detected end of hallway with depth " + String(depth) + " at range " + String(currRange) + " cm");
+      break;
+    case Other:
+      Serial.println("Feature| detected feature with depth " + String(depth) + " at range " + String(currRange) + " cm");
+      break;
+  }
+
+  range = currRange; // or newRangeAvg -- both have pros & cons
+  return detected;
+}
+
 Drive Robot::drive() const
 {
   return _drive;

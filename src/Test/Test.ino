@@ -171,23 +171,40 @@ void loop() {
     }; break;
 
     case EndHallwayRightTurn: {
+      const static constexpr float RangeSetpoint = 60;
+      
+      static Feature feature;
+      static float featureRange;
+      
       switch (autoStep) {
         case 0:
           Serial.println("Auto| step 0: start wall following");
-          robot.startWallFollow(60, -1, 0.7, SonarLoc::FrontRight);
+          robot.startWallFollow(RangeSetpoint, -1, 0.7, SonarLoc::FrontRight);
           autoStep++;
           break;
         case 1:
           Serial.println("Auto| step 1: continue wall following");
-          if (isEndOfHallway(SonarLoc::FrontRight)) {
-            Serial.println("Auto| step 1: end of hallway detected");
-            robot.stop();
-          } else if (robot.mode() == Mode::WallFollowing) {
-            robot.step();
-          } else {
-            Serial.println("Auto| step 1: wall following complete");
-            autoStep++;
-          };
+          
+          feature = robot.detectFeature(SonarLoc::FrontRight, featureRange);
+          switch (feature) {
+            case Feature::Junction:
+              Serial.println("Auto| step 1: end of hallway detected");
+              robot.stop();
+              break;
+            case Feature::Other:
+              Serial.println("Auto| step 1: feature detected");
+              robot.setRangeSetpoint(featureRange); // adjust range setpoint
+              // no break is intentional
+            default:
+              if (robot.mode() == Mode::WallFollowing) {
+                robot.step();
+              } else {
+                Serial.println("Auto| step 1: wall following complete");
+                autoStep++;
+              };
+              break;
+          }
+          
           break;
         case 2:
           Serial.println("Auto| step 2: starting rotation");
@@ -247,22 +264,38 @@ void loop() {
           break;
         case 10:
           Serial.println("Auto| step 10: start wall following");
-          robot.startWallFollow(60, -1, 0.7, SonarLoc::FrontRight);
+          robot.startWallFollow(RangeSetpoint, -1, 0.7, SonarLoc::FrontRight);
           autoStep++;
           break;
         case 11:
           Serial.println("Auto| step 11: continue wall following");
-          if (isEndOfHallway(SonarLoc::FrontRight)) {
-            Serial.println("Auto| step 11: end of hallway detected");
-            robot.stop();
-          } else if (robot.mode() == Mode::WallFollowing) {
-            robot.step();
-          } else {
-            Serial.println("Auto| step 11: wall following complete");
-            autoStep++;
-          };
-          break;
+
+          feature = robot.detectFeature(SonarLoc::FrontRight, featureRange);
+          switch (feature) {
+            case Feature::Junction:
+              Serial.println("Auto| step 11: end of hallway detected");
+              robot.stop();
+              break;
+            case Feature::Other:
+              Serial.println("Auto| step 11: feature detected");
+              robot.setRangeSetpoint(featureRange); // adjust range setpoint
+              // no break is intentional
+            default:
+              if (robot.mode() == Mode::WallFollowing) {
+                robot.step();
+              } else {
+                Serial.println("Auto| step 11: wall following complete");
+                autoStep++;
+              };
+              break;
+          }
           
+          break;
+        case 12:
+          Serial.println("Auto| step 12: routine complete");
+          autoRoutine = AutoRoutine::DoNothing;
+          robot.stop();
+          break;
       }
     }; break;
 	
