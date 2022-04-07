@@ -3,6 +3,10 @@
 Sonar::Sonar(int pin)
 : _pin { pin } { }
 
+void Sonar::Init() {
+  this->GetRange();
+}
+
 void Sonar::Update() {
   this->GetRange();
 }

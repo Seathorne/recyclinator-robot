@@ -75,6 +75,9 @@ void Drive::GetEncoderCounts() {
 
   _distance_left = (2*M_PI*WHEEL_RADIUS*(double)_encoder_left)/(double)REVOLUTIONS;
   _distance_right = (2*M_PI*WHEEL_RADIUS*(double)_encoder_right)/(double)REVOLUTIONS;
+
+  // Serial.println("Encoders| left=" + String(_encoder_left) + "; right=" + String(_encoder_right));
+  // Serial.println("Distance| left=" + String(_distance_left) + "; right=" + String(_distance_right));
 }
 
 void Drive::SendCommand(DriveCommand command) const {
@@ -97,6 +100,14 @@ double Drive::GetDistance(double &left, double &right) const {
   left = _distance_left;
   right = _distance_right;
   return (_distance_left + _distance_right) * 0.5;
+}
+
+double Drive::DistanceLeft() const {
+  return _distance_left;
+}
+
+double Drive::DistanceRight() const {
+  return _distance_right;
 }
 
 double Drive::GetSpeed() const {

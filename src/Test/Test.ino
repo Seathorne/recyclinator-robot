@@ -1,46 +1,25 @@
-#include "Drive.h"
-#include "Gyro.h"
 #include "Robot.h"
-#include "Sonar.h"
-
-// MD49 motor controller
-Drive drive(Serial2);
-Gyro gyro(55);
-float angleMaint;
-
-// Sonar distance sensors
-Sonar sonar_front_left(27);
-Sonar sonar_front_right(28);
-Sonar sonar_back_left(26);
-Sonar sonar_back_right(29);
-Sonar sonar_hall_left(24);
-Sonar sonar_hall_right(25);
-Sonar sonar_front(34);
-
-Robot robot(drive, gyro);
 
 enum AutoRoutine
 {
   DoNothing,
+  Drive,
+  Rotate,
   WallFollow,
   StopEndOfHallway,
-  ForwardDrive,
-  Rotate,
-  RotateTwice,
   RotateDrive,
+  TestMinSpeed,
 };
 
-AutoRoutine autoRoutine = AutoRoutine::RotateDrive;
-int autoStep = 0;
+Robot robot;
+AutoRoutine autoRoutine = AutoRoutine::DoNothing;
 
 void setup() {
   Serial.begin(9600);
 
   /* Initialize subsystems */
-  drive.Init();
-  gyro.init();
+  robot.init();
 
-  angleMaint=gyro.angleDeg();
   Serial.println("Robot| setup complete.");
 }
 
@@ -50,6 +29,7 @@ void loop() {
 
   static long prevTime = millis();
   static bool prevIsAutoMode;
+  static int autoStep = 0;
 
   /* Only loop within specfied frequency
       and in autonomous mode */
@@ -61,91 +41,128 @@ void loop() {
   prevIsAutoMode = isAutoMode;
 
   /* Update sensors & subsystems */
-  drive.Update();
-  gyro.update();
-  UpdateSonar();
+  robot.update();
 
   /* Perform autonomous routine step */
   switch (autoRoutine) {
-	
+
+    case TestMinSpeed: {
+        robot.drive().SetSpeed(0.03, 0.03);
+    }; break;
+
+    case Drive: {
+      if (autoStep == 0)
+      {
+        robot.startDrive(2, 0.7);
+        autoStep++;
+      }
+      else if (robot.mode() == Mode::Driving)
+      {
+        robot.step();
+      }
+      else
+      {
+        autoRoutine = AutoRoutine::DoNothing;
+      }
+    }; break;
+
+    case Rotate: {
+      if (autoStep == 0)
+      {
+        robot.startRotate(60);
+        autoStep++;
+      }
+      else if (robot.mode() == Mode::Rotating)
+      {
+        robot.step();
+      }
+      else
+      {
+        autoRoutine = AutoRoutine::DoNothing;
+      }
+    }; break;
+
     // Follow wall at range=60cm, speed=75%
     case WallFollow: {
-      // Follow(60, 0.75, sonar_front_left);
-      // FollowLR(0.50, 40, 0.75, sonar_front_left, sonar_front_right);
-      OldFollow(60, 0.75, sonar_front_right);
+      if (autoStep == 0)
+      {
+        robot.startWallFollow(60, 20, 0.75, SonarLoc::FrontRight);
+        autoStep++;
+      }
+      else if (robot.mode() == Mode::WallFollowing)
+      {
+        robot.step();
+      }
+      else
+      {
+        autoRoutine = AutoRoutine::DoNothing;
+      }
     }; break;
 
     case StopEndOfHallway: {
-      static bool done = false;
-      if (!done) {
-        drive.SetSpeed(0.6, 0.6);
-        
-        if (isEndOfHallway(sonar_front_right)) {
-          drive.SetSpeed(0.0, 0.0);
-          done = true;
-        }
+      if (autoStep == 0)
+      {
+        robot.drive().SetSpeed(0.6, 0.6);
+        autoStep++;
+      }
+      else if (isEndOfHallway(SonarLoc::FrontRight)) {
+        robot.stop();
+        autoRoutine = AutoRoutine::DoNothing;
       }
     }; break;
-	
-	case Rotate: {
-      rotateAbsolute(60);
-    }; break;
-	
-    case RotateTwice: {
-      static int i = 0;
-      static bool started = false;
-      
-      if (i == 0) {
-        rotateAbsolute(60);
-        if (!started) {
-          if(isStoppedRotating()) break;
-          else started = true;
-        }
-      } else if (i == 1) {
-        rotateAbsolute(-60);
-      }
-      
-      if (isStoppedRotating()) {
-        i++;
-      }
-      
-    }; break;
-	
-    case ForwardDrive: {
-      forwardmovement(0.7,angleMaint,gyro);
-	}; break;
 	  
-	case RotateDrive: {
+    case RotateDrive: {
       switch (autoStep) {
         case 0:
-          robot.startRotate(60);
           Serial.println("Rotate| starting rotation");
+          robot.startRotate(45);
           autoStep++;
           break;
         case 1:
-          if (robot.isRotating() == true) {
-            robot.stepRotate();
-          } else {
+          if (robot.mode() == Mode::Stopped) {
             Serial.println("Rotate| rotation complete");
             autoStep++;
+          } else {
+            robot.step();
           }
           break;
         case 2:
-          robot.startDrive(2, 0.7);
           Serial.println("Drive| starting drive");
+          robot.startDrive(2.5, 0.7);
           autoStep++;
         case 3:
-          if (robot.isDriving() == true) {
-            robot.stepDrive();
-          } else {
+          if (robot.mode() == Mode::Stopped) {
             Serial.println("Drive| drive complete");
             autoStep++;
+          } else {
+            robot.step();
           }
           break;
         case 4:
-          drive.SetSpeed(0, 0);
-          autoRoutine = AutoRoutine::DoNothing;
-          Serial.println("Robot| stopped");
+          Serial.println("Rotate| starting rotation");
+          robot.startRotate(45);
+          autoStep++;
+          break;
+        case 5:
+          if (robot.mode() == Mode::Stopped) {
+            Serial.println("Rotate| rotation complete");
+            autoStep++;
+          } else {
+            robot.step();
+          }
+          break;
+        case 6:
+          Serial.println("Drive| starting drive");
+          robot.startDrive(1, 0.7);
+          autoStep++;
+        case 7:
+          if (robot.mode() == Mode::Stopped) {
+            Serial.println("Drive| drive complete");
+            autoStep++;
+            autoRoutine = AutoRoutine::DoNothing;
+          } else {
+            robot.step();
+          }
           break;
       }
     }; break;
@@ -154,8 +171,8 @@ void loop() {
 
   /* Print info about subsystems */
   if (PrintAll) {
-    Print(drive);
-    Print(gyro);
+    PrintDrive();
+    PrintGyro();
     PrintSonar();
     Serial.println();
   }
@@ -166,22 +183,12 @@ bool IsAutoMode() {
   return digitalRead(BUSY_PIN) == 0;
 }
 
-void UpdateSonar() {
-  sonar_front_left.Update();
-  sonar_front_right.Update();
-  sonar_back_left.Update();
-  sonar_back_right.Update();
-  sonar_hall_left.Update();
-  sonar_hall_right.Update();
-  sonar_front.Update();
-}
-
-bool isEndOfHallway(Sonar& sonar) {
+bool isEndOfHallway(SonarLoc sonarLoc) {
   constexpr float Threshold = 100;
   static float prevRange;
   static bool firstTime = true;
 
-  float currRange = sonar.Range();
+  float currRange = robot.sonar(sonarLoc).Range();
 
   if (firstTime) {
     firstTime = false;
@@ -202,38 +209,25 @@ bool isEndOfHallway(Sonar& sonar) {
   return endOfHallway;
 }
 
-bool isStoppedRotating() {
-  constexpr float Threshold = 2;
-  bool isStopped = abs(gyro.angularVel()) <= Threshold;
-  if (isStopped) Serial.println("isStoppedRotating = true");
-  return isStopped;
-}
-bool isStopped() {
-  constexpr double Threshold = 0.02;
-  bool isStopped = abs(drive.GetSpeed()) <= Threshold;
-  if (isStopped) Serial.println("isStopped = true");
-  return isStopped;
-}
-
 void PrintSonar() {
   Serial.println("-------- Sonar Ranges --------");
   Serial.println(" Front     = "
-    + String(sonar_front.Range()));
+    + String(robot.sonar(SonarLoc::Front).Range()));
   Serial.println(" L/R Front = "
-    + String(sonar_front_left.Range()) + "\t"
-    + String(sonar_front_right.Range()));
+    + String(robot.sonar(SonarLoc::FrontLeft).Range()) + "\t"
+    + String(robot.sonar(SonarLoc::FrontRight).Range()));
   Serial.println(" L/R Hall  = "
-    + String(sonar_hall_left.Range()) + "\t"
-    + String(sonar_hall_right.Range()));
+    + String(robot.sonar(SonarLoc::HallLeft).Range()) + "\t"
+    + String(robot.sonar(SonarLoc::HallRight).Range()));
   Serial.println(" L/R Back  = "
-    + String(sonar_back_left.Range()) + "\t"
-    + String(sonar_back_right.Range()));
+    + String(robot.sonar(SonarLoc::BackLeft).Range()) + "\t"
+    + String(robot.sonar(SonarLoc::BackRight).Range()));
   Serial.println("------------------------------\n");
 }
 
-void Print(Drive& drive) {
+void PrintDrive() {
   double leftDistance, rightDistance;
-  double distance = drive.GetDistance(leftDistance, rightDistance);
+  double distance = robot.drive().GetDistance(leftDistance, rightDistance);
   Serial.println("------- Drive -------");
   Serial.println(" Distance = " + String(distance) + "m");
   Serial.println("  Left    = " + String(leftDistance) + "m");
@@ -241,8 +235,8 @@ void Print(Drive& drive) {
   Serial.println("---------------------\n");
 }
 
-void Print(Gyro& gyro) {
+void PrintGyro() {
   Serial.println("----- Gyroscope -----");
-  Serial.println("Angle = " + String(gyro.angleDeg()) + " deg");
+  Serial.println("Angle = " + String(robot.gyro().angleDeg()) + " deg");
   Serial.println("---------------------\n");
 }
