@@ -1,23 +1,4 @@
-#include "Drive.h"
-#include "Gyro.h"
 #include "Robot.h"
-#include "Sonar.h"
-
-// MD49 motor controller
-Drive drive(Serial2);
-Gyro gyro(55);
-float angleMaint;
-
-// Sonar distance sensors
-Sonar sonar_front_left(27);
-Sonar sonar_front_right(28);
-Sonar sonar_back_left(26);
-Sonar sonar_back_right(29);
-Sonar sonar_hall_left(24);
-Sonar sonar_hall_right(25);
-Sonar sonar_front(34);
-
-Robot robot(drive, gyro);
 
 enum AutoRoutine
 {
@@ -30,8 +11,8 @@ enum AutoRoutine
   TestMinSpeed,
 };
 
+Robot robot;
 AutoRoutine autoRoutine = AutoRoutine::DoNothing;
-int autoStep = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -39,16 +20,16 @@ void setup() {
   /* Initialize subsystems */
   robot.init();
 
-  angleMaint=gyro.angleDeg();
   Serial.println("Robot| setup complete.");
 }
 
 void loop() {
-  constexpr long FrameLength = 1000;
+  constexpr long FrameLength = 200;
   constexpr bool PrintAll = true;
 
   static long prevTime = millis();
   static bool prevIsAutoMode;
+  static int autoStep = 0;
 
   /* Only loop within specfied frequency
       and in autonomous mode */
@@ -61,19 +42,18 @@ void loop() {
 
   /* Update sensors & subsystems */
   robot.update();
-  UpdateSonar();
 
   /* Perform autonomous routine step */
   switch (autoRoutine) {
 
     case TestMinSpeed: {
-        drive.SetSpeed(0.25, -0.25);
+        robot.drive().SetSpeed(0.03, 0.03);
     }; break;
 
     case Drive: {
       if (autoStep == 0)
       {
-        robot.startDrive(2,.7);
+        robot.startDrive(2, 0.7);
         autoStep++;
       }
       else if (robot.mode() == Mode::Driving)
@@ -104,22 +84,30 @@ void loop() {
 
     // Follow wall at range=60cm, speed=75%
     case WallFollow: {
-      robot.
-      // Follow(60, 0.75, sonar_front_left);
-      // FollowLR(0.50, 40, 0.75, sonar_front_left, sonar_front_right);
-      OldFollow(60, 0.75, sonar_front_right);
-      robot.
+      if (autoStep == 0)
+      {
+        robot.startWallFollow(60, 20, 0.75, SonarLoc::FrontRight);
+        autoStep++;
+      }
+      else if (robot.mode() == Mode::WallFollowing)
+      {
+        robot.step();
+      }
+      else
+      {
+        autoRoutine = AutoRoutine::DoNothing;
+      }
     }; break;
 
     case StopEndOfHallway: {
-      static bool done = false;
-      if (!done) {
-        drive.SetSpeed(0.6, 0.6);
-        
-        if (isEndOfHallway(sonar_front_right)) {
-          drive.SetSpeed(0.0, 0.0);
-          done = true;
-        }
+      if (autoStep == 0)
+      {
+        robot.drive().SetSpeed(0.6, 0.6);
+        autoStep++;
+      }
+      else if (isEndOfHallway(SonarLoc::FrontRight)) {
+        robot.stop();
+        autoRoutine = AutoRoutine::DoNothing;
       }
     }; break;
 	  
@@ -183,8 +171,8 @@ void loop() {
 
   /* Print info about subsystems */
   if (PrintAll) {
-    Print(robot.drive());
-    Print(robot.gyro());
+    PrintDrive();
+    PrintGyro();
     PrintSonar();
     Serial.println();
   }
@@ -195,22 +183,12 @@ bool IsAutoMode() {
   return digitalRead(BUSY_PIN) == 0;
 }
 
-void UpdateSonar() {
-  sonar_front_left.Update();
-  sonar_front_right.Update();
-  sonar_back_left.Update();
-  sonar_back_right.Update();
-  sonar_hall_left.Update();
-  sonar_hall_right.Update();
-  sonar_front.Update();
-}
-
-bool isEndOfHallway(Sonar& sonar) {
+bool isEndOfHallway(SonarLoc sonarLoc) {
   constexpr float Threshold = 100;
   static float prevRange;
   static bool firstTime = true;
 
-  float currRange = sonar.Range();
+  float currRange = robot.sonar(sonarLoc).Range();
 
   if (firstTime) {
     firstTime = false;
@@ -234,22 +212,22 @@ bool isEndOfHallway(Sonar& sonar) {
 void PrintSonar() {
   Serial.println("-------- Sonar Ranges --------");
   Serial.println(" Front     = "
-    + String(sonar_front.Range()));
+    + String(robot.sonar(SonarLoc::Front).Range()));
   Serial.println(" L/R Front = "
-    + String(sonar_front_left.Range()) + "\t"
-    + String(sonar_front_right.Range()));
+    + String(robot.sonar(SonarLoc::FrontLeft).Range()) + "\t"
+    + String(robot.sonar(SonarLoc::FrontRight).Range()));
   Serial.println(" L/R Hall  = "
-    + String(sonar_hall_left.Range()) + "\t"
-    + String(sonar_hall_right.Range()));
+    + String(robot.sonar(SonarLoc::HallLeft).Range()) + "\t"
+    + String(robot.sonar(SonarLoc::HallRight).Range()));
   Serial.println(" L/R Back  = "
-    + String(sonar_back_left.Range()) + "\t"
-    + String(sonar_back_right.Range()));
+    + String(robot.sonar(SonarLoc::BackLeft).Range()) + "\t"
+    + String(robot.sonar(SonarLoc::BackRight).Range()));
   Serial.println("------------------------------\n");
 }
 
-void Print(Drive& drive) {
+void PrintDrive() {
   double leftDistance, rightDistance;
-  double distance = drive.GetDistance(leftDistance, rightDistance);
+  double distance = robot.drive().GetDistance(leftDistance, rightDistance);
   Serial.println("------- Drive -------");
   Serial.println(" Distance = " + String(distance) + "m");
   Serial.println("  Left    = " + String(leftDistance) + "m");
@@ -257,8 +235,8 @@ void Print(Drive& drive) {
   Serial.println("---------------------\n");
 }
 
-void Print(Gyro& gyro) {
+void PrintGyro() {
   Serial.println("----- Gyroscope -----");
-  Serial.println("Angle = " + String(gyro.angleDeg()) + " deg");
+  Serial.println("Angle = " + String(robot.gyro().angleDeg()) + " deg");
   Serial.println("---------------------\n");
 }

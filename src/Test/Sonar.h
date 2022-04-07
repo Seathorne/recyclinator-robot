@@ -7,6 +7,7 @@ class Sonar {
     
     float Range() const;
 
+    void Init();
     void Update();
   
   private:

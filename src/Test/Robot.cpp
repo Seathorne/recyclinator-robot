@@ -1,8 +1,8 @@
 #include "Robot.h"
 
-Robot::Robot(Drive &drive, Gyro &gyro)
-  : _drive(drive),
-    _gyro(gyro)
+Robot::Robot()
+  : _drive(Serial2),
+    _gyro(GyroPin)
 { }
 
 void Robot::init()
@@ -10,6 +10,11 @@ void Robot::init()
   /* Initialize subsystems */
   _drive.Init();
   _gyro.init();
+  
+  for (int i = 0; i < SonarLoc::Count; i++)
+  {
+    _sonars[i].Init();
+  }
 }
 
 void Robot::update()
@@ -17,6 +22,11 @@ void Robot::update()
   /* Update sensors & subsystems */
   _drive.Update();
   _gyro.update();
+
+  for (int i = 0; i < SonarLoc::Count; i++)
+  {
+    _sonars[i].Update();
+  }
 }
 
 void Robot::step()
@@ -29,6 +39,10 @@ void Robot::step()
 
     case Driving:
       stepDrive();
+      break;
+
+    case WallFollowing:
+      _stepWallFollow();
       break;
     
     default: break;
@@ -49,7 +63,7 @@ void Robot::stepRotate()
   const float Kp = 1;
   const float Kd = 0.01;
   const float AngleThreshold = 5;
-  const float MinSpeed = 0.25;
+  const float MinSpeed = 0.03;
   
   static double delError = 0;
   static double error = 0;
@@ -141,7 +155,7 @@ void Robot::_driveForward(float speed, float angle)
   
   if (_mode != Mode::Driving)
   {
-    Serial.println("Warning! Robot::forwardmovement(...) : _mode is " + String(_mode) + "; should be Mode::Driving.");
+    Serial.println("Warning! Robot::_driveForward(...) : _mode is " + String(_mode) + "; should be Mode::Driving.");
     return;
   }
   
@@ -173,19 +187,57 @@ void Robot::_driveForward(float speed, float angle)
     else if (corr < -.1)
   {
     corr = -.1;
-    }
-
-
-  //on top of that, I guess you have to really ask how we're going to merge the two, as two routines
-  //controlling the motor independently is bound to cause some issue.
+  }
+    
   float leftSpeed = speed;
   float rightSpeed= speed+corr;
-  Serial.println("s");
-  Serial.println(leftSpeed);
   _drive.SetSpeed(leftSpeed, rightSpeed);
 }
 
 //driveforward functions end
+
+void Robot::startWallFollow(float range, double distance, double speed, SonarLoc sonar)
+{
+  _rangeSetpoint = range;
+  _distanceSetpoint = distance;
+  _driveSpeed = speed;
+  _wallFollowSonar = sonar;
+
+  _mode = Mode::WallFollowing;
+  this->_stepWallFollow();
+}
+
+void Robot::_stepWallFollow()
+{
+  const float Kp = 0.2;
+  const float Kd = 5;
+  const float speedMaxDiff = 10 / 128.0;
+  
+  static float prevError = 0;
+
+  if (_mode != Mode::WallFollowing)
+  {
+    Serial.println("Warning! Robot::_stepWallFollow(...) : _mode is " + String(_mode) + "; should be Mode::WallFollowing.");
+    return;
+  }
+
+  float range = _sonars[_wallFollowSonar].Range();
+  float error = _rangeSetpoint - range;
+  float delError = (error - prevError);
+  prevError = error;
+
+  float corr = -(Kp*error + Kd*delError);
+  Serial.println("Following| corr=" + String(corr));
+  if (corr > 1)
+    corr = 1;
+  else if (corr < -1)
+    corr = -1;
+  
+  float corrLim = corr*speedMaxDiff;
+  float leftSpeed = _driveSpeed + corrLim;
+  float rightSpeed = _driveSpeed;
+  _drive.SetSpeed(leftSpeed, rightSpeed);
+}
 
 Drive Robot::drive() const
 {
@@ -195,6 +247,11 @@ Drive Robot::drive() const
 Gyro Robot::gyro() const
 {
   return _gyro;
+}
+
+Sonar Robot::sonar(SonarLoc location) const
+{
+  return _sonars[location];
 }
 
 Mode Robot::mode() const
