@@ -36,6 +36,9 @@ void Drive::SetSpeed(float left, float right) {
 }
 
 void Drive::SetSpeedLeft(float value) {
+  static float previous;
+  if(previous==value) return;
+  previous=value;
   // Transform [-1..1] --> [0..255]
   if (value > 1) value = 1;
   else if (value < -1) value = -1;
@@ -43,6 +46,9 @@ void Drive::SetSpeedLeft(float value) {
 }
 
 void Drive::SetSpeedRight(float value) {
+  static float previous;
+  if(previous==value) return;
+  previous=value;
   // Transform [-1..1] --> [0..255]
   if (value > 1) value = 1;
   else if (value < -1) value = -1;
