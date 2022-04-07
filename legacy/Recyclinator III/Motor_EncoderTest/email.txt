@@ -1,0 +1,68 @@
+Nov 19 2021
+
+Attached is a program that tests the auto function and the encoders.
+The RC transmitter drives the robot when the throttle stick is all the way up.
+All the way down is stop.
+The autonomous mode is in the middle.  In that position, the Mega executes whatever code is in the  if busy loop:
+
+      if(busy == 0) {                                      //auto mode
+         MtrSpeed(LtSpd, RtSpd);
+         Encoders();
+         Print();
+     }
+
+Right now the the only commands are to drive the motor with left and right speeds defined in setup(),
+and to retrieve the wheel encoder values.  The Print() prints the time in milliseconds since the code was uploaded,
+or the mega subsequently turned on, the left and right motor speeds and the left and right encoder counts to the logomatic.
+
+Example logomatic file:
+
+90    210    210    122    36
+180    210    210    130    53
+272    210    210    163    93
+363    210    210    163    93
+453    210    210    314    260
+544    210    210    426    378
+635    210    210    544    497
+726    210    210    659    612
+817    210    210    775    728
+908    210    210    892    845
+999    210    210    1008    960
+1090    210    210    1124    1076
+1181    210    210    1241    1193
+1272    210    210    1357    1309
+1362    210    210    1473    1427
+1453    210    210    1589    1541
+1544    210    210    1706    1660
+1636    210    210    1822    1776
+1727    210    210    1939    1891
+1818    210    210    2055    2007
+1909    210    210    2171    2123
+2000    210    210    2289    2241
+2091    210    210    2405    2357
+2181    210    210    2521    2473
+2273    210    210    2639    2590
+2364    210    210    2756    2707
+2455    210    210    2871    2822
+2546    210    210    2987    2938
+2637    210    210    3104    3055
+2728    210    210    3221    3171
+2819    210    210    3337    3288
+2910    210    210    3453    3404
+3001    210    210    3569    3521
+3092    210    210    3685    3637
+3183    210    210    3802    3753
+3274    210    210    3919    3871
+3365    210    210    4035    3987
+3456    210    210    4151    4103
+3547    210    210    4267    4218
+3639    210    210    4384    4335
+3730    210    210    4501    4450
+3820    210    210    4617    4568
+3911    210    210    4734    4685
+4002    210    210    4850    4801
+4093    210    210    4966    4917
+4184    210    210    5083    5034
+
+Email or see me if you  have any questions.  Before modifying or re-configuring the code, I suggest each team
+member run it as is.  The code is on the mini-ITX desk top and in the desk top Recyclinator folder.
