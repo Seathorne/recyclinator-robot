@@ -36,30 +36,57 @@ void Drive::SetSpeed(float left, float right) {
 }
 
 void Drive::SetSpeedLeft(float value) {
-  static float previous;
-  if(previous==value) return;
-  previous=value;
+  static byte prev;
+  
+  if (value > 1)
+	value = 1;
+  else if (value < -1)
+	value = -1;
+  
   // Transform [-1..1] --> [0..255]
-  if (value > 1) value = 1;
-  else if (value < -1) value = -1;
-  this->SendCommand(SET_SPEED_LEFT, (byte)((value + 1.0) * 127.5));
+  byte curr = (value + 1.0) * 127.5;
+  
+  if (curr != prev)
+  {
+	prev = curr;
+	this->SendCommand(SET_SPEED_LEFT, curr);
+  }
 }
 
 void Drive::SetSpeedRight(float value) {
-  static float previous;
-  if(previous==value) return;
-  previous=value;
+  static byte prev;
+  
+  if (value > 1)
+	value = 1;
+  else if (value < -1)
+	value = -1;
+  
   // Transform [-1..1] --> [0..255]
-  if (value > 1) value = 1;
-  else if (value < -1) value = -1;
-  this->SendCommand(SET_SPEED_RIGHT, (byte)((value + 1.0) * 127.5));
+  byte curr = (value + 1.0) * 127.5;
+  
+  if (curr != prev)
+  {
+	prev = curr;
+	this->SendCommand(SET_SPEED_RIGHT, curr);
+  }
 }
 
 void Drive::SetAccel(float value) {
+  static byte prev;
+
+  if (value > 1)
+	value = 1;
+  else if (value < 0)
+	value = 0;
+  
   // Transform [0..1] --> [0..255]
-  if (value > 1) value = 1;
-  else if (value < 0) value = 0;
-  this->SendCommand(SET_ACCEL, (byte)(value * 255));
+  byte curr = value * 255;
+  
+  if (curr != prev)
+  {
+	prev = curr;
+	this->SendCommand(SET_ACCEL, curr);
+  }
 }
 
 void Drive::GetEncoderCounts() {
