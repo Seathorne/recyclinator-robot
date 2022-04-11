@@ -10,6 +10,7 @@ enum AutoRoutine
   RotateDrive,
   TestMinSpeed,
   EndHallwayRightTurn,
+  EndHallwayFeatureDetect
 };
 
 Robot robot;
@@ -171,6 +172,101 @@ void loop() {
     }; break;
 
     case EndHallwayRightTurn: {
+      switch (autoStep) {
+        case 0:
+          Serial.println("Auto| step 0: start wall following");
+          robot.startWallFollow(60, -1, 0.7, SonarLoc::FrontRight);
+          autoStep++;
+          break;
+        case 1:
+          Serial.println("Auto| step 1: continue wall following");
+          if (isEndOfHallway(SonarLoc::FrontRight)) {
+            Serial.println("Auto| step 1: end of hallway detected");
+            robot.stop();
+          } else if (robot.mode() == Mode::WallFollowing) {
+            robot.step();
+          } else {
+            Serial.println("Auto| step 1: wall following complete");
+            autoStep++;
+          };
+          break;
+        case 2:
+          Serial.println("Auto| step 2: starting rotation");
+          robot.startRotate(45);
+          autoStep++;
+          break;
+        case 3:
+          Serial.println("Auto| step 3: continuing rotation");
+          if (robot.mode() == Mode::Rotating) {
+            robot.step();
+          } else {
+            Serial.println("Auto| step 3: rotation complete");
+            autoStep++;
+          }
+          break;
+        case 4:
+          Serial.println("Auto| step 4: starting drive");
+          robot.startDrive(0.5, 0.5);
+          autoStep++;
+          break;
+        case 5:
+          Serial.println("Auto| step 5: continuing drive");
+          if (robot.mode() == Mode::Driving) {
+            robot.step();
+          } else {
+            Serial.println("Auto| step 5: drive complete");
+            autoStep++;
+          }
+          break;
+        case 6:
+          Serial.println("Auto| step 6: starting rotation");
+          robot.startRotate(45);
+          autoStep++;
+          break;
+        case 7:
+          Serial.println("Auto| step 7: continuing rotation");
+          if (robot.mode() == Mode::Rotating) {
+            robot.step();
+          } else {
+            Serial.println("Auto| step 7: rotation complete");
+            autoStep++;
+          }
+          break;
+        case 8:
+          Serial.println("Auto| step 8: starting drive");
+          robot.startDrive(1, 0.7);
+          autoStep++;
+          break;
+        case 9:
+          Serial.println("Auto| step 9: continuing drive");
+          if (robot.mode() == Mode::Driving) {
+            robot.step();
+          } else {
+            Serial.println("Auto| step 9: drive complete");
+            autoStep++;
+          }
+          break;
+        case 10:
+          Serial.println("Auto| step 10: start wall following");
+          robot.startWallFollow(60, -1, 0.7, SonarLoc::FrontRight);
+          autoStep++;
+          break;
+        case 11:
+          Serial.println("Auto| step 11: continue wall following");
+          if (isEndOfHallway(SonarLoc::FrontRight)) {
+            Serial.println("Auto| step 11: end of hallway detected");
+            robot.stop();
+          } else if (robot.mode() == Mode::WallFollowing) {
+            robot.step();
+          } else {
+            Serial.println("Auto| step 11: wall following complete");
+            autoStep++;
+          };
+          break;
+      }
+    }; break;
+
+    case EndHallwayFeatureDetect: {
       const static constexpr float RangeSetpoint = 60;
       
       static Feature feature;
