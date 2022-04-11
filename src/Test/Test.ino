@@ -6,6 +6,7 @@ enum AutoRoutine
   Drive,
   Rotate,
   WallFollow,
+  WallFollowFeatureDetect,
   StopEndOfHallway,
   RotateDrive,
   TestMinSpeed,
@@ -26,7 +27,7 @@ void setup() {
 }
 
 void loop() {
-  constexpr long FrameLength = 200;
+  constexpr long FrameLength = 100;
   constexpr bool PrintAll = true;
 
   static long prevTime = millis();
@@ -100,6 +101,45 @@ void loop() {
         autoRoutine = AutoRoutine::DoNothing;
       }
     }; break;
+
+    case WallFollowFeatureDetect: {
+      const static constexpr float RangeSetpoint = 60;
+      
+      static Feature feature;
+      static float featureRange;
+      
+      switch (autoStep) {
+        case 0:
+          Serial.println("Auto| step 0: start wall following");
+          robot.startWallFollow(RangeSetpoint, -1, 0.7, SonarLoc::FrontRight);
+          autoStep++;
+          break;
+        case 1:
+          Serial.println("Auto| step 1: continue wall following");
+          
+          feature = robot.detectFeature(SonarLoc::HallRight, featureRange);
+          switch (feature) {
+            case Feature::Junction:
+              Serial.println("Auto| step 1: end of hallway detected");
+              robot.stop();
+              break;
+            case Feature::Other:
+              Serial.println("Auto| step 1: feature detected");
+              robot.setRangeSetpoint(featureRange); // adjust range setpoint
+              // no break is intentional
+            default:
+              if (robot.mode() == Mode::WallFollowing) {
+                robot.step();
+              } else {
+                Serial.println("Auto| step 1: wall following complete");
+                robot.stop();
+                autoRoutine = AutoRoutine::DoNothing;
+              };
+              break;
+          }
+          break;
+      }
+    } break;
 
     case StopEndOfHallway: {
       if (autoStep == 0)

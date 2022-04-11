@@ -251,9 +251,10 @@ void Robot::setRangeSetpoint(float range) {
  */
 Feature Robot::detectFeature(SonarLoc sonarLoc, float &range) {
   constexpr float FeatureThreshold = 15;
-  constexpr float JunctionThreshold = 100;
+  constexpr float JunctionThreshold = 200;
 
-  constexpr int BufferSize = 6;
+  constexpr int BufferSize = 2 * 2;
+  constexpr int RepeatSize = 2;
   
   static float ranges[BufferSize];
   static bool firstTime = true;
@@ -277,27 +278,47 @@ Feature Robot::detectFeature(SonarLoc sonarLoc, float &range) {
   }
   ranges[BufferSize-1] = currRange;
 
-  /* Find mean of older readings */
-  float oldRangeAvg = 0;
-  int oldCount = (BufferSize + 1)/2;
-  for (int i = 0; i < oldCount; i++) {
-    oldRangeAvg += ranges[i];
-  }
-  oldRangeAvg /= oldCount;
+  
+//  /* Find mean of older readings */
+//  float oldRangeAvg = 0;
+//  int oldCount = (BufferSize + 1)/2;
+//  for (int i = 0; i < oldCount; i++) {
+//    oldRangeAvg += ranges[i];
+//  }
+//  oldRangeAvg /= oldCount;
+//
+//  /* Find mean of newer readings */
+//  float newRangeAvg = 0;
+//  int newCount = BufferSize - oldCount;
+//  for (int i = oldCount; i < BufferSize; i++) {
+//    newRangeAvg += ranges[i];
+//  }
+//  newRangeAvg /= newCount;
 
-  /* Find mean of newer readings */
-  float newRangeAvg = 0;
-  int newCount = BufferSize/2;
-  for (int i = 0; i < newCount; i++) {
-    newRangeAvg += ranges[i];
+  bool repeated = true;
+  float depths[RepeatSize];
+  float old = ranges[BufferSize-1 - RepeatSize];
+  for (int i = 0; i < RepeatSize; i++) {
+    depths[i] = ranges[BufferSize-1 - i] - old;
+    if (depths[i] < FeatureThreshold) {
+      repeated = false;
+      break;
+    }
   }
-  newRangeAvg /= newCount;
 
   /* Characterize feature */
-  float depth = abs(newRangeAvg - oldRangeAvg); // abs -> detects pos & neg features
-  Feature detected = (depth >= JunctionThreshold)
+  float depth = 0;
+  for (int i = 0; i < RepeatSize; i++) {
+    depth += depths[i];
+  }
+  depth = abs(depth/RepeatSize);
+//  float depth = abs(newRangeAvg - oldRangeAvg); // abs -> detects pos & neg features
+//  Serial.println("Feature| newRangeAvg = " + String(newRangeAvg));
+//  Serial.println("Feature| oldRangeAvg = " + String(oldRangeAvg));
+  Serial.println("Feature| depth = " + String(depth));
+  Feature detected = (depth >= JunctionThreshold && repeated)
     ? Feature::Junction
-    : (depth >= FeatureThreshold)
+    : (depth >= FeatureThreshold && repeated)
       ? Feature::Other
       : Feature::None;
 
