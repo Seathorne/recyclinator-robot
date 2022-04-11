@@ -53,7 +53,8 @@ public:
 
     void stop();
 
-    Feature detectFeature(SonarLoc sonar, float &range);
+    Feature detectFeatureBuffered(SonarLoc sonar, float &range);
+    Feature detectFeatureRepeated(SonarLoc sonar, float &range);
 
     Mode mode() const;
 

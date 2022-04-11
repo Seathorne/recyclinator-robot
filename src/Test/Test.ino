@@ -117,7 +117,7 @@ void loop() {
         case 1:
           Serial.println("Auto| step 1: continue wall following");
           
-          feature = robot.detectFeature(SonarLoc::HallRight, featureRange);
+          feature = robot.detectFeatureRepeated(SonarLoc::HallRight, featureRange);
           switch (feature) {
             case Feature::Junction:
               Serial.println("Auto| step 1: end of hallway detected");
@@ -321,7 +321,7 @@ void loop() {
         case 1:
           Serial.println("Auto| step 1: continue wall following");
           
-          feature = robot.detectFeature(SonarLoc::FrontRight, featureRange);
+          feature = robot.detectFeatureRepeated(SonarLoc::FrontRight, featureRange);
           switch (feature) {
             case Feature::Junction:
               Serial.println("Auto| step 1: end of hallway detected");
@@ -406,7 +406,7 @@ void loop() {
         case 11:
           Serial.println("Auto| step 11: continue wall following");
 
-          feature = robot.detectFeature(SonarLoc::FrontRight, featureRange);
+          feature = robot.detectFeatureRepeated(SonarLoc::FrontRight, featureRange);
           switch (feature) {
             case Feature::Junction:
               Serial.println("Auto| step 11: end of hallway detected");
