@@ -249,7 +249,7 @@ void Robot::setRangeSetpoint(float range) {
  * Returns the type of feature and its absolute
  * range from the robot.
  */
-Feature Robot::Buffered(SonarLoc sonarLoc, float &range) {
+Feature Robot::detectFeatureBuffered(SonarLoc sonarLoc, float &range) {
   constexpr float FeatureThreshold = 15;
   constexpr float JunctionThreshold = 200;
 
@@ -415,13 +415,13 @@ void Robot::_setMode(Mode mode)
   _mode = mode;
 }
 
-bool Robot::checkWall(SonarLoc leftS, SonarLoc RightS)
+bool Robot::checkWall(SonarLoc LeftS, SonarLoc RightS)
 {
   const float exDistance=201;
   float currRangeL = this->sonar(LeftS).Range();
   float currRangeR = this->sonar(RightS).Range();
   float currRange=LeftS+RightS;
-  normRange=abs(currRange-exDistance);
+  float  normRange=abs(currRange-exDistance);
   if(normRange<5) return true;
   else return false;
 }
@@ -435,10 +435,10 @@ void Robot::startWallFollowComp(float range, double distance, double speed, Sona
   _wallFollowSonarL = sonarL;
   
   _mode = Mode::WallFollowing;
-  this->_stepWallFollowComp();
+  this->_stepWallFollow();
 }
 
-Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, sonarLoc sonarLoc2, float &range) {
+Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, float &range) {
   constexpr float FeatureThreshold = 15;
   constexpr float JunctionThreshold = 200;
 
@@ -450,7 +450,7 @@ Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, sonarLoc sonarLoc2, 
   
   if(checkWall(sonarLoc, sonarLoc2))
   {
-    range=_rangeSetPoint;
+    range=_rangeSetpoint;
     return;
   }
   

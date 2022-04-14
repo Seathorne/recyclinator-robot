@@ -12,12 +12,12 @@ enum AutoRoutine
   RotateDrive,
   TestMinSpeed,
   EndHallwayRightTurn,
-  EndHallwayFeatureDetect
+  EndHallwayFeatureDetect,
   TestFeatureDetection
 };
 
 Robot robot;
-AutoRoutine autoRoutine = AutoRoutine::TestFeatureDetection;
+AutoRoutine autoRoutine = AutoRoutine::WallFollowFeatureDetect;
 
 void setup() {
   Serial.begin(9600);
@@ -456,7 +456,7 @@ void loop() {
           Serial.println("Test Feature Detection| Left Feature = " + String(left) + ", Range = " + String(rangeLeft) + " cm");
         }
         
-        Feature right = robot.detectFeatureRepeated(SonarLoc::HallLeft, rangeLeft);
+        Feature right = robot.detectFeatureRepeated(SonarLoc::HallRight, rangeLeft);
         if (right != Feature::None)
         {
           Serial.println("Test Feature Detection| Right Feature = " + String(right) + ", Range = " + String(rangeRight) + " cm");
