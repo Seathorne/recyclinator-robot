@@ -414,3 +414,14 @@ void Robot::_setMode(Mode mode)
 {
   _mode = mode;
 }
+
+bool Robot::checkWall(SonarLoc leftS, SonarLoc RightS)
+{
+  const float exDistance=201;
+  float currRangeL = this->sonar(LeftS).Range();
+  float currRangeR = this->sonar(RightS).Range();
+  float currRange=LeftS+RightS;
+  normRange=abs(currRange-exDistance);
+  if(normRange<5) return true;
+  else return false;
+}
