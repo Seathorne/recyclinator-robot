@@ -327,17 +327,17 @@ Feature Robot::detectFeatureRepeated(SonarLoc sonarLoc, float &range) {
   constexpr int BufferSize = 2 * 2;
   constexpr int RepeatSize = 2;
   
-  static float ranges[BufferSize];
-  static bool firstTime = true;
+  static float ranges[SonarLoc::Count][BufferSize];
+  static bool firstTime[SonarLoc::Count] = { true, true, true, true, true, true, true };
 
   /* Read current range */
   float currRange = this->sonar(sonarLoc).Range();
 
   /* First time only: initialize buffer */
-  if (firstTime) {
-    firstTime = false;
+  if (firstTime[sonarLoc]) {
+    firstTime[sonarLoc] = false;
     for (int i = 0; i < BufferSize; i++) {
-      ranges[i] = currRange;
+      ranges[sonarLoc][i] = currRange;
     }
     range = -1;
     return Feature::None;
@@ -345,16 +345,16 @@ Feature Robot::detectFeatureRepeated(SonarLoc sonarLoc, float &range) {
 
   /* Shift in new reading */
   for (int i = 0; i < BufferSize-1; i++) {
-    ranges[i] = ranges[i+1];
+    ranges[sonarLoc][i] = ranges[sonarLoc][i+1];
   }
-  ranges[BufferSize-1] = currRange;
+  ranges[sonarLoc][BufferSize-1] = currRange;
 
   /* Detect whether feature present in repeated readings */
   bool repeated = true;
   float depths[RepeatSize];
-  float old = ranges[BufferSize-1 - RepeatSize];
+  float old = ranges[sonarLoc][BufferSize-1 - RepeatSize];
   for (int i = 0; i < RepeatSize; i++) {
-    depths[i] = ranges[BufferSize-1 - i] - old;
+    depths[i] = ranges[sonarLoc][BufferSize-1 - i] - old;
     if (depths[i] < FeatureThreshold) {
       repeated = false;
       break;
