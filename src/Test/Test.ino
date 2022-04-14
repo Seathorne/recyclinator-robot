@@ -1,3 +1,4 @@
+#include "Junction.h"
 #include "Robot.h"
 
 enum AutoRoutine
@@ -19,6 +20,9 @@ AutoRoutine autoRoutine = AutoRoutine::DoNothing;
 
 void setup() {
   Serial.begin(9600);
+
+  /* Initialize static classes */
+  Junctions::Init();
 
   /* Initialize subsystems */
   robot.init();
