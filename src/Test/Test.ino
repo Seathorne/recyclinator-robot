@@ -13,10 +13,11 @@ enum AutoRoutine
   TestMinSpeed,
   EndHallwayRightTurn,
   EndHallwayFeatureDetect
+  TestFeatureDetection
 };
 
 Robot robot;
-AutoRoutine autoRoutine = AutoRoutine::DoNothing;
+AutoRoutine autoRoutine = AutoRoutine::TestFeatureDetection;
 
 void setup() {
   Serial.begin(9600);
@@ -439,6 +440,36 @@ void loop() {
       }
     }; break;
 	
+    case TestFeatureDetection: {
+        if (autoStep == 0)
+      {
+        robot.startDrive(2, 0.7);
+        autoStep++;
+      }
+      else if (robot.mode() == Mode::Driving)
+      {
+        float rangeLeft, rangeRight;
+        
+        Feature left = robot.detectFeatureRepeated(SonarLoc::HallLeft, rangeLeft);
+        if (left != Feature::None)
+        {
+          Serial.println("Test Feature Detection| Left Feature = " + String(left) + ", Range = " + String(rangeLeft) + " cm");
+        }
+        
+        Feature right = robot.detectFeatureRepeated(SonarLoc::HallLeft, rangeLeft);
+        if (right != Feature::None)
+        {
+          Serial.println("Test Feature Detection| Right Feature = " + String(right) + ", Range = " + String(rangeRight) + " cm");
+        }
+
+        robot.step();
+      }
+      else
+      {
+        autoRoutine = AutoRoutine::DoNothing;
+      }
+    }; break;
+
   }
 
   /* Print info about subsystems */
