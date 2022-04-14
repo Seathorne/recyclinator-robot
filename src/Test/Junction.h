@@ -1,8 +1,6 @@
 #ifndef JUNCTION_H
 #define JUNCTION_H
 
-#include <stddef.h>
-
 enum Direction {
   North,
   South,
@@ -17,7 +15,9 @@ enum JunctionId {
 class Junction
 {
 public:
-  bool connectsTo(Junction const& dest, Direction &dir);
+  bool connectsTo(Junction const &dest, Direction &dir);
+  
+  JunctionId id() const;
   Junction const* next(Direction dir) const;
   Junction const* prev(Direction dir) const;
 
@@ -26,20 +26,8 @@ public:
 
 private:
   JunctionId _id;
-  Junction const* _nexts[4] = { NULL, NULL, NULL, NULL };
-  Junction const* _prevs[4] = { NULL, NULL, NULL, NULL };
-};
-
-/* Static class holding Junction instances */
-
-class Junctions
-{
-public:
-  static Junction A, B, C, D, E, F, G, H;
-  static constexpr Junction *const All[8] = { &A, &B, &C, &D, &E, &F, &G, &H };
-
-  static void Init();
-  static Junction const *const ById(JunctionId id);
+  Junction const* _nexts[4];
+  Junction const* _prevs[4];
 };
 
 #endif // JUNCTION_H
