@@ -36,7 +36,7 @@ class Robot
 public:
     static constexpr int GyroPin = 55;
     static constexpr int SonarPins[SonarLoc::Count] = { 24, 25, 26, 27, 28, 29, 34 };
-
+    bool Robot::checkWall(SonarLoc leftS, SonarLoc RightS);
     Robot();
     void init();
     void update();
