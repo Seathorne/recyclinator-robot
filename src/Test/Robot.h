@@ -62,8 +62,11 @@ public:
     Gyro gyro() const;
     Sonar sonar(SonarLoc location) const;
   
-    bool Robot::checkWall(SonarLoc leftS, SonarLoc RightS);
-    
+    bool checkWall(SonarLoc leftS, SonarLoc RightS);
+  
+    void startWallFollowComp(float range, double distance, double speed, SonarLoc sonarR, SonarLoc sonarL)
+      
+    Feature detectFeatureRepeatedComp(SonarLoc sonarLoc, sonarLoc sonarLoc2, float &range)
 private:
     Drive _drive;
     Gyro _gyro;
@@ -84,6 +87,7 @@ private:
     double _distanceSetpoint;
     float _rangeSetpoint;
     SonarLoc _wallFollowSonar;
+    SonarLoc _wallFollowSonarL;
 
     void _setMode(Mode mode);
     
