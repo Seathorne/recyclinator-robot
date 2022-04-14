@@ -249,7 +249,7 @@ void Robot::setRangeSetpoint(float range) {
  * Returns the type of feature and its absolute
  * range from the robot.
  */
-Feature Robot::detectFeatureBuffered(SonarLoc sonarLoc, float &range) {
+Feature Robot::Buffered(SonarLoc sonarLoc, float &range) {
   constexpr float FeatureThreshold = 15;
   constexpr float JunctionThreshold = 200;
 
@@ -424,4 +424,92 @@ bool Robot::checkWall(SonarLoc leftS, SonarLoc RightS)
   normRange=abs(currRange-exDistance);
   if(normRange<5) return true;
   else return false;
+}
+
+void Robot::startWallFollowComp(float range, double distance, double speed, SonarLoc sonarR, SonarLoc sonarL)
+{
+  _rangeSetpoint = range;
+  _distanceSetpoint = distance;
+  _driveSpeed = speed;
+  _wallFollowSonar = sonarR;
+  _wallFollowSonarL = sonarL;
+  
+  _mode = Mode::WallFollowing;
+  this->_stepWallFollowComp();
+}
+
+Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, sonarLoc sonarLoc2, float &range) {
+  constexpr float FeatureThreshold = 15;
+  constexpr float JunctionThreshold = 200;
+
+  constexpr int BufferSize = 2 * 2;
+  constexpr int RepeatSize = 2;
+  
+  static float ranges[SonarLoc::Count][BufferSize];
+  static bool firstTime[SonarLoc::Count] = { true, true, true, true, true, true, true };
+  
+  if(checkWall(sonarLoc, sonarLoc2))
+  {
+    range=_rangeSetPoint;
+    return;
+  }
+  
+  /* Read current range */
+  float currRange = this->sonar(sonarLoc).Range();
+
+  /* First time only: initialize buffer */
+  if (firstTime[sonarLoc]) {
+    firstTime[sonarLoc] = false;
+    for (int i = 0; i < BufferSize; i++) {
+      ranges[sonarLoc][i] = currRange;
+    }
+    range = -1;
+    return Feature::None;
+  }
+
+  /* Shift in new reading */
+  for (int i = 0; i < BufferSize-1; i++) {
+    ranges[sonarLoc][i] = ranges[sonarLoc][i+1];
+  }
+  ranges[sonarLoc][BufferSize-1] = currRange;
+
+  /* Detect whether feature present in repeated readings */
+  bool repeated = true;
+  float depths[RepeatSize];
+  float old = ranges[sonarLoc][BufferSize-1 - RepeatSize];
+  for (int i = 0; i < RepeatSize; i++) {
+    depths[i] = ranges[sonarLoc][BufferSize-1 - i] - old;
+    if (depths[i] < FeatureThreshold) {
+      repeated = false;
+      break;
+    }
+  }
+
+  /* Take average depth of feature */
+  float depth = 0;
+  for (int i = 0; i < RepeatSize; i++) {
+    depth += depths[i];
+  }
+  depth = abs(depth/RepeatSize);
+
+  /* Characterize feature */
+  Serial.println("Feature| depth = " + String(depth));
+  Feature detected = (depth >= JunctionThreshold && repeated)
+    ? Feature::Junction
+    : (depth >= FeatureThreshold && repeated)
+      ? Feature::Other
+      : Feature::None;
+
+  /* For debugging: print detected feature */
+  switch (detected) {
+    case Junction:
+      Serial.println("Feature| detected end of hallway with depth " + String(depth) + " at range " + String(currRange) + " cm");
+      break;
+    case Other:
+      Serial.println("Feature| detected feature with depth " + String(depth) + " at range " + String(currRange) + " cm");
+      break;
+  }
+
+  range = currRange; // or newRangeAvg -- both have pros & cons
+  return detected;
 }
