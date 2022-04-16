@@ -448,23 +448,27 @@ Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, 
   static float ranges[SonarLoc::Count][BufferSize];
   static bool firstTime[SonarLoc::Count] = { true, true, true, true, true, true, true };
   
-  if(checkWall(sonarLoc, sonarLoc2))
-  {
-    range=_rangeSetpoint;
-    return;
-  }
+
   
   /* Read current range */
-  float currRange = this->sonar(sonarLoc).Range();
+  float currRange = this->sonar(sonarLoc).Range();                                        
 
   /* First time only: initialize buffer */
-  if (firstTime[sonarLoc]) {
+  if (firstTime[sonarLoc]) {                                    //failure vector 1; firstTime fails to change
     firstTime[sonarLoc] = false;
     for (int i = 0; i < BufferSize; i++) {
       ranges[sonarLoc][i] = currRange;
     }
     range = -1;
+    Serial.println("Performing first time setup. If this happens more than once, this is bugged.");
     return Feature::None;
+  }
+
+  if(checkWall(sonarLoc, sonarLoc2))                                                      //reset case
+  {
+    Serial.println("Reset case. If this occurs, the robot *should* be between two consistent walls.");
+    range=_rangeSetpoint;
+    return;
   }
 
   /* Shift in new reading */
@@ -508,8 +512,11 @@ Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, 
     case Other:
       Serial.println("Feature| detected feature with depth " + String(depth) + " at range " + String(currRange) + " cm");
       break;
+    default:
+      Serial.println("Feature| None");                                                                                                  //modified condition for error testing.
+      break;
   }
 
-  range = currRange; // or newRangeAvg -- both have pros & cons
+  range = currRange-(ranges[0]-range); //implementation of my range setpoint method
   return detected;
 }
