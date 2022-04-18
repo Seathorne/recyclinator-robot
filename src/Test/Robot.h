@@ -50,7 +50,7 @@ public:
 
     void startWallFollow(float range, double distance, double speed, SonarLoc sonar);
     void setRangeSetpoint(float range);
-
+    float getRangeSetpoint();
     void stop();
 
     Feature detectFeatureBuffered(SonarLoc sonar, float &range);

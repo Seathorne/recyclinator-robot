@@ -18,7 +18,7 @@ enum AutoRoutine
 };
 
 Robot robot;
-AutoRoutine autoRoutine = AutoRoutine::EndHallwayFeatureDetect;
+AutoRoutine autoRoutine = AutoRoutine::WallCompTest;
 
 void setup() {
   Serial.begin(9600);
@@ -35,7 +35,7 @@ void setup() {
 void loop() {
   constexpr long FrameLength = 100;
   constexpr bool PrintAll = true;
-
+  float testSetPoint[2];
   static long prevTime = millis();
   static bool prevIsAutoMode;
   static int autoStep = 0;
@@ -503,9 +503,12 @@ void loop() {
               break;
             case Feature::Other:
               Serial.println("Auto| step 1: feature detected");
-              robot.setRangeSetpoint(featureRange); // adjust range setpoint
+              robot.setRangeSetpoint(featureRange-(testSetPoint[0]-robot.getRangeSetpoint())); // adjust range setpoint
               // no break is intentional
             default:
+              testSetPoint[0]=testSetPoint[1];
+              testSetPoint[1]=featureRange;
+              
               if (robot.mode() == Mode::WallFollowing) {
                 robot.step();
               } else {
