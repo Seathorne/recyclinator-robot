@@ -440,7 +440,7 @@ void Robot::startWallFollowComp(float range, double distance, double speed, Sona
 
 Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, float &range) {
   constexpr float FeatureThreshold = 15;
-  constexpr float JunctionThreshold = 200;
+  constexpr float JunctionThreshold = 150;
 
   constexpr int BufferSize = 2 * 2;
   constexpr int RepeatSize = 2;
@@ -462,13 +462,6 @@ Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, 
     range = -1;
     Serial.println("Performing first time setup. If this happens more than once, this is bugged.");
     return Feature::None;
-  }
-
-  if(checkWall(sonarLoc, sonarLoc2))                                                      //reset case
-  {
-    Serial.println("Reset case. If this occurs, the robot *should* be between two consistent walls.");
-    range=_rangeSetpoint;
-    return;
   }
 
   /* Shift in new reading */
@@ -495,7 +488,8 @@ Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, 
     depth += depths[i];
   }
   depth = abs(depth/RepeatSize);
-
+  // ranges[sonarLoc][0]-range
+  
   /* Characterize feature */
   Serial.println("Feature| depth = " + String(depth));
   Feature detected = (depth >= JunctionThreshold && repeated)
@@ -517,6 +511,6 @@ Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, 
       break;
   }
 
-  range = currRange-(ranges[0]-range); //implementation of my range setpoint method
+  range = currRange; //implementation of my range setpoint method
   return detected;
 }

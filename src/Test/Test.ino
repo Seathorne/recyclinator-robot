@@ -18,7 +18,7 @@ enum AutoRoutine
 };
 
 Robot robot;
-AutoRoutine autoRoutine = AutoRoutine::WallFollowFeatureDetect;
+AutoRoutine autoRoutine = AutoRoutine::EndHallwayFeatureDetect;
 
 void setup() {
   Serial.begin(9600);
@@ -480,30 +480,40 @@ void loop() {
     switch (autoStep) {
       case 0:
         Serial.println("Auto| step 0: start wall following");
-        robot.startWallFollowComp(RangeSetpoint, -1, 0.7, SonarLoc::FrontRight, SonarLoc::FrontLeft);
+        robot.startWallFollowComp(RangeSetpoint, -1, 0.7, SonarLoc::HallRight, SonarLoc::HallLeft);
         autoStep++;
         break;
       case 1:
         Serial.println("Auto| step 1: continue wall following");
-        
-        feature = robot.detectFeatureRepeated(SonarLoc::FrontRight, SonarLoc::FrontLeft, featureRange);
-        switch (feature) {
-          case Feature::Junction:
-            Serial.println("Auto| step 1: end of hallway detected");
-            robot.stop();
-            break;
-          case Feature::Other:
-            Serial.println("Auto| step 1: feature detected");
-            robot.setRangeSetpoint(featureRange); // adjust range setpoint
-            // no break is intentional
-          default:
-            if (robot.mode() == Mode::WallFollowing) {
-              robot.step();
-            } else {
+
+        if(robot.checkWall(SonarLoc::HallRight, SonarLoc::HallLeft))                                                      //reset case
+        {
+          Serial.println("Reset case. If this occurs, the robot *should* be between two consistent walls.");
+          robot.setRangeSetpoint(RangeSetpoint);
+        }
+        else
+        {
+          feature = robot.detectFeatureRepeatedComp(SonarLoc::HallRight, SonarLoc::HallLeft, featureRange);
+          switch (feature) {
+            case Feature::Junction:
+              Serial.println("Auto| step 1: end of hallway detected");
+              robot.stop();
               Serial.println("Auto| step 1: wall following complete");
               autoStep++;
-            };
-            break;
+              break;
+            case Feature::Other:
+              Serial.println("Auto| step 1: feature detected");
+              robot.setRangeSetpoint(featureRange); // adjust range setpoint
+              // no break is intentional
+            default:
+              if (robot.mode() == Mode::WallFollowing) {
+                robot.step();
+              } else {
+                Serial.println("Auto| step 1: wall following complete");
+                autoStep++;
+              };
+              break;
+          }
         }
         
         break;
