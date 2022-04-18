@@ -1,9 +1,13 @@
-#include "Junctions.h"
+#include "Action.h"
+#include "DriveAction.h"
+
+//#include "Junctions.h"
 #include "Robot.h"
 
 enum AutoRoutine
 {
   DoNothing,
+  ActionList,
   Drive,
   Rotate,
   WallFollow,
@@ -18,13 +22,16 @@ enum AutoRoutine
 };
 
 Robot robot;
-AutoRoutine autoRoutine = AutoRoutine::WallCompTest;
+AutoRoutine autoRoutine = AutoRoutine::ActionList;
+
+constexpr int ACTIONS = 1;
+Action *actions[ACTIONS] = { new DriveAction(&robot, 2, 0.7) };
 
 void setup() {
   Serial.begin(9600);
 
   /* Initialize static classes */
-  Junctions::Init();
+  // Junctions::Init();
 
   /* Initialize subsystems */
   robot.init();
@@ -54,6 +61,17 @@ void loop() {
 
   /* Perform autonomous routine step */
   switch (autoRoutine) {
+
+    case ActionList: {
+      if (autoStep < ACTIONS) {
+        Action *currAction = actions[autoStep];
+        if (!currAction->isDone()) {
+          currAction->run();
+        } else {
+          autoStep++;
+        }
+      }
+    }; break;
 
     case TestMinSpeed: {
         robot.drive().SetSpeed(0.03, 0.03);
