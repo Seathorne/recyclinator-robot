@@ -249,7 +249,8 @@ void Robot::setRangeSetpoint(float range) {
  * Returns the type of feature and its absolute
  * range from the robot.
  */
-Feature Robot::detectFeatureBuffered(SonarLoc sonarLoc, float &range) {
+/*
+Feature Robot::detectFeatureBuffered(SonarLoc sonarLoc, float &range) {   vestigial. does nothing that other replaced functions don't do.
   constexpr float FeatureThreshold = 15;
   constexpr float JunctionThreshold = 200;
 
@@ -258,10 +259,10 @@ Feature Robot::detectFeatureBuffered(SonarLoc sonarLoc, float &range) {
   static float ranges[BufferSize];
   static bool firstTime = true;
 
-  /* Read current range */
+  // Read current range 
   float currRange = this->sonar(sonarLoc).Range();
 
-  /* First time only: initialize buffer */
+  // First time only: initialize buffer 
   if (firstTime) {
     firstTime = false;
     for (int i = 0; i < BufferSize; i++) {
@@ -271,13 +272,13 @@ Feature Robot::detectFeatureBuffered(SonarLoc sonarLoc, float &range) {
     return Feature::None;
   }
 
-  /* Shift in new reading */
+  // Shift in new reading 
   for (int i = 0; i < BufferSize-1; i++) {
     ranges[i] = ranges[i+1];
   }
   ranges[BufferSize-1] = currRange;
   
-  /* Find mean of older readings */
+  // Find mean of older readings 
   float oldRangeAvg = 0;
   int oldCount = (BufferSize + 1)/2;
   for (int i = 0; i < oldCount; i++) {
@@ -285,7 +286,7 @@ Feature Robot::detectFeatureBuffered(SonarLoc sonarLoc, float &range) {
   }
   oldRangeAvg /= oldCount;
 
-  /* Find mean of newer readings */
+  // Find mean of newer readings 
   float newRangeAvg = 0;
   int newCount = BufferSize - oldCount;
   for (int i = oldCount; i < BufferSize; i++) {
@@ -293,12 +294,12 @@ Feature Robot::detectFeatureBuffered(SonarLoc sonarLoc, float &range) {
   }
   newRangeAvg /= newCount;
 
-  /* Calculate depth of feature */
+  // Calculate depth of feature 
   float depth = abs(newRangeAvg - oldRangeAvg); // abs -> detects pos & neg features
 //  Serial.println("Feature| newRangeAvg = " + String(newRangeAvg));
 //  Serial.println("Feature| oldRangeAvg = " + String(oldRangeAvg));
 
-  /* Characterize feature */
+  // Characterize feature //
   Serial.println("Feature| depth = " + String(depth));
   Feature detected = (depth >= JunctionThreshold)
     ? Feature::Junction
@@ -306,7 +307,7 @@ Feature Robot::detectFeatureBuffered(SonarLoc sonarLoc, float &range) {
       ? Feature::Other
       : Feature::None;
 
-  /* For debugging: print detected feature */
+  // For debugging: print detected feature //
   switch (detected) {
     case Junction:
       Serial.println("Feature| detected end of hallway with depth " + String(depth) + " at range " + String(currRange) + " cm");
@@ -319,8 +320,8 @@ Feature Robot::detectFeatureBuffered(SonarLoc sonarLoc, float &range) {
   range = currRange; // or newRangeAvg -- both have pros & cons
   return detected;
 }
-
-Feature Robot::detectFeatureRepeated(SonarLoc sonarLoc, float &range) {
+*/
+Feature Robot::detectFeatureRepeated(SonarLoc sonarLoc, float &range) {     //slated for reevaluation once detectfeaturerepeatedcomp is functional
   constexpr float FeatureThreshold = 15;
   constexpr float JunctionThreshold = 200;
 
@@ -442,10 +443,10 @@ void Robot::startWallFollowComp(float range, double distance, double speed, Sona
 
 Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, float &range) {
   constexpr float FeatureThreshold = 15;
-  constexpr float JunctionThreshold = 150;
+  constexpr float JunctionThreshold = 200;
 
-  constexpr int BufferSize = 2 * 2;
-  constexpr int RepeatSize = 2;
+  constexpr int BufferSize = 2 * 2;       
+  constexpr int RepeatSize = 2;           
   
   static float ranges[SonarLoc::Count][BufferSize];
   static bool firstTime[SonarLoc::Count] = { true, true, true, true, true, true, true };
@@ -453,7 +454,7 @@ Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, 
 
   
   /* Read current range */
-  float currRange = this->sonar(sonarLoc).Range();                                        
+  float currRange = this->sonar(sonarLoc).Range();
   Serial.println(String(currRange));
   /* First time only: initialize buffer */
   if (firstTime[sonarLoc]) {                                    //failure vector 1; firstTime fails to change
@@ -494,7 +495,7 @@ Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, 
   
   /* Characterize feature */
   Serial.println("Feature| depth = " + String(depth));
-  Feature detected = (currRange >= JunctionThreshold && repeated)
+  Feature detected = (depth >= JunctionThreshold && repeated)
     ? Feature::Junction
     : (depth >= FeatureThreshold && repeated)
       ? Feature::Other
@@ -513,7 +514,7 @@ Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, 
       break;
   }
 
-  range = currRange; //implementation of my range setpoint method
+  range = currRange; 
   return detected;
 }
 float Robot::getRangeSetpoint()
