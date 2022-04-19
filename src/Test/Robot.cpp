@@ -209,8 +209,8 @@ void Robot::startWallFollow(float range, double distance, double speed, SonarLoc
 
 void Robot::_stepWallFollow()
 {
-  const float Kp = 0.2;
-  const float Kd = 5;
+  const float Kp = 0.005;
+  const float Kd = .7;
   const float speedMaxDiff = 10 / 128.0;
   
   static float prevError = 0;
