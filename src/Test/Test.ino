@@ -22,7 +22,7 @@ enum AutoRoutine
 };
 
 Robot robot;
-AutoRoutine autoRoutine = AutoRoutine::ActionList;
+AutoRoutine autoRoutine = AutoRoutine::WallCompTest;
 
 constexpr int ACTIONS = 1;
 Action *actions[ACTIONS] = { new DriveAction(&robot, 2, 0.7) };
@@ -503,15 +503,19 @@ void loop() {
         break;
       case 1:
         Serial.println("Auto| step 1: continue wall following");
-
+        
         if(robot.checkWall(SonarLoc::HallRight, SonarLoc::HallLeft))                                                      //reset case
         {
           Serial.println("Reset case. If this occurs, the robot *should* be between two consistent walls.");
           robot.setRangeSetpoint(RangeSetpoint);
+          Serial.println("Range Setpoint set to"+String(RangeSetpoint));
+          feature=Feature::None;
         }
         else
         {
+        
           feature = robot.detectFeatureRepeatedComp(SonarLoc::HallRight, SonarLoc::HallLeft, featureRange);
+        }
           switch (feature) {
             case Feature::Junction:
               Serial.println("Auto| step 1: end of hallway detected");
@@ -526,7 +530,7 @@ void loop() {
             default:
               testSetPoint[0]=testSetPoint[1];
               testSetPoint[1]=featureRange;
-              
+              Serial.println("Range set to" + String(RangeSetpoint));
               if (robot.mode() == Mode::WallFollowing) {
                 robot.step();
               } else {
@@ -535,7 +539,7 @@ void loop() {
               };
               break;
           }
-        }
+        
         
         break;
       case 2:
