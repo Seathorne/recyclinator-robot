@@ -36,6 +36,11 @@ float Gyro::angleDeg() const {
   return _angleDeg;
 }
 
+float Gyro::angleRad() const {
+  constexpr const float DegToRad = PI/180.0;
+  return _angleDeg * DegToRad;
+}
+
 float Gyro::angularVel() const {
   return _angularVel;
 }

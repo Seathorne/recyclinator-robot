@@ -17,6 +17,10 @@ class Gyro
         in degrees (-180..180]. */
     float angleDeg() const;
 
+    /* Returns the theta angle of the IMU,
+     *  in radians (-pi..pi]. */
+    float angleRad() const;
+
     /* Returns the angular velocity of the IMU,
      *   in degrees per second. */
     float angularVel() const;
