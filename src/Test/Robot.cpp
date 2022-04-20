@@ -44,7 +44,11 @@ void Robot::step()
     case WallFollowing:
       _stepWallFollow();
       break;
-    
+
+    case Approaching:
+      stepApproach();
+      break;
+
     default: break;
   }
 }
@@ -439,6 +443,21 @@ void Robot::startWallFollowComp(float range, double distance, double speed, Sona
   
   _mode = Mode::WallFollowing;
   this->_stepWallFollow();
+}
+
+void Robot::startApproach(double distance, double speed)
+{
+  _distanceSetpoint = distance;
+  _driveSpeed = speed;
+  _angleSetpoint = _gyro.angleDeg();
+  
+  _mode = Mode::Approaching;
+  this->stepApproach();
+}
+
+void Robot::stepApproach()
+{
+
 }
 
 Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, float &range) {

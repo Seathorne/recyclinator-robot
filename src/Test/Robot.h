@@ -4,6 +4,8 @@
 #include "Drive.h"
 #include "Gyro.h"
 #include "Sonar.h"
+#include <Pixy2.h>
+#include <PIDLoop.h>
 
 enum Mode
 {
@@ -11,6 +13,7 @@ enum Mode
   Rotating,
   Driving,
   WallFollowing,
+  Approaching,
 };
 
 enum SonarLoc
@@ -65,6 +68,9 @@ public:
     bool checkWall(SonarLoc leftS, SonarLoc RightS);
   
     void startWallFollowComp(float range, double distance, double speed, SonarLoc sonarR, SonarLoc sonarL);
+
+    void startApproach(double distance, double speed);
+    void stepApproach();
       
     Feature detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, float &range);
 private:
