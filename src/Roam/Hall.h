@@ -18,20 +18,31 @@ enum Direction
   West,
 };
 
+enum Side
+{
+  Left,
+  Right,
+};
+
 class Hall
 {
 public:
-  Hall(HallId id);
-  Hall(HallId id, const Hall *north, const Hall *south, const Hall *east, const Hall *west);
+  static constexpr const double HallWidthDefault = 244; // 244cm (8ft)
+
+  Hall(HallId id, double width = HallWidthDefault);
+  Hall(HallId id, const Hall *north, const Hall *south, const Hall *east, const Hall *west, double width = HallWidthDefault);
 
   void setConnection(Direction dir, const Hall *connection);
-
+  
   HallId getId() const;
+  double getWidth() const;
   const Hall *getConnection(Direction dir) const;
   const Hall *getConnection() const;
+  bool isWallConst(double y, Side side) const;
 
 private:
   HallId _id;
+  double _width;
   const Hall *_connections[4] = { NULL, NULL, NULL, NULL }; // 1 connection per cardinal direction
 };
 

@@ -28,7 +28,11 @@ void Robot::update()
     _sonars[i].Update();
   }
 
+  SonarLoc left = SonarLoc::HallLeft;
+  SonarLoc right = SonarLoc::HallRight;
+
   this->_updateOdometry();
+  this->_syncOdometry();
 }
 
 void Robot::_updateOdometry() {
@@ -60,6 +64,27 @@ void Robot::_updateOdometry() {
   _aTheta = aTheta;
   _x = x;
   _y = y;
+}
+
+void Robot::_syncOdometry() {
+  constexpr const double HalfRobotWidth = 16.5;
+  constexpr const SonarLoc LeftSonarLoc = SonarLoc::HallLeft;
+  constexpr const SonarLoc RightSonarLoc = SonarLoc::HallRight;
+
+  double rangeLeft = _sonars[LeftSonarLoc].Range();
+  double rangeRight = _sonars[RightSonarLoc].Range();
+
+  bool isConstLeft = _hall->isWallConst(_y, Side::Left);
+  bool isConstRight = _hall->isWallConst(_y, Side::Right);
+  double hallWidth = _hall->getWidth();
+
+  if (checkWall(LeftSonarLoc, RightSonarLoc) || (isConstLeft && isConstRight)) {
+    _x = rangeLeft / (rangeLeft + rangeRight) * hallWidth + HalfRobotWidth;
+  } else if (isConstLeft) {
+    _x = rangeLeft + HalfRobotWidth;
+  } else if (isConstRight) {
+    _x = hallWidth - rangeRight - HalfRobotWidth;
+  }
 }
 
 void Robot::step()

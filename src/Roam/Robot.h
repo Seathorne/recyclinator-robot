@@ -3,6 +3,7 @@
 
 #include "Drive.h"
 #include "Gyro.h"
+#include "Hall.h"
 #include "Sonar.h"
 
 enum Mode
@@ -76,6 +77,10 @@ private:
     double _theta, _vTheta, _aTheta;
 
     void _updateOdometry();
+    void _syncOdometry();
+
+    /* Hall variables */
+    const Hall* _hall;
 
     Drive _drive;
     Gyro _gyro;
