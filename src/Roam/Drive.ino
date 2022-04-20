@@ -21,7 +21,7 @@ void Drive::Update() {
   GetEncoderCounts();
   double currDistance = GetDistance(left, right);
   
-  _speed += (currDistance - prevDistance) / (currTime - prevTime) / 1000.0;
+  _speed = (currDistance - prevDistance) / (currTime - prevTime) / 1000.0;
 
   prevTime = currTime;
 }
