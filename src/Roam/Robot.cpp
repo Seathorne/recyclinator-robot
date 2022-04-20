@@ -27,6 +27,39 @@ void Robot::update()
   {
     _sonars[i].Update();
   }
+
+  this->_updateOdometry();
+}
+
+void Robot::_updateOdometry() {
+  /* Update new odometry values */
+  double t = millis() / 1000.0;
+  double dt = t - _t;
+
+  double chL, chR;
+  double dist = _drive.GetDistance(chL, chR);
+  double vel = (dist - _dist) / dt;
+  double accel = (vel - _vel) / dt;
+
+  double theta = _gyro.angleRad();
+  double vTheta = (theta - _theta) / dt;
+  double aTheta = (vTheta - _vTheta) / dt;
+
+  double dDist = (vel * dt) + (0.5 * accel * dt * dt);
+  double x = _x + (dDist * sin(theta));
+  double y = _y + (dDist * cos(theta));
+
+  /* Update old values */
+  _t = t;
+  _dt = dt;
+  _dist = dist;
+  _vel = vel;
+  _accel = accel;
+  _theta = theta;
+  _vTheta = vTheta;
+  _aTheta = aTheta;
+  _x = x;
+  _y = y;
 }
 
 void Robot::step()

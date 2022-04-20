@@ -67,7 +67,16 @@ public:
     void startWallFollowComp(float range, double distance, double speed, SonarLoc sonarR, SonarLoc sonarL);
       
     Feature detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, float &range);
+
 private:
+    /* Odometry variables */
+    double _t, _dt;
+    double _x, _y;
+    double _dist, _vel, _accel;
+    double _theta, _vTheta, _aTheta;
+
+    void _updateOdometry();
+
     Drive _drive;
     Gyro _gyro;
     Sonar _sonars[SonarLoc::Count] = {
