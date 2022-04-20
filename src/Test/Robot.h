@@ -7,6 +7,7 @@
 #include <Pixy2.h>
 #include <PIDLoop.h>
 
+
 enum Mode
 {
   Stopped,
@@ -49,7 +50,9 @@ public:
     void stepRotate();
 
     void startDrive(double distance, double speed);
+    void startDriveComp(double distance, double speed, double ang);
     void stepDrive();
+    void stepDriveComp();
 
     void startWallFollow(float range, double distance, double speed, SonarLoc sonar);
     void setRangeSetpoint(float range);
@@ -98,6 +101,7 @@ private:
     void _setMode(Mode mode);
     
     void _driveForward(float speed, float angle);
+    void _driveForwardComp(float speed, float angle);
     void _stepWallFollow();
 };
 

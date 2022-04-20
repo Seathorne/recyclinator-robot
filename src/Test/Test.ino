@@ -19,11 +19,12 @@ enum AutoRoutine
   EndHallwayFeatureDetect,
   TestFeatureDetection,
   WallCompTest,
-  ApproachBin
+  ApproachBin,
+  DriveTest
 };
 
 Robot robot;
-AutoRoutine autoRoutine = AutoRoutine::WallCompTest;
+AutoRoutine autoRoutine = AutoRoutine::DriveTest;
 
 constexpr int ACTIONS = 1;
 Action *actions[ACTIONS] = { new DriveAction(&robot, 2, 0.7) };
@@ -62,6 +63,47 @@ void loop() {
 
   /* Perform autonomous routine step */
   switch (autoRoutine) {
+
+   case ApproachBin: {
+      switch (autoStep)
+      {
+        case 0:
+          Serial.println("Auto| step 0: detecting bin");
+          if (pixy.isBinDetected()) {
+            Serial.println("Auto| step 0: bin detected -- starting rotation")
+            robot.startRotate(pixy.detectedAngle());
+            autoStep++;
+          }
+          break;
+        case 1:
+          Serial.println("Auto| step 1: continuing rotation");
+          if (robot.mode() == Mode::Rotating) {
+            robot.step();
+          } else {
+            Serial.println("Auto| step 1: rotation complete");
+            robot->stop();
+            autoRoutine = AutoRoutine::DoNothing;
+          }
+          break;
+      }
+      
+    }; break;
+
+        case DriveTest: {
+      if (autoStep == 0)
+      {
+        robot.startDriveComp(2, 0.7,-45);
+        autoStep++;
+      }
+      else if (robot.mode() == Mode::Driving)
+      {
+        robot.step();
+      }
+      else
+      {
+        autoRoutine = AutoRoutine::DoNothing;
+      }
+    }; break;
 
     case ActionList: {
       if (autoStep < ACTIONS) {
@@ -600,32 +642,6 @@ void loop() {
         }
     }
   }; break;
-
-    case ApproachBin: {
-      switch (autoStep)
-      {
-        case 0:
-          Serial.println("Auto| step 0: detecting bin");
-          if (pixy.isBinDetected()) {
-            Serial.println("Auto| step 0: bin detected -- starting rotation")
-            robot.startRotate(pixy.detectedAngle());
-            autoStep++;
-          }
-          break;
-        case 1:
-          Serial.println("Auto| step 1: continuing rotation");
-          if (robot.mode() == Mode::Rotating) {
-            robot.step();
-          } else {
-            Serial.println("Auto| step 1: rotation complete");
-            robot->stop();
-            autoRoutine = AutoRoutine::DoNothing;
-          }
-          break;
-      }
-      
-    }; break;
-
   }
 
   /* Print info about subsystems */

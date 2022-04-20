@@ -38,7 +38,7 @@ void Robot::step()
       break;
 
     case Driving:
-      stepDrive();
+      stepDriveComp();
       break;
 
     case WallFollowing:
@@ -224,7 +224,7 @@ void Robot::_stepWallFollow()
     Serial.println("Warning! Robot::_stepWallFollow(...) : _mode is " + String(_mode) + "; should be Mode::WallFollowing.");
     return;
   }
-
+  
   float range = _sonars[_wallFollowSonar].Range();
   float error = _rangeSetpoint - range;
   float delError = (error - prevError);
@@ -539,4 +539,82 @@ Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, 
 float Robot::getRangeSetpoint()
 {
   return _rangeSetpoint;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////EXPERIMENTAL////////////////////////////////////////////////////////////////////////////////////////////
+void Robot::startDriveComp(double distance, double speed, double ang)
+{
+  // Use right wheel as reference since left is the correcting wheel,
+  //  and will have variable distance traveled.
+  double distanceSoFar = _drive.DistanceRight();
+  _distanceSetpoint = distance + distanceSoFar;
+  _driveSpeed = speed;    //set this as a non-1 value, please and thank you.
+  _angleSetpoint = ang;
+  
+  _mode = Mode::Driving;
+  this->stepDriveComp();
+}
+void Robot::stepDriveComp()
+{
+  if (_mode != Mode::Driving)
+  {
+    Serial.println("Warning! Robot::stepDriveComp() : _mode is " + String(_mode) + "; should be Mode::Driving.");
+    return;
+  }
+  double left;
+  double right;
+  double distanceSoFar = _drive.GetDistance(left, right);
+  if (distanceSoFar < _distanceSetpoint) {
+    this->_driveForwardComp(_driveSpeed, _angleSetpoint);
+  } else {
+    this->stop();
+  }
+}
+
+void Robot::_driveForwardComp(float speed, float angle)
+{
+  const float Kp = 0.1;
+  const float Kd = 0;
+
+  static float error = 0;
+  static float delError = 0;
+  
+  if (_mode != Mode::Driving)
+  {
+    Serial.println("Warning! Robot::_driveForward(...) : _mode is " + String(_mode) + "; should be Mode::Driving.");
+    return;
+  }
+  
+  float Speed=speed;
+  float dist=55;
+  float currentAng = _gyro.angleDeg();
+  float correctedAngle;
+  correctedAngle=currentAng-angle;
+  
+  if(correctedAngle>180)
+  {
+    correctedAngle-=360;
+  }
+  else if(correctedAngle<-180)
+  {
+    correctedAngle+=360;
+  }
+  
+  float newError = 0-correctedAngle;
+  delError=newError-error;
+  error=newError;
+  Serial.println("Set Angle "+String(angle));
+  Serial.println("Current Angle " + String(_gyro.angleDeg()));
+  float corr = -(Kp*error+Kd*delError);
+  Serial.println("Corr value"+String(corr));
+  if (corr > .1) {
+    corr = .1;
+  }
+    else if (corr < -.1)
+  {
+    corr = -.1;
+  }
+    corr=corr/2;
+  float leftSpeed = speed-corr;
+  float rightSpeed= speed+corr;
+  _drive.SetSpeed(leftSpeed, rightSpeed);
 }
