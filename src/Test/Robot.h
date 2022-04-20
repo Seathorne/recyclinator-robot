@@ -40,7 +40,7 @@ public:
     Robot();
     void init();
     void update();
-    void step();
+    void step(bool Flip);
 
     void startRotate(float angleDeg);
     void stepRotate();
@@ -50,10 +50,11 @@ public:
 
     void startWallFollow(float range, double distance, double speed, SonarLoc sonar);
     void setRangeSetpoint(float range);
+    void setRangeSetpointL(float range);
     float getRangeSetpoint();
+    float getRangeSetpointL();
     void stop();
 
-    Feature detectFeatureBuffered(SonarLoc sonar, float &range);
     Feature detectFeatureRepeated(SonarLoc sonar, float &range);
 
     Mode mode() const;
@@ -64,9 +65,10 @@ public:
   
     bool checkWall(SonarLoc leftS, SonarLoc RightS);
   
-    void startWallFollowComp(float range, double distance, double speed, SonarLoc sonarR, SonarLoc sonarL);
+    void startWallFollowComp(float range, double distance, double distanceL, double speed, SonarLoc sonarR, SonarLoc sonarL);
+    void stepWallFollowComp(bool Flip);
       
-    Feature detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, float &range);
+    Feature detectFeatureRepeatedComp(SonarLoc sonarLoc, float &range);
 private:
     Drive _drive;
     Gyro _gyro;
@@ -86,6 +88,7 @@ private:
     double _angleSetpoint;
     double _distanceSetpoint;
     float _rangeSetpoint;
+    float _rangeSetpointL;
     SonarLoc _wallFollowSonar;
     SonarLoc _wallFollowSonarL;
 

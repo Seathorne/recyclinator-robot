@@ -29,7 +29,7 @@ void Robot::update()
   }
 }
 
-void Robot::step()
+void Robot::step(bool Flip)
 {
   switch (_mode)
   {
@@ -42,7 +42,7 @@ void Robot::step()
       break;
 
     case WallFollowing:
-      _stepWallFollow();
+      _stepWallFollowComp(Flip);
       break;
     
     default: break;
@@ -196,201 +196,6 @@ void Robot::_driveForward(float speed, float angle)
 
 //driveforward functions end
 
-void Robot::startWallFollow(float range, double distance, double speed, SonarLoc sonar)
-{
-  _rangeSetpoint = range;
-  _distanceSetpoint = distance;
-  _driveSpeed = speed;
-  _wallFollowSonar = sonar;
-
-  _mode = Mode::WallFollowing;
-  this->_stepWallFollow();
-}
-
-void Robot::_stepWallFollow()
-{
-  const float Kp = 0.005;
-  const float Kd = .7;
-  const float speedMaxDiff = 10 / 128.0;
-  
-  static float prevError = 0;
-
-  if (_mode != Mode::WallFollowing)
-  {
-    Serial.println("Warning! Robot::_stepWallFollow(...) : _mode is " + String(_mode) + "; should be Mode::WallFollowing.");
-    return;
-  }
-
-  float range = _sonars[_wallFollowSonar].Range();
-  float error = _rangeSetpoint - range;
-  float delError = (error - prevError);
-  prevError = error;
-
-  float corr = -(Kp*error + Kd*delError);
-  Serial.println("Following| corr=" + String(corr));
-  if (corr > 1)
-    corr = 1;
-  else if (corr < -1)
-    corr = -1;
-  
-  float corrLim = corr*speedMaxDiff;
-  float leftSpeed = _driveSpeed + corrLim;
-  float rightSpeed = _driveSpeed;
-  _drive.SetSpeed(leftSpeed, rightSpeed);
-}
-
-void Robot::setRangeSetpoint(float range) {
-  _rangeSetpoint = range;
-}
-
-/* Provides simple feature detection based on 
- * a small buffer of past sonar readings and
- * recognition of quick increases in depth.
- * Returns the type of feature and its absolute
- * range from the robot.
- */
-/*
-Feature Robot::detectFeatureBuffered(SonarLoc sonarLoc, float &range) {   vestigial. does nothing that other replaced functions don't do.
-  constexpr float FeatureThreshold = 15;
-  constexpr float JunctionThreshold = 200;
-
-  constexpr int BufferSize = 2 * 2;
-  
-  static float ranges[BufferSize];
-  static bool firstTime = true;
-
-  // Read current range 
-  float currRange = this->sonar(sonarLoc).Range();
-
-  // First time only: initialize buffer 
-  if (firstTime) {
-    firstTime = false;
-    for (int i = 0; i < BufferSize; i++) {
-      ranges[i] = currRange;
-    }
-    range = -1;
-    return Feature::None;
-  }
-
-  // Shift in new reading 
-  for (int i = 0; i < BufferSize-1; i++) {
-    ranges[i] = ranges[i+1];
-  }
-  ranges[BufferSize-1] = currRange;
-  
-  // Find mean of older readings 
-  float oldRangeAvg = 0;
-  int oldCount = (BufferSize + 1)/2;
-  for (int i = 0; i < oldCount; i++) {
-    oldRangeAvg += ranges[i];
-  }
-  oldRangeAvg /= oldCount;
-
-  // Find mean of newer readings 
-  float newRangeAvg = 0;
-  int newCount = BufferSize - oldCount;
-  for (int i = oldCount; i < BufferSize; i++) {
-    newRangeAvg += ranges[i];
-  }
-  newRangeAvg /= newCount;
-
-  // Calculate depth of feature 
-  float depth = abs(newRangeAvg - oldRangeAvg); // abs -> detects pos & neg features
-//  Serial.println("Feature| newRangeAvg = " + String(newRangeAvg));
-//  Serial.println("Feature| oldRangeAvg = " + String(oldRangeAvg));
-
-  // Characterize feature //
-  Serial.println("Feature| depth = " + String(depth));
-  Feature detected = (depth >= JunctionThreshold)
-    ? Feature::Junction
-    : (depth >= FeatureThreshold)
-      ? Feature::Other
-      : Feature::None;
-
-  // For debugging: print detected feature //
-  switch (detected) {
-    case Junction:
-      Serial.println("Feature| detected end of hallway with depth " + String(depth) + " at range " + String(currRange) + " cm");
-      break;
-    case Other:
-      Serial.println("Feature| detected feature with depth " + String(depth) + " at range " + String(currRange) + " cm");
-      break;
-  }
-
-  range = currRange; // or newRangeAvg -- both have pros & cons
-  return detected;
-}
-*/
-Feature Robot::detectFeatureRepeated(SonarLoc sonarLoc, float &range) {     //slated for reevaluation once detectfeaturerepeatedcomp is functional
-  constexpr float FeatureThreshold = 15;
-  constexpr float JunctionThreshold = 200;
-
-  constexpr int BufferSize = 2 * 2;
-  constexpr int RepeatSize = 2;
-  
-  static float ranges[SonarLoc::Count][BufferSize];
-  static bool firstTime[SonarLoc::Count] = { true, true, true, true, true, true, true };
-
-  /* Read current range */
-  float currRange = this->sonar(sonarLoc).Range();
-  Serial.println(String(currRange));
-  /* First time only: initialize buffer */
-  if (firstTime[sonarLoc]) {
-    firstTime[sonarLoc] = false;
-    for (int i = 0; i < BufferSize; i++) {
-      ranges[sonarLoc][i] = currRange;
-    }
-    range = -1;
-    return Feature::None;
-  }
-
-  /* Shift in new reading */
-  for (int i = 0; i < BufferSize-1; i++) {
-    ranges[sonarLoc][i] = ranges[sonarLoc][i+1];
-  }
-  ranges[sonarLoc][BufferSize-1] = currRange;
-
-  /* Detect whether feature present in repeated readings */
-  bool repeated = true;
-  float depths[RepeatSize];
-  float old = ranges[sonarLoc][BufferSize-1 - RepeatSize];
-  for (int i = 0; i < RepeatSize; i++) {
-    depths[i] = ranges[sonarLoc][BufferSize-1 - i] - old;
-    if (depths[i] < FeatureThreshold) {
-      repeated = false;
-      break;
-    }
-  }
-
-  /* Take average depth of feature */
-  float depth = 0;
-  for (int i = 0; i < RepeatSize; i++) {
-    depth += depths[i];
-  }
-  depth = abs(depth/RepeatSize);
-
-  /* Characterize feature */
-  Serial.println("Feature| depth = " + String(depth));
-  Feature detected = (depth >= JunctionThreshold && repeated)
-    ? Feature::Junction
-    : (depth >= FeatureThreshold && repeated)
-      ? Feature::Other
-      : Feature::None;
-
-  /* For debugging: print detected feature */
-  switch (detected) {
-    case Junction:
-      Serial.println("Feature| detected end of hallway with depth " + String(depth) + " at range " + String(currRange) + " cm");
-      break;
-    case Other:
-      Serial.println("Feature| detected feature with depth " + String(depth) + " at range " + String(currRange) + " cm");
-      break;
-  }
-
-  range = currRange; // or newRangeAvg -- both have pros & cons
-  return detected;
-}
-
 Drive Robot::drive() const
 {
   return _drive;
@@ -429,21 +234,22 @@ bool Robot::checkWall(SonarLoc LeftS, SonarLoc RightS)
   else return false;
 }
 
-void Robot::startWallFollowComp(float range, double distance, double speed, SonarLoc sonarR, SonarLoc sonarL)
+void Robot::startWallFollowComp(float range, double distance, double distanceL, double speed, SonarLoc sonarR, SonarLoc sonarL)
 {
   _rangeSetpoint = range;
+  _rangeSetpointL = distanceL;
   _distanceSetpoint = distance;
   _driveSpeed = speed;
   _wallFollowSonar = sonarR;
   _wallFollowSonarL = sonarL;
   
   _mode = Mode::WallFollowing;
-  this->_stepWallFollow();
+  this->_stepWallFollowComp(false);
 }
 
-Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, float &range) {
+Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, float &range) {   //this hasn't changed aside from losing a var.
   constexpr float FeatureThreshold = 15;
-  constexpr float JunctionThreshold = 200;
+  constexpr float JunctionThreshold = 200;  
 
   constexpr int BufferSize = 2 * 2;       
   constexpr int RepeatSize = 2;           
@@ -520,4 +326,48 @@ Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, 
 float Robot::getRangeSetpoint()
 {
   return _rangeSetpoint;
+}
+float Robot::getRangeSetpointL()
+{
+  return _rangeSetpointL;
+}
+
+void Robot::_stepWallFollowComp(bool Flip)
+{
+  const float Kp = 0.005;   
+  const float Kd = .7;
+  const float speedMaxDiff = 10 / 128.0;
+  float range;
+  float error;
+  static float prevError = 0;
+
+  if (_mode != Mode::WallFollowing)
+  {
+    Serial.println("Warning! Robot::_stepWallFollow(...) : _mode is " + String(_mode) + "; should be Mode::WallFollowing.");
+    return;
+  }
+  if(Flip=false)    //if flip = false
+  {
+    range = _sonars[_wallFollowSonar].Range();   //set range to right sonar range
+    error = _rangeSetpoint - range;              //calc error from that
+  }
+  else
+  {
+    range = _sonars[_wallFollowSonarL].Range();  //set range to left sonar range
+    error = _rangeSetpointL - range;             //calc error from that
+  }
+  float delError = (error - prevError);
+  prevError = error;
+
+  float corr = -(Kp*error + Kd*delError);             //wall follow as usual (Should? work with this method.)
+  Serial.println("Following| corr=" + String(corr));
+  if (corr > 1)
+    corr = 1;
+  else if (corr < -1)
+    corr = -1;
+  
+  float corrLim = corr*speedMaxDiff;                    //should have some wonk stuff with the compensation for 1 iteration
+  float leftSpeed = _driveSpeed + corrLim;              //but it shouldn't matter.
+  float rightSpeed = _driveSpeed;
+  _drive.SetSpeed(leftSpeed, rightSpeed);
 }
