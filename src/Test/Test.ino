@@ -660,10 +660,12 @@ void PrintSonar() {
 void PrintDrive() {
   double leftDistance, rightDistance;
   double distance = robot.drive().GetDistance(leftDistance, rightDistance);
+  bool boolin=robot.checkWall(SonarLoc::HallRight, SonarLoc::HallLeft);
   Serial.println("------- Drive -------");
   Serial.println(" Distance = " + String(distance) + "m");
   Serial.println("  Left    = " + String(leftDistance) + "m");
   Serial.println("  Right   = " + String(rightDistance) + "m");
+  Serial.println("  Hall    = " + String(boolin));
   Serial.println("---------------------\n");
 }
 
