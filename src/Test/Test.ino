@@ -3,6 +3,7 @@
 
 //#include "Junctions.h"
 #include "Robot.h"
+#include "pixy.h"
 
 enum AutoRoutine
 {
@@ -25,7 +26,7 @@ enum AutoRoutine
 
 Robot robot;
 AutoRoutine autoRoutine = AutoRoutine::DriveTest;
-
+Pixy pixy;
 constexpr int ACTIONS = 1;
 Action *actions[ACTIONS] = { new DriveAction(&robot, 2, 0.7) };
 
@@ -70,7 +71,7 @@ void loop() {
         case 0:
           Serial.println("Auto| step 0: detecting bin");
           if (pixy.isBinDetected()) {
-            Serial.println("Auto| step 0: bin detected -- starting rotation")
+            Serial.println("Auto| step 0: bin detected -- starting rotation");
             robot.startRotate(pixy.detectedAngle());
             autoStep++;
           }
@@ -81,7 +82,7 @@ void loop() {
             robot.step();
           } else {
             Serial.println("Auto| step 1: rotation complete");
-            robot->stop();
+            robot.stop();
             autoRoutine = AutoRoutine::DoNothing;
           }
           break;
