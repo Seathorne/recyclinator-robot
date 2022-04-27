@@ -1,41 +1,67 @@
 #include "Halls.h"
 
-Hall Halls::_halls[(int)(HallId::H) + 1] = {
-  Hall(A),  Hall(AB), Hall(B),           Hall(C), Hall(CD), Hall(D),
-  Hall(AE),          Hall(BF),          Hall(CG),          Hall(DH),
-  Hall(E),  Hall(EF), Hall(F), Hall(FG), Hall(G), Hall(GH), Hall(H), 
-};
+constexpr double FtCm = 12 * 2.54;
+
+Hall Halls::JunctA(A);
+Hall Halls::HallAB(AB);
+Hall Halls::JunctB(B);
+Hall Halls::JunctC(C);
+Hall Halls::HallCD(CD);
+Hall Halls::JunctD(D);
+Hall Halls::HallAE(AE);
+Hall Halls::HallBF(BF);
+Hall Halls::HallCG(CG);
+Hall Halls::HallDH(DH, 7 * FtCm);
+Hall Halls::JunctE(E);
+Hall Halls::HallEF(EF);
+Hall Halls::JunctF(F);
+Hall Halls::HallFG(FG);
+Hall Halls::JunctG(G);
+Hall Halls::HallGH(GH);
+Hall Halls::JunctH(H);
+
+Hall* Halls::_halls[(int)(HallId::H) + 1];
 
 void Halls::init() {
-  setConnection(_getById(A), _getById(AB), East);
-  setConnection(_getById(AB), _getById(B), East);
-  setConnection(_getById(C), _getById(CD), East);
-  setConnection(_getById(CD), _getById(D), East);
-  
-  setConnection(_getById(A), _getById(AE), South);
-  setConnection(_getById(AE), _getById(E), South);
-  setConnection(_getById(B), _getById(BF), South);
-  setConnection(_getById(BF), _getById(F), South);
-  setConnection(_getById(C), _getById(CG), South);
-  setConnection(_getById(CG), _getById(G), South);
-  setConnection(_getById(D), _getById(DH), South);
-  setConnection(_getById(DH), _getById(H), South);
+  Hall *halls[(int)(HallId::H)+1] = {
+    &JunctA, &HallAB, &JunctB,          &JunctC, &HallCD, &JunctD,
+    &HallAE,          &HallBF,          &HallCG,          &HallDH,
+    &JunctE, &HallEF, &JunctF, &HallFG, &JunctG, &HallGH, &JunctH,
+  };
 
-  setConnection(_getById(E), _getById(EF), East);
-  setConnection(_getById(EF), _getById(F), East);
-  setConnection(_getById(F), _getById(FG), East);
-  setConnection(_getById(FG), _getById(G), East);
-  setConnection(_getById(G), _getById(GH), East);
-  setConnection(_getById(GH), _getById(H), East);
-}
-
-Direction opposite(Direction dir) {
-  switch (dir) {
-    case North: return South;
-    case South: return North;
-    case East: return West;
-    case West: return East;
+  for (int i = 0; i <= (int)HallId::H; i++) {
+    _halls[i] = halls[i];
   }
+
+  constexpr int BFLength = 87;
+  HallBF._xSetpoints = new double[BFLength];
+  HallBF._wallDistances[(int)Side::Left] = new double[BFLength] {
+    /* Left  */ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3.5, 3, 7, 7, 7, 7, 7, 7, 7, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3.5, 3, 3.5, 4, 4, 4, 4, 4, 4, 7, 7, 7, 7, 7, 7, 7, 4, 4, 4, 4, 4, 4, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4.5, 5.5, 6.5, 7.5,
+  };
+  HallBF._wallDistances[(int)Side::Right] = new double[BFLength] {
+    /* Right */ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,   4, 4, 7, 7, 7, 7, 7, 7, 7, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,   4, 4,   4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 7, 7, 7, 7, 7, 7, 7, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5,   5,   4,   4,   4,
+  };
+  
+  setConnection(&JunctA, &HallAB, East);
+  setConnection(&HallAB, &JunctB, East);
+  setConnection(&JunctC, &HallCD, East);
+  setConnection(&HallCD, &JunctD, East);
+  
+  setConnection(&JunctA, &HallAE, South);
+  setConnection(&HallAE, &JunctE, South);
+  setConnection(&JunctB, &HallBF, South);
+  setConnection(&HallBF, &JunctF, South);
+  setConnection(&JunctC, &HallCG, South);
+  setConnection(&HallCG, &JunctG, South);
+  setConnection(&JunctD, &HallDH, South);
+  setConnection(&HallDH, &JunctH, South);
+
+  setConnection(&JunctE, &HallEF, East);
+  setConnection(&HallEF, &JunctF, East);
+  setConnection(&JunctF, &HallFG, East);
+  setConnection(&HallFG, &JunctG, East);
+  setConnection(&JunctG, &HallGH, East);
+  setConnection(&HallGH, &JunctH, East);
 }
 
 void Halls::setConnection(Hall *a, Hall *b, Direction dir) {
@@ -44,9 +70,24 @@ void Halls::setConnection(Hall *a, Hall *b, Direction dir) {
 }
 
 const Hall* Halls::getById(HallId id) {
-  return &_halls[(int)id];
+  return _halls[(int)id];
 }
 
-Hall* Halls::_getById(HallId id) {
-  return &_halls[(int)id];
+Direction Halls::opposite(Direction dir) {
+  switch (dir) {
+    case North: return South;
+    case South: return North;
+    case East: return West;
+    case West: return East;
+  }
+}
+
+int Halls::degreesBetween(Direction a, Direction b) {
+  static constexpr int DegreesBetween[4][4] = {
+    { 0, 180, 90, -90 },  // North to NSEW
+    { -180, 0, -90, 90 }, // South to NSEW
+    { -90, 90, 0, 180 },  // East to NSEW
+    { 90, -90, -180, 0 }, // West to NSEW
+  };
+  return DegreesBetween[(int)a][(int)b];
 }

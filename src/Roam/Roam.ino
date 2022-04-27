@@ -1,3 +1,4 @@
+#include "Halls.h"
 #include "Robot.h"
 
 enum AutoRoutine
@@ -14,20 +15,26 @@ enum AutoRoutine
   EndHallwayRightTurn,
   EndHallwayFeatureDetect,
   TestFeatureDetection,
-  WallCompTest
+  WallCompTest,
+  Roam,
 };
 
 Robot robot;
-AutoRoutine autoRoutine = AutoRoutine::WallCompTest;
+AutoRoutine autoRoutine = AutoRoutine::Roam;
+
+/* Initial hall positioning */
+const Hall *initHall = &Halls::HallBF;
+const Direction initDirection = Direction::South;
 
 void setup() {
   Serial.begin(9600);
 
   /* Initialize static classes */
-  // Junctions::Init();
+  Halls::init();
 
-  /* Initialize subsystems */
+  /* Initialize robot & subsystems */
   robot.init();
+  robot.setHall(initHall, initDirection);
 
   Serial.println("Robot| setup complete.");
 }
@@ -54,6 +61,22 @@ void loop() {
 
   /* Perform autonomous routine step */
   switch (autoRoutine) {
+
+    case Roam: {
+      if (autoStep == 0)
+      {
+        robot.startRoam(initHall, initDirection, 0, 0, 0.7);
+        autoStep++;
+      }
+      else if (robot.mode() == Mode::Roaming)
+      {
+        robot.step();
+      }
+      else
+      {
+        autoRoutine = AutoRoutine::DoNothing;
+      }
+    }; break;
 
     case TestMinSpeed: {
         robot.drive().SetSpeed(0.03, 0.03);
@@ -588,6 +611,7 @@ void loop() {
     PrintDrive();
     PrintGyro();
     PrintSonar();
+    PrintOdometry();
     Serial.println();
   }
 }
@@ -653,4 +677,18 @@ void PrintGyro() {
   Serial.println("----- Gyroscope -----");
   Serial.println("Angle = " + String(robot.gyro().angleDeg()) + " deg");
   Serial.println("---------------------\n");
+}
+
+void PrintOdometry() {
+  Serial.println("----- Odometry -----");
+  Serial.println(" t = " + String(robot.getTime()) + " s");
+  Serial.println(" d = " + String(robot.getDistance()) + " m");
+  Serial.println(" v = " + String(robot.getVelocity()) + " m/s");
+  Serial.println(" a = " + String(robot.getAcceleration()) + " m/s^2");
+  Serial.println(" th = " + String(robot.getAngle()) + " rad");
+  Serial.println(" vTh = " + String(robot.getAngularVelocity()) + " rad/s");
+  Serial.println(" aTh = " + String(robot.getAngularAcceleration()) + " rad/s^2");
+  Serial.println(" x = " + String(robot.getX()));
+  Serial.println(" y = " + String(robot.getY()));
+  Serial.println("--------------------\n");
 }

@@ -21,6 +21,14 @@ HallId Hall::getId() const {
   return _id;
 }
 
+void Hall::setLength(double length) {
+  _length = length;
+}
+
+double Hall::getLength() const {
+  return _length;
+}
+
 double Hall::getWidth() const {
   return _width;
 }
@@ -34,6 +42,29 @@ const Hall* Hall::getConnection() const {
   return getConnection(randDir);
 }
 
-bool Hall::isWallConst(double y, Side side) const {
+int Hall::yToIndex(double y) const {
+  return min(max(0, (int)y), (int)(_width)-1);
+}
+
+bool Hall::isWallConst(double y, Side side, double &distance) const {
+  int index = yToIndex(y);
+  distance = _wallDistances[(int)side][index];
+}
+
+bool Hall::isWidthConst(double y, double &width) const {
+  double distLeft, distRight;
+  if (isWallConst(y, Side::Left, distLeft)) {
+    if (isWallConst(y, Side::Right, distRight)) {
+      width = distLeft + distRight;
+      return true;
+    }
+  }
+
+  width = -1;
   return false;
+}
+
+double Hall::xSetpointAt(double y) const {
+  int index = yToIndex(y);
+  return _xSetpoints[index];
 }

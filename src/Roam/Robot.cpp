@@ -1,5 +1,7 @@
 #include "Robot.h"
 
+#include "Halls.h" // for Halls::degreesBetween(Direction a, Direction b)
+
 Robot::Robot()
   : _drive(Serial2),
     _gyro(GyroPin)
@@ -32,7 +34,19 @@ void Robot::update()
   SonarLoc right = SonarLoc::HallRight;
 
   this->_updateOdometry();
-  this->_syncOdometry();
+}
+
+void Robot::setHall(const Hall *hall, Direction dir) {
+  _initHall = hall;
+  _initDirection = dir;
+}
+
+void Robot::resetOdometry() {
+  _dist = 0;
+  _vel = 0;
+  _accel = 0;
+  _x = 0;
+  _y = 0;
 }
 
 void Robot::_updateOdometry() {
@@ -40,8 +54,7 @@ void Robot::_updateOdometry() {
   double t = millis() / 1000.0;
   double dt = t - _t;
 
-  double chL, chR;
-  double dist = _drive.GetDistance(chL, chR);
+  double dist = _drive.GetDistance();
   double vel = (dist - _dist) / dt;
   double accel = (vel - _vel) / dt;
 
@@ -66,27 +79,6 @@ void Robot::_updateOdometry() {
   _y = y;
 }
 
-void Robot::_syncOdometry() {
-  constexpr const double HalfRobotWidth = 16.5;
-  constexpr const SonarLoc LeftSonarLoc = SonarLoc::HallLeft;
-  constexpr const SonarLoc RightSonarLoc = SonarLoc::HallRight;
-
-  double rangeLeft = _sonars[LeftSonarLoc].Range();
-  double rangeRight = _sonars[RightSonarLoc].Range();
-
-  bool isConstLeft = _hall->isWallConst(_y, Side::Left);
-  bool isConstRight = _hall->isWallConst(_y, Side::Right);
-  double hallWidth = _hall->getWidth();
-
-  if (checkWall(LeftSonarLoc, RightSonarLoc) || (isConstLeft && isConstRight)) {
-    _x = rangeLeft / (rangeLeft + rangeRight) * hallWidth + HalfRobotWidth;
-  } else if (isConstLeft) {
-    _x = rangeLeft + HalfRobotWidth;
-  } else if (isConstRight) {
-    _x = hallWidth - rangeRight - HalfRobotWidth;
-  }
-}
-
 void Robot::step()
 {
   switch (_mode)
@@ -101,6 +93,10 @@ void Robot::step()
 
     case WallFollowing:
       _stepWallFollow();
+      break;
+
+    case Roaming:
+      _stepRoam();
       break;
     
     default: break;
@@ -195,6 +191,76 @@ void Robot::stepDrive()
   } else {
     this->stop();
   }
+}
+
+void Robot::startRoam(const Hall *hall, Direction dir, double x, double y, double speed) {
+  _hall = hall;
+  _direction = dir;
+  _x = x;
+  _y = y;
+  _driveSpeed = speed;
+  _angleSetpoint = Halls::degreesBetween(_initDirection, dir);
+
+  this->_stepRoam();
+}
+
+bool Robot::rangeMatches(double actual, double expected) {
+  static constexpr double Threshold = 5;
+  return (actual >= expected - Threshold) || (actual <= expected + Threshold);
+}
+
+void Robot::_syncOdometry() {
+  constexpr const double HalfRobotWidth = 0.5 * Robot::Width;
+  constexpr const SonarLoc LeftSonarLoc = SonarLoc::HallLeft;
+  constexpr const SonarLoc RightSonarLoc = SonarLoc::HallRight;
+
+  double rangeLeft = _sonars[LeftSonarLoc].Range();
+  double rangeRight = _sonars[RightSonarLoc].Range();
+  double measuredWidth = rangeLeft + rangeRight + Robot::Width;
+
+  double expLeft, expRight, expWidth;
+  bool isLeftConst = _hall->isWallConst(_y, Side::Left, expLeft);
+  bool isRightConst = _hall->isWallConst(_y, Side::Right, expRight);
+  bool isWidthConst = _hall->isWidthConst(_y, expWidth);
+  double avgWidth = _hall->getWidth();
+
+  if (rangeMatches(measuredWidth, avgWidth)
+      || (isWidthConst && rangeMatches(measuredWidth, expWidth))) {
+    _x = (rangeLeft + HalfRobotWidth) - expLeft;
+  } else if (isLeftConst && rangeMatches(rangeLeft, expLeft)) {
+    _x = (rangeLeft + HalfRobotWidth) - expLeft;
+  } else if (isRightConst && rangeMatches(rangeRight, expRight)) {
+    _x = expRight - (rangeRight + HalfRobotWidth);
+  }
+
+  // update _y
+}
+
+void Robot::_stepRoam() {
+  static constexpr double ResponseTime = 5; // seconds
+  static constexpr double MaxAngle = 20; // degrees
+  
+  if (_mode != Mode::Roaming) {
+    Serial.println("Warning! Robot::_stepRoam(...) : _mode is " + String(_mode) + "; should be Mode::Roaming.");
+    return;
+  }
+
+  this->_syncOdometry();
+
+  if (_y > _hall->getLength()) {
+    Serial.println("Roaming| reached end of hall, stopping... (hall length = " + String(_hall->getLength()) + "; y = " + String(_y) + ")");
+    this->stop();
+    return;
+  }
+
+  double xSetpoint = _hall->xSetpointAt(_y);
+  double xError = xSetpoint - _x;
+  double responseDistance = _vel * ResponseTime;
+  
+  double angleSetpoint = asin(xError/responseDistance);
+  angleSetpoint = min(max(angleSetpoint, -MaxAngle), MaxAngle); // Clamp angleSetpoint) to [-MaxAngle..MaxAngle]
+  
+  this->_driveForward(_driveSpeed, angleSetpoint);
 }
 
 void Robot::stop()
@@ -578,4 +644,40 @@ Feature Robot::detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, 
 float Robot::getRangeSetpoint()
 {
   return _rangeSetpoint;
+}
+
+double Robot::getTime() const {
+  return _t;
+}
+
+double Robot::getDistance() const {
+  return _dist;
+}
+
+double Robot::getVelocity() const {
+  return _vel;
+}
+
+double Robot::getAcceleration() const {
+  return _accel;
+}
+
+double Robot::getAngle() const {
+  return _theta;
+}
+
+double Robot::getAngularVelocity() const {
+  return _vTheta;
+}
+
+double Robot::getAngularAcceleration() const {
+  return _aTheta;
+}
+
+double Robot::getX() const {
+  return _x;
+}
+
+double Robot::getY() const {
+  return _y;
 }

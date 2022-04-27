@@ -12,6 +12,7 @@ enum Mode
   Rotating,
   Driving,
   WallFollowing,
+  Roaming,
 };
 
 enum SonarLoc
@@ -37,11 +38,19 @@ class Robot
 public:
     static constexpr int GyroPin = 55;
     static constexpr int SonarPins[SonarLoc::Count] = { 24, 25, 26, 27, 28, 29, 34 };
+    static constexpr double Width = 33;
     
     Robot();
     void init();
     void update();
     void step();
+    void stop();
+
+    void resetOdometry();
+
+    void setHall(const Hall *hall, Direction dir);
+    void startRoam(const Hall *hall, Direction dir, double x, double y, double speed);
+    void _stepRoam();
 
     void startRotate(float angleDeg);
     void stepRotate();
@@ -52,7 +61,6 @@ public:
     void startWallFollow(float range, double distance, double speed, SonarLoc sonar);
     void setRangeSetpoint(float range);
     float getRangeSetpoint();
-    void stop();
 
     Feature detectFeatureBuffered(SonarLoc sonar, float &range);
     Feature detectFeatureRepeated(SonarLoc sonar, float &range);
@@ -69,6 +77,19 @@ public:
       
     Feature detectFeatureRepeatedComp(SonarLoc sonarLoc, SonarLoc sonarLoc2, float &range);
 
+    double getTime() const;
+
+    double getDistance() const;
+    double getVelocity() const;
+    double getAcceleration() const;
+
+    double getAngle() const;
+    double getAngularVelocity() const;
+    double getAngularAcceleration() const;
+
+    double getX() const;
+    double getY() const;
+
 private:
     /* Odometry variables */
     double _t, _dt;
@@ -76,11 +97,15 @@ private:
     double _dist, _vel, _accel;
     double _theta, _vTheta, _aTheta;
 
+    static bool rangeMatches(double actual, double expected);
     void _updateOdometry();
     void _syncOdometry();
 
     /* Hall variables */
+    const Hall* _initHall;
     const Hall* _hall;
+    Direction _initDirection;
+    Direction _direction;
 
     Drive _drive;
     Gyro _gyro;
