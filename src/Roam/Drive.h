@@ -35,6 +35,7 @@ class Drive {
     void GetEncodersLong(long &left, long &right);
 
     /* Returns the averaged left and right encoder distances, in meters */
+    double GetDistance() const;
     double GetDistance(double &left, double &right) const;
     double DistanceLeft() const;
     double DistanceRight() const;

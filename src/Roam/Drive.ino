@@ -94,7 +94,7 @@ void Drive::GetEncoderCounts() {
   
   delay(50); // TODO: refactor to remove delay
 
-  Serial.println("Drive| reading encoders");
+//  Serial.println("Drive| reading encoders");
   
   _encoder_left = (long)_serial.read() << 24;
   _encoder_left += (long)_serial.read() << 16;
@@ -127,6 +127,10 @@ void Drive::SendCommand(DriveCommand command, byte value) const {
 void Drive::GetEncodersLong(long &left, long &right) {
   left = _encoder_left;
   right = _encoder_right;
+}
+
+double Drive::GetDistance() const {
+  return (_distance_left + _distance_right) * 0.5;
 }
 
 double Drive::GetDistance(double &left, double &right) const {
