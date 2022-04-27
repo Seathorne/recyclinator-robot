@@ -21,15 +21,17 @@ enum AutoRoutine
   TestFeatureDetection,
   WallCompTest,
   ApproachBin,
-  DriveTest
+  DriveTest,
+  StopTest,
+  DockTest
 };
 
 Robot robot;
-AutoRoutine autoRoutine = AutoRoutine::DriveTest;
+AutoRoutine autoRoutine = AutoRoutine::StopTest;
 Pixy pixy;
 constexpr int ACTIONS = 1;
 Action *actions[ACTIONS] = { new DriveAction(&robot, 2, 0.7) };
-
+int arg=0;
 void setup() {
   Serial.begin(9600);
 
@@ -64,7 +66,26 @@ void loop() {
 
   /* Perform autonomous routine step */
   switch (autoRoutine) {
-
+     case StopTest:
+    {
+      if(arg==0)
+      {
+        delay(500);
+        robot.startDriveComp(40,0.7, 0);
+        arg++;
+      }
+      else if(arg==1)
+      {
+        robot.step();
+        Serial.println("Front Range: " + String((robot.sonar(SonarLoc::Front)).Range()));
+        if((robot.sonar(SonarLoc::Front)).Range()<70)
+        {
+          robot.stop();
+          autoRoutine=AutoRoutine::DoNothing;
+        }
+        }
+      }; break;
+      
    case ApproachBin: {
       switch (autoStep)
       {
