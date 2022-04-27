@@ -49,6 +49,7 @@ int Hall::yToIndex(double y) const {
 bool Hall::isWallConst(double y, Side side, double &distance) const {
   int index = yToIndex(y);
   distance = _wallDistances[(int)side][index];
+  return (distance > 0);
 }
 
 bool Hall::isWidthConst(double y, double &width) const {

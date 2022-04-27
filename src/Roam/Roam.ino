@@ -63,7 +63,14 @@ void loop() {
   switch (autoRoutine) {
 
     case Roam: {
-      if (autoStep == 0)
+      if (robot.drive().GetDistance() < 0 || robot.getY() < 0) {
+        Serial.println("Odometry| resetting...");
+        robot.stop();
+        robot.resetOdometry();
+        autoStep = 0;
+        return;
+      }
+      else if (autoStep == 0)
       {
         robot.startRoam(initHall, initDirection, 0, 0, 0.7);
         autoStep++;

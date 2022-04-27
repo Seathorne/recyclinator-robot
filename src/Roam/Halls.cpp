@@ -1,6 +1,6 @@
 #include "Halls.h"
 
-constexpr double FtCm = 12 * 2.54;
+constexpr double FtCm = 30.3;
 
 Hall Halls::JunctA(A);
 Hall Halls::HallAB(AB);
@@ -34,6 +34,7 @@ void Halls::init() {
   }
 
   constexpr int BFLength = 87;
+  HallBF.setLength(BFLength);
   HallBF._xSetpoints = new double[BFLength];
   HallBF._wallDistances[(int)Side::Left] = new double[BFLength] {
     /* Left  */ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3.5, 3, 7, 7, 7, 7, 7, 7, 7, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3.5, 3, 3.5, 4, 4, 4, 4, 4, 4, 7, 7, 7, 7, 7, 7, 7, 4, 4, 4, 4, 4, 4, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4.5, 5.5, 6.5, 7.5,
@@ -41,6 +42,10 @@ void Halls::init() {
   HallBF._wallDistances[(int)Side::Right] = new double[BFLength] {
     /* Right */ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,   4, 4, 7, 7, 7, 7, 7, 7, 7, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,   4, 4,   4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 7, 7, 7, 7, 7, 7, 7, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5,   5,   4,   4,   4,
   };
+  for (int i = 0; i < BFLength; i++) {
+    HallBF._wallDistances[0][i] *= FtCm;
+    HallBF._wallDistances[1][i] *= FtCm;
+  }
   
   setConnection(&JunctA, &HallAB, East);
   setConnection(&HallAB, &JunctB, East);

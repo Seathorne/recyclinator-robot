@@ -201,6 +201,7 @@ void Robot::startRoam(const Hall *hall, Direction dir, double x, double y, doubl
   _driveSpeed = speed;
   _angleSetpoint = Halls::degreesBetween(_initDirection, dir);
 
+  _mode = Mode::Roaming;
   this->_stepRoam();
 }
 
@@ -224,19 +225,39 @@ void Robot::_syncOdometry() {
   bool isWidthConst = _hall->isWidthConst(_y, expWidth);
   double avgWidth = _hall->getWidth();
 
+  if (isLeftConst) expLeft -= HalfRobotWidth;
+  if (isRightConst) expRight -= HalfRobotWidth;
+
+  Serial.println("----- Sync Odometry -----");
+  Serial.println(" range = (" + String(rangeLeft) + ", " + String(rangeRight) + ")");
+  Serial.println(" measuredWidth = " + String(measuredWidth));
+  Serial.println(" expectedWidth = " + String(expWidth));
+  Serial.println(" avgWidth = " + String(avgWidth));
+  Serial.println(" isConst = (" + String(isLeftConst) + ", " + String(isRightConst) + ")");
+  Serial.println(" expected = (" + String(expLeft) + ", " + String(expRight) + ")");
+  Serial.println(" isWidthConst = " + String(isWidthConst));
+
+  Serial.println(" (x,y) = (" + String(_x) + ", " + String(_y) + ")");
+
   if (rangeMatches(measuredWidth, avgWidth)
       || (isWidthConst && rangeMatches(measuredWidth, expWidth))) {
-    _x = (rangeLeft + HalfRobotWidth) - expLeft;
+    _x = rangeLeft - expLeft;
+    Serial.println(" case 1: set x = " + String(_x));
   } else if (isLeftConst && rangeMatches(rangeLeft, expLeft)) {
-    _x = (rangeLeft + HalfRobotWidth) - expLeft;
+    _x = rangeLeft - expLeft;
+    Serial.println(" case 2: set x = " + String(_x));
   } else if (isRightConst && rangeMatches(rangeRight, expRight)) {
-    _x = expRight - (rangeRight + HalfRobotWidth);
+    _x = expRight - rangeRight;
+    Serial.println(" case 3: set x = " + String(_x));
   }
 
   // update _y
+
+  Serial.println("-------------------------");
 }
 
 void Robot::_stepRoam() {
+  static constexpr double MinResponseDistance = 1; // meters
   static constexpr double ResponseTime = 5; // seconds
   static constexpr double MaxAngle = 20; // degrees
   
@@ -255,10 +276,20 @@ void Robot::_stepRoam() {
 
   double xSetpoint = _hall->xSetpointAt(_y);
   double xError = xSetpoint - _x;
-  double responseDistance = _vel * ResponseTime;
+  double responseDistance = min(_vel * ResponseTime, MinResponseDistance) * 1000;
   
   double angleSetpoint = asin(xError/responseDistance);
+
+  Serial.println("----- StepRoam -----");
+  Serial.println(" xSetpoint = " + String(xSetpoint));
+  Serial.println(" xError = " + String(xError));
+  Serial.println(" responseDist = " + String(responseDistance));
+  Serial.println(" angleSetpoint = " + String(angleSetpoint));
+  
   angleSetpoint = min(max(angleSetpoint, -MaxAngle), MaxAngle); // Clamp angleSetpoint) to [-MaxAngle..MaxAngle]
+
+  Serial.println(" angleSetpoint (clamped) = " + String(angleSetpoint));
+  Serial.println("--------------------");
   
   this->_driveForward(_driveSpeed, angleSetpoint);
 }
@@ -277,7 +308,7 @@ void Robot::_driveForward(float speed, float angle)
   static float error = 0;
   static float delError = 0;
   
-  if (_mode != Mode::Driving)
+  if (_mode != Mode::Driving && _mode != Mode::Roaming)
   {
     Serial.println("Warning! Robot::_driveForward(...) : _mode is " + String(_mode) + "; should be Mode::Driving.");
     return;

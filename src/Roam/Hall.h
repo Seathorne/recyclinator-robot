@@ -27,7 +27,7 @@ enum Side
 class Hall
 {
 public:
-  static constexpr const double HallWidthDefault = 243.84; // 243.84cm = 8ft
+  static constexpr const double HallWidthDefault = 8 * 30.3;
 
   Hall(HallId id, double width = HallWidthDefault);
   Hall(HallId id, const Hall *north, const Hall *south, const Hall *east, const Hall *west, double width = HallWidthDefault);
