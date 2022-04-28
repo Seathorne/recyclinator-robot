@@ -23,6 +23,7 @@ public:
   int _range;
   int Encode;
   void HandleCalibration();
+  int MaxCount;
 private:
   	//motor ints
   int servonum=0;
@@ -36,7 +37,6 @@ private:
   int Direction;
   int EncoderTimeout = 200;
   int volatile Counter = 0;
-  int MaxCount;
   int Calibrated;
   bool Moving;
   int TargetCount;
